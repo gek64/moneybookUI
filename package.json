@@ -1,0 +1,19 @@
+{
+  "name": "financial_accounting_frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.ts",
+  "scripts": {
+    "start": "ts-node main",
+    "clean": "tsc --build --clean"
+  },
+  "dependencies": {
+    "@types/node": "^18.15.11",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  },
+  "devDependencies": {
+    "npm-check-updates": "^16.10.7",
+    "@angular/cli": "^15.2.5"
+  }
+}

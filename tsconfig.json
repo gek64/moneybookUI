@@ -20,6 +20,9 @@
     "lib": [
       "ES2022",
       "dom"
+    ],
+    "types": [
+      "jasmine"
     ]
   },
   "angularCompilerOptions": {
@@ -27,5 +30,8 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "files": [
+    "main.ts"
+  ]
 }

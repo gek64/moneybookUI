@@ -4,7 +4,8 @@
   "description": "",
   "main": "main.ts",
   "scripts": {
-    "start": "ts-node main",
+    "start": "ng serve",
+    "build": "ng build",
     "clean": "tsc --build --clean"
   },
   "dependencies": {

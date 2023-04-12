@@ -5,8 +5,7 @@
   "main": "main.ts",
   "scripts": {
     "start": "ng serve",
-    "build": "ng build",
-    "clean": "tsc --build --clean"
+    "build": "ng build"
   },
   "dependencies": {
     "@angular/animations": "^15.2.6",

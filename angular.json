@@ -18,17 +18,21 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist",
-            "index": "main.html",
+            "index": "index.html",
             "main": "main.ts",
             "polyfills": [
               "zone.js"
             ],
             "tsConfig": "tsconfig.json",
             "assets": [
-              "assets"
+              {
+                "glob": "**/*",
+                "input": "assets",
+                "output": "assets"
+              }
             ],
             "styles": [
-              "main.css"
+              "style.css"
             ],
             "scripts": []
           },

@@ -1,22 +1,38 @@
 import {NgModule} from "@angular/core"
 import {BrowserModule} from "@angular/platform-browser"
-import {AppRoutingModule} from "./app-routing.module"
 import {AppComponent} from "./app.component"
-import {NgOptimizedImage} from "@angular/common"
+import {AppRoutingModule} from "./app-routing.module"
+import {HttpClientModule} from "@angular/common/http"
+import {NoopAnimationsModule} from "@angular/platform-browser/animations"
+import {NzLayoutModule} from "ng-zorro-antd/layout"
+import {NzMenuModule} from "ng-zorro-antd/menu"
 import {NzIconModule} from "ng-zorro-antd/icon"
+import {InvoiceComponent} from "./invoice/invoice.component"
+import {TypeComponent} from "./type/type.component"
+import {AccountComponent} from "./account/account.component"
+import {HomeComponent} from "./home/home.component"
+import {NzListModule} from "ng-zorro-antd/list"
+import {NgOptimizedImage} from "@angular/common"
 import {NzButtonModule} from "ng-zorro-antd/button"
 
 @NgModule({
     declarations: [
-        AppComponent
+        AppComponent,
+        InvoiceComponent,
+        TypeComponent,
+        AccountComponent,
+        HomeComponent
     ],
     imports: [
-        // angular 组件
-        BrowserModule,
         AppRoutingModule,
+        BrowserModule,
+        HttpClientModule,
+        NoopAnimationsModule,
         NgOptimizedImage,
-        // ant 组件
+        NzLayoutModule,
+        NzMenuModule,
         NzIconModule,
+        NzListModule,
         NzButtonModule,
     ],
     providers: [],

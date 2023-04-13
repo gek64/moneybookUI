@@ -1,0 +1,24 @@
+.app-layout {
+    height: 100vh;
+}
+
+.side-menu {
+    height: 100%;
+}
+
+.inner-layout {
+    padding: 24px 24px 0 24px;
+}
+
+nz-header {
+    color: white;
+}
+
+nz-content {
+    background: #fff;
+    padding: 24px;
+}
+
+nz-footer {
+    text-align: center;
+}

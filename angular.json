@@ -27,12 +27,18 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "assets",
-                "output": "assets"
+                "input": "assets/",
+                "output": "assets/"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/@ant-design/icons-angular/src/inline-svg/",
+                "output": "assets/"
               }
             ],
             "styles": [
-              "style.css"
+              "style.css",
+              "node_modules/ng-zorro-antd/ng-zorro-antd.min.css"
             ],
             "scripts": []
           },

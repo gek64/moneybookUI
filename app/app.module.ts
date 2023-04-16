@@ -14,6 +14,9 @@ import {HomeComponent} from "./home/home.component"
 import {NzListModule} from "ng-zorro-antd/list"
 import {NgOptimizedImage} from "@angular/common"
 import {NzButtonModule} from "ng-zorro-antd/button"
+import {NzCheckboxModule} from "ng-zorro-antd/checkbox"
+import {NzMessageModule} from "ng-zorro-antd/message"
+import {TypeService} from "../internal/service/type.service"
 
 @NgModule({
     declarations: [
@@ -34,8 +37,12 @@ import {NzButtonModule} from "ng-zorro-antd/button"
         NzIconModule,
         NzListModule,
         NzButtonModule,
+        NzCheckboxModule,
+        NzMessageModule
     ],
-    providers: [],
+    providers: [
+        TypeService
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule {

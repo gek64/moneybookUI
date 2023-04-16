@@ -1,1 +1,17 @@
-<p>type works!</p>
+<div style="margin-bottom: 8px;">
+    <button nz-button (click)="getTypes()">http 获取数据</button>
+</div>
+<nz-list nzItemLayout="horizontal" nzLoading="{{ loading }}">
+    <nz-list-item *ngFor="let item of types">
+        <nz-list-item-meta>
+            <nz-list-item-meta-avatar>
+                <label nz-checkbox></label>
+            </nz-list-item-meta-avatar>
+
+            <nz-list-item-meta-title>
+                {{ item.name }}
+            </nz-list-item-meta-title>
+        </nz-list-item-meta>
+    </nz-list-item>
+    <nz-list-empty *ngIf="types.length === 0"></nz-list-empty>
+</nz-list>

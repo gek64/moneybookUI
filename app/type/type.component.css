@@ -1,0 +1,12 @@
+.function-header {
+    display: flex;
+    margin-bottom: 4px;
+}
+
+.function-header .function-button {
+    margin-left: auto;
+}
+
+.function-header .function-button button {
+    margin-left: 4px;
+}

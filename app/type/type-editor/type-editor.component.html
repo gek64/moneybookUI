@@ -1,0 +1,21 @@
+<nz-modal [(nzVisible)]="isVisible" [nzTitle]="title"
+          [nzOkText]="okText" [nzOkDisabled]="newType.name == ''" (nzOnOk)="handleOk()"
+          (nzOnCancel)="handleCancel()">
+    <ng-container *nzModalContent>
+        <nz-table [nzData]="[{}]" [nzShowPagination]="false">
+            <thead>
+            <tr>
+                <th *ngIf="newType.id != undefined">Id</th>
+                <th>Name</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td *ngIf="newType.id != undefined">{{ newType.id }}</td>
+                <td><input nz-input [(ngModel)]="newType.name"/></td>
+            </tr>
+            </tbody>
+        </nz-table>
+    </ng-container>
+</nz-modal>

@@ -11,12 +11,16 @@ import {InvoiceComponent} from "./invoice/invoice.component"
 import {TypeComponent} from "./type/type.component"
 import {AccountComponent} from "./account/account.component"
 import {HomeComponent} from "./home/home.component"
-import {NzListModule} from "ng-zorro-antd/list"
 import {NgOptimizedImage} from "@angular/common"
 import {NzButtonModule} from "ng-zorro-antd/button"
-import {NzCheckboxModule} from "ng-zorro-antd/checkbox"
 import {NzMessageModule} from "ng-zorro-antd/message"
 import {TypeService} from "../internal/service/type.service"
+import {NzTableModule} from "ng-zorro-antd/table"
+import {NzBadgeModule} from "ng-zorro-antd/badge"
+import {TypeEditorComponent} from "./type/type-editor/type-editor.component"
+import {NzModalModule} from "ng-zorro-antd/modal"
+import {NzInputModule} from "ng-zorro-antd/input"
+import {FormsModule} from "@angular/forms"
 
 @NgModule({
     declarations: [
@@ -24,7 +28,8 @@ import {TypeService} from "../internal/service/type.service"
         InvoiceComponent,
         TypeComponent,
         AccountComponent,
-        HomeComponent
+        HomeComponent,
+        TypeEditorComponent,
     ],
     imports: [
         AppRoutingModule,
@@ -35,10 +40,13 @@ import {TypeService} from "../internal/service/type.service"
         NzLayoutModule,
         NzMenuModule,
         NzIconModule,
-        NzListModule,
         NzButtonModule,
-        NzCheckboxModule,
-        NzMessageModule
+        NzMessageModule,
+        NzTableModule,
+        NzBadgeModule,
+        NzModalModule,
+        NzInputModule,
+        FormsModule
     ],
     providers: [
         TypeService

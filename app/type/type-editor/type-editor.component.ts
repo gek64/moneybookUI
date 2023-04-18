@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Output} from "@angular/core"
 import {Type} from "../../../internal/interface/type"
-import {TypeService} from "../../../internal/service/type.service"
 
 @Component({
     selector: "app-type-editor",
@@ -10,7 +9,6 @@ import {TypeService} from "../../../internal/service/type.service"
 export class TypeEditorComponent {
     isVisible = false
     title = ""
-    okText = "提交"
     newType = new class implements Type {
         id: string | undefined
         name: string
@@ -18,15 +16,20 @@ export class TypeEditorComponent {
 
     @Output() editorResult = new EventEmitter()
 
-    constructor(private service: TypeService) {
+    constructor() {
     }
 
     showModal(newType?: Type): void {
         if (newType != undefined) {
-            this.title = "修改"
-            this.newType = newType
+            this.title = "Edit"
+
+            // 使用 this.newType = newType是引用赋值
+            // 值赋值
+            // this.newType.id = newType.id
+            // this.newType.name = newType.name
+            Object.assign(this.newType, newType)
         } else {
-            this.title = "新建"
+            this.title = "Create"
             this.newType.id = undefined
             this.newType.name = ""
         }

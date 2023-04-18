@@ -14,29 +14,29 @@
 
     <div class="function-button">
         <button
-                nz-button
-                nzType="primary"
                 (click)="deleteTypes()"
                 [disabled]="setOfCheckedItems.size === 0"
                 [nzDanger]="true"
                 [nzLoading]="loading"
+                nz-button
+                nzType="primary"
         >
             删除
         </button>
         <button
-                nz-button
-                nzType="primary"
-                (click)="editType()"
+                (click)="editTypeButton()"
                 [disabled]="setOfCheckedItems.size !== 1"
                 [nzLoading]="loading"
+                nz-button
+                nzType="primary"
         >
             修改
         </button>
         <button
+                (click)="createTypeButton()"
+                [nzLoading]="loading"
                 nz-button
                 nzType="primary"
-                (click)="createType()"
-                [nzLoading]="loading"
         >
             新建
         </button>

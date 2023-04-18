@@ -9,7 +9,11 @@ export class TypeService {
     }
 
     createType(newType: Type) {
-        return this.http.post<any>(new URL("/type", environment.backend_server).toString(), newType)
+        return this.http.post<Type>(new URL("/type", environment.backend_server).toString(), newType)
+    }
+
+    updateType(updateType: Type) {
+        return this.http.put<Type>(new URL("/type", environment.backend_server).toString(), updateType)
     }
 
     getTypeById(id: string) {
@@ -52,7 +56,7 @@ export class TypeService {
     }
 
     deleteManyType(ids: Set<string>) {
-        return this.http.delete<any>(new URL("/type/many", environment.backend_server).toString(), {
+        return this.http.delete<{ count: number }>(new URL("/type/many", environment.backend_server).toString(), {
             params: {
                 "ids": Array.from(ids)
             }

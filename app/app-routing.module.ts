@@ -1,8 +1,8 @@
 import {NgModule} from "@angular/core"
 import {RouterModule, Routes} from "@angular/router"
-import {InvoiceComponent} from "./invoice/invoice.component"
-import {TypeComponent} from "./type/type.component"
-import {AccountComponent} from "./account/account.component"
+import {InvoiceComponent} from "./tables/invoice/invoice.component"
+import {TypeComponent} from "./tables/type/type.component"
+import {AccountComponent} from "./tables/account/account.component"
 import {HomeComponent} from "./home/home.component"
 
 const routes: Routes = [

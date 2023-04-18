@@ -1,0 +1,53 @@
+<nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
+          [(nzVisible)]="isVisible" [nzOkDisabled]="newInvoice.title == ''"
+          [nzTitle]="title" [nzWidth]="5000">
+    <ng-container *nzModalContent>
+        <nz-table [nzData]="[{}]" [nzShowPagination]="false">
+            <thead>
+            <tr>
+                <th *ngIf="newInvoice.id != undefined">Id</th>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Account</th>
+                <th>Amount</th>
+                <th>Datetime</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td *ngIf="newInvoice.id != undefined">
+                    {{ newInvoice.id }}
+                </td>
+                <td>
+                    <input [(ngModel)]="newInvoice.title" nz-input/>
+                </td>
+                <td>
+                    <nz-select [(ngModel)]="selectedType" [compareWith]="compareFn" nzPlaceHolder="Select a type">
+                        <nz-option *ngFor="let type of types" [nzLabel]="type.name" [nzValue]="type"></nz-option>
+                    </nz-select>
+                </td>
+                <td>
+                    <nz-select [(ngModel)]="selectedAccount" [compareWith]="compareFn" nzPlaceHolder="Select a account">
+                        <nz-option *ngFor="let account of accounts" [nzLabel]="account.name"
+                                   [nzValue]="account"></nz-option>
+                    </nz-select>
+                </td>
+                <td>
+                    <nz-input-number [(ngModel)]="newInvoice.amount" [nzStep]="1"></nz-input-number>
+                </td>
+                <td>
+                    <nz-date-picker [(ngModel)]="newInvoice.datetime"></nz-date-picker>
+                </td>
+                <td>
+                    <nz-select [(ngModel)]="newInvoice.status" nzPlaceHolder="Select a status">
+                        <nz-option *ngFor="let s of status" [nzLabel]="s.key"
+                                   [nzValue]="s.value"></nz-option>
+                    </nz-select>
+                </td>
+            </tr>
+            </tbody>
+        </nz-table>
+    </ng-container>
+</nz-modal>

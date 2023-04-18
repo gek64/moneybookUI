@@ -1,18 +1,21 @@
 import {NzTableSortFn, NzTableSortOrder} from "ng-zorro-antd/table"
 
-interface Type {
+interface Account {
     id: string
     name: string
+    number?: string
+    type: string
+    funds?: number
 }
 
-interface TypeColumnItem {
+interface AccountColumnItem {
     name: string
     sortOrder: NzTableSortOrder | null
-    sortFn: NzTableSortFn<Type> | null
+    sortFn: NzTableSortFn<Account> | null
     sortDirections: NzTableSortOrder[]
 }
 
 export {
-    Type,
-    TypeColumnItem
+    Account,
+    AccountColumnItem
 }

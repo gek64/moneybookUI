@@ -1,9 +1,9 @@
 import {Component, OnInit, ViewChild} from "@angular/core"
 import {HttpErrorResponse} from "@angular/common/http"
-import {Type, TypeColumnItem} from "../../internal/interface/type"
+import {Type, TypeColumnItem} from "../../../internal/interface/type"
 import {catchError, retry, throwError} from "rxjs"
 import {NzMessageService} from "ng-zorro-antd/message"
-import {TypeService} from "../../internal/service/type.service"
+import {TypeService} from "../../../internal/service/type.service"
 import {TypeEditorComponent} from "./type-editor/type-editor.component"
 
 @Component({
@@ -31,7 +31,7 @@ export class TypeComponent implements OnInit {
         {
             name: "Id",
             sortOrder: null,
-            sortFn: (a: Type, b: Type) => a.name.localeCompare(b.name),
+            sortFn: (a: Type, b: Type) => a.id.localeCompare(b.id),
             sortDirections: ["ascend", "descend", null]
         },
         {
@@ -173,7 +173,7 @@ export class TypeComponent implements OnInit {
         let pageThis = this
         this.loading = true
 
-        const req = this.typeService.getAllType()
+        const req = this.typeService.getAllTypes()
             .pipe(
                 retry(3),
                 catchError(this.handleError)
@@ -195,7 +195,7 @@ export class TypeComponent implements OnInit {
         let pageThis = this
         this.loading = true
 
-        const req = this.typeService.deleteManyType(this.setOfCheckedItems)
+        const req = this.typeService.deleteManyTypes(this.setOfCheckedItems)
             .pipe(
                 retry(3),
                 catchError(this.handleError)

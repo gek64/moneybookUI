@@ -1,0 +1,86 @@
+<app-account-editor #editor (editorResult)="getEditorResult($event)"></app-account-editor>
+
+<div class="function-header">
+    <nz-badge [nzCount]="setOfCheckedItems.size">
+        <button
+                (click)="clearSetOfCheckedItems()"
+                [disabled]="setOfCheckedItems.size === 0"
+                [nzLoading]="loading"
+                nz-button>
+            清除
+        </button>
+    </nz-badge>
+
+
+    <div class="function-button">
+        <button
+                (click)="deleteAccounts()"
+                [disabled]="setOfCheckedItems.size === 0"
+                [nzDanger]="true"
+                [nzLoading]="loading"
+                nz-button
+                nzType="primary"
+        >
+            删除
+        </button>
+        <button
+                (click)="editTypeButton()"
+                [disabled]="setOfCheckedItems.size !== 1"
+                [nzLoading]="loading"
+                nz-button
+                nzType="primary"
+        >
+            修改
+        </button>
+        <button
+                (click)="createTypeButton()"
+                [nzLoading]="loading"
+                nz-button
+                nzType="primary"
+        >
+            新建
+        </button>
+    </div>
+</div>
+
+
+<nz-table
+    #rowSelectionTable
+    (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
+    [nzData]="listOfData"
+    [nzLoading]="loading"
+    [nzShowPagination]="showPagination"
+    [nzShowSizeChanger]="showSizeChanger">
+
+    <thead>
+    <tr>
+        <th
+                (nzCheckedChange)="onAllChecked($event)"
+                [(nzChecked)]="checkedAll"
+                [nzIndeterminate]="indeterminate">
+        </th>
+        <th *ngFor="let column of columns"
+            [nzSortDirections]="column.sortDirections"
+            [nzSortFn]="column.sortFn"
+            [nzSortOrder]="column.sortOrder">
+            {{ column.name }}
+        </th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr *ngFor="let account of rowSelectionTable.data">
+        <td
+                (nzCheckedChange)="onItemChecked(account.id,$event)"
+                [nzChecked]="setOfCheckedItems.has(account.id)">
+        </td>
+        <td>{{ account.id }}</td>
+        <td>{{ account.name }}</td>
+        <td>{{ account.number }}</td>
+        <td>{{ account.type }}</td>
+        <td>{{ account.funds }}</td>
+    </tr>
+    </tbody>
+</nz-table>
+
+

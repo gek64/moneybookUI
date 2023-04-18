@@ -17,14 +17,14 @@ export class TypeService {
     }
 
     getTypeById(id: string) {
-        return this.http.get<Type[]>(new URL("/type", environment.backend_server).toString(), {
+        return this.http.get<Type>(new URL("/type", environment.backend_server).toString(), {
             params: {
                 "id": id
             }
         })
     }
 
-    getAllType() {
+    getAllTypes() {
         return this.http.get<Type[]>(new URL("/type/all", environment.backend_server).toString())
     }
 
@@ -55,7 +55,7 @@ export class TypeService {
         })
     }
 
-    deleteManyType(ids: Set<string>) {
+    deleteManyTypes(ids: Set<string>) {
         return this.http.delete<{ count: number }>(new URL("/type/many", environment.backend_server).toString(), {
             params: {
                 "ids": Array.from(ids)

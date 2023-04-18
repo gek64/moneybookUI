@@ -1,0 +1,90 @@
+<app-invoice-editor #editor (editorResult)="getEditorResult($event)"></app-invoice-editor>
+
+<div class="function-header">
+    <nz-badge [nzCount]="setOfCheckedItems.size">
+        <button
+                (click)="clearSetOfCheckedItems()"
+                [disabled]="setOfCheckedItems.size === 0"
+                [nzLoading]="loading"
+                nz-button>
+            清除
+        </button>
+    </nz-badge>
+
+
+    <div class="function-button">
+        <button
+                (click)="deleteInvoices()"
+                [disabled]="setOfCheckedItems.size === 0"
+                [nzDanger]="true"
+                [nzLoading]="loading"
+                nz-button
+                nzType="primary"
+        >
+            删除
+        </button>
+        <button
+                (click)="editTypeButton()"
+                [disabled]="setOfCheckedItems.size !== 1"
+                [nzLoading]="loading"
+                nz-button
+                nzType="primary"
+        >
+            修改
+        </button>
+        <button
+                (click)="createTypeButton()"
+                [nzLoading]="loading"
+                nz-button
+                nzType="primary"
+        >
+            新建
+        </button>
+    </div>
+</div>
+
+
+<nz-table
+    #rowSelectionTable
+    (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
+    [nzData]="listOfData"
+    [nzLoading]="loading"
+    [nzShowPagination]="showPagination"
+    [nzShowSizeChanger]="showSizeChanger">
+
+    <thead>
+    <tr>
+        <th
+                (nzCheckedChange)="onAllChecked($event)"
+                [(nzChecked)]="checkedAll"
+                [nzIndeterminate]="indeterminate">
+        </th>
+        <th *ngFor="let column of columns"
+            [nzSortDirections]="column.sortDirections"
+            [nzSortFn]="column.sortFn"
+            [nzSortOrder]="column.sortOrder"
+            [nzSortPriority]="column.priority">
+            {{ column.name }}
+        </th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr *ngFor="let invoice of rowSelectionTable.data">
+        <td
+                (nzCheckedChange)="onItemChecked(invoice.id,$event)"
+                [nzChecked]="setOfCheckedItems.has(invoice.id)">
+        </td>
+        <td>{{ invoice.id }}</td>
+        <td>{{ invoice.title }}</td>
+        <td>{{ invoice.type.name }}</td>
+        <td>{{ invoice.account.name }}</td>
+        <td>{{ invoice.amount }}</td>
+        <!--https://angular.cn/api/common/DatePipe-->
+        <td>{{ invoice.datetime| date:"short":"+0800":"zh" }}</td>
+        <td>{{ invoice.status }}</td>
+    </tr>
+    </tbody>
+</nz-table>
+
+

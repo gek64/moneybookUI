@@ -1,0 +1,38 @@
+<nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
+          [(nzVisible)]="isVisible" [nzOkDisabled]="newAccount.name == ''"
+          [nzTitle]="title" [nzWidth]="5000">
+    <ng-container *nzModalContent>
+        <nz-table [nzData]="[{}]" [nzShowPagination]="false">
+            <thead>
+            <tr>
+                <th *ngIf="newAccount.id != undefined">Id</th>
+                <th>Name</th>
+                <th>Number</th>
+                <th>Type</th>
+                <th>Funds</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td *ngIf="newAccount.id != undefined">
+                    {{ newAccount.id }}
+                </td>
+                <td>
+                    <input [(ngModel)]="newAccount.name" nz-input/>
+                </td>
+                <td>
+                    <input [(ngModel)]="newAccount.number" nz-input/>
+                </td>
+                <td>
+                    <input [(ngModel)]="newAccount.type" nz-input/>
+                </td>
+                <td>
+                    <nz-input-number [(ngModel)]="newAccount.funds" [nzMin]="0" [nzStep]="100">
+                    </nz-input-number>
+                </td>
+            </tr>
+            </tbody>
+        </nz-table>
+    </ng-container>
+</nz-modal>

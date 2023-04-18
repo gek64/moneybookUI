@@ -7,7 +7,7 @@ import {TypeService} from "../../../internal/service/type.service"
 import {TypeEditorComponent} from "./type-editor/type-editor.component"
 
 @Component({
-    selector: "app-type",
+    selector: "app-table-type",
     templateUrl: "./type.component.html",
     styleUrls: ["./type.component.css"]
 })

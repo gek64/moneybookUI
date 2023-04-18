@@ -2,7 +2,7 @@ import {Component, EventEmitter, Output} from "@angular/core"
 import {Type} from "../../../../internal/interface/type"
 
 @Component({
-    selector: "app-type-editor",
+    selector: "app-table-type-editor",
     templateUrl: "./type-editor.component.html",
     styleUrls: ["./type-editor.component.css"]
 })

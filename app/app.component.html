@@ -6,23 +6,31 @@
     </nz-header>
 
     <nz-layout>
-        <nz-sider nzTheme="dark">
-            <ul nz-menu nzMode="inline" nzTheme="dark">
+        <nz-sider nzTheme="light">
+            <ul nz-menu nzMode="inline" nzTheme="light">
                 <li nz-menu-item nzMatchRouter routerLink="/home">
                     <span nz-icon nzTheme="outline" nzType="home"></span>
                     <span>主页</span>
                 </li>
 
-                <li nz-submenu nzIcon="solution" nzOpen nzTitle="表单">
+                <li nz-submenu nzIcon="table" nzOpen nzTitle="表单">
                     <ul>
                         <li nz-menu-item nzMatchRouter routerLink="/invoice">
-                            <span>账单</span>
+                            <span>账单表单</span>
                         </li>
                         <li nz-menu-item nzMatchRouter routerLink="/account">
-                            <span>账户</span>
+                            <span>账户表单</span>
                         </li>
                         <li nz-menu-item nzMatchRouter routerLink="/type">
-                            <span>类型</span>
+                            <span>类型表单</span>
+                        </li>
+                    </ul>
+                </li>
+
+                <li nz-submenu nzIcon="file-done" nzOpen nzTitle="报告">
+                    <ul>
+                        <li nz-menu-item nzMatchRouter routerLink="/invoice-report">
+                            <span>账单报告</span>
                         </li>
                     </ul>
                 </li>

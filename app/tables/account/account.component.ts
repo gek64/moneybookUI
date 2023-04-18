@@ -7,7 +7,7 @@ import {Account, AccountColumnItem} from "../../../internal/interface/account"
 import {AccountService} from "../../../internal/service/account.service"
 
 @Component({
-    selector: "app-account",
+    selector: "app-table-account",
     templateUrl: "./account.component.html",
     styleUrls: ["./account.component.css"]
 })

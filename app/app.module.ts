@@ -28,6 +28,7 @@ import {NzInputNumberModule} from "ng-zorro-antd/input-number"
 import {InvoiceService} from "../internal/service/invoice.service"
 import {NzDatePickerModule} from "ng-zorro-antd/date-picker"
 import {NzSelectModule} from "ng-zorro-antd/select"
+import {InvoiceReportComponent} from "./reports/invoice-report/invoice-report.component"
 
 @NgModule({
     declarations: [
@@ -39,6 +40,7 @@ import {NzSelectModule} from "ng-zorro-antd/select"
         TypeEditorComponent,
         InvoiceEditorComponent,
         AccountEditorComponent,
+        InvoiceReportComponent,
     ],
     imports: [
         AppRoutingModule,

@@ -4,6 +4,7 @@ import {InvoiceComponent} from "./tables/invoice/invoice.component"
 import {TypeComponent} from "./tables/type/type.component"
 import {AccountComponent} from "./tables/account/account.component"
 import {HomeComponent} from "./home/home.component"
+import {InvoiceReportComponent} from "./reports/invoice-report/invoice-report.component"
 
 const routes: Routes = [
     {path: "", redirectTo: "/home", pathMatch: "full"},
@@ -11,6 +12,7 @@ const routes: Routes = [
     {path: "invoice", component: InvoiceComponent},
     {path: "type", component: TypeComponent},
     {path: "account", component: AccountComponent},
+    {path: "invoice-report", component: InvoiceReportComponent},
 ]
 
 @NgModule({

@@ -14,7 +14,7 @@ registerLocaleData(zh)
 
 
 @Component({
-    selector: "app-invoice-editor",
+    selector: "app-table-invoice-editor",
     templateUrl: "./invoice-editor.component.html",
     styleUrls: ["./invoice-editor.component.css"]
 })

@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from "@angular/core"
 import {HttpErrorResponse} from "@angular/common/http"
-import {Type} from "../../internal/interface/type"
+import {Type, TypeColumnItem} from "../../internal/interface/type"
 import {catchError, retry, throwError} from "rxjs"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {TypeService} from "../../internal/service/type.service"
@@ -25,6 +25,23 @@ export class TypeComponent implements OnInit {
     listOfData: readonly Type[] = []
     listOfCurrentPageData: readonly Type[] = []
     setOfCheckedItems: Set<string> = new Set<string>()
+
+    // 表头
+    columns: TypeColumnItem[] = [
+        {
+            name: "Id",
+            sortOrder: null,
+            sortFn: (a: Type, b: Type) => a.name.localeCompare(b.name),
+            sortDirections: ["ascend", "descend", null]
+        },
+        {
+            name: "Name",
+            sortOrder: null,
+            sortFn: (a: Type, b: Type) => a.name.localeCompare(b.name),
+            sortDirections: ["ascend", "descend", null]
+        }
+    ]
+
 
     constructor(private typeService: TypeService, private message: NzMessageService) {
     }

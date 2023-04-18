@@ -20,7 +20,9 @@ import {NzBadgeModule} from "ng-zorro-antd/badge"
 import {TypeEditorComponent} from "./type/type-editor/type-editor.component"
 import {NzModalModule} from "ng-zorro-antd/modal"
 import {NzInputModule} from "ng-zorro-antd/input"
-import {FormsModule} from "@angular/forms"
+import {FormsModule} from "@angular/forms";
+import { InvoiceEditorComponent } from './invoice/invoice-editor/invoice-editor.component';
+import { AccountEditorComponent } from './account/account-editor/account-editor.component'
 
 @NgModule({
     declarations: [
@@ -30,6 +32,8 @@ import {FormsModule} from "@angular/forms"
         AccountComponent,
         HomeComponent,
         TypeEditorComponent,
+        InvoiceEditorComponent,
+        AccountEditorComponent,
     ],
     imports: [
         AppRoutingModule,

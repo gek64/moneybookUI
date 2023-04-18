@@ -59,8 +59,12 @@
                 [(nzChecked)]="checkedAll"
                 [nzIndeterminate]="indeterminate">
         </th>
-        <th>Id</th>
-        <th>Name</th>
+        <th *ngFor="let column of columns"
+            [nzSortDirections]="column.sortDirections"
+            [nzSortFn]="column.sortFn"
+            [nzSortOrder]="column.sortOrder">
+            {{ column.name }}
+        </th>
     </tr>
     </thead>
 

@@ -11,7 +11,7 @@ import {InvoiceComponent} from "./tables/invoice/invoice.component"
 import {TypeComponent} from "./tables/type/type.component"
 import {AccountComponent} from "./tables/account/account.component"
 import {HomeComponent} from "./home/home.component"
-import {NgOptimizedImage} from "@angular/common"
+import {NgOptimizedImage, registerLocaleData} from "@angular/common"
 import {NzButtonModule} from "ng-zorro-antd/button"
 import {NzMessageModule} from "ng-zorro-antd/message"
 import {TypeService} from "../internal/service/type.service"
@@ -29,6 +29,10 @@ import {InvoiceService} from "../internal/service/invoice.service"
 import {NzDatePickerModule} from "ng-zorro-antd/date-picker"
 import {NzSelectModule} from "ng-zorro-antd/select"
 import {InvoiceReportComponent} from "./reports/invoice-report/invoice-report.component"
+import {NzStatisticModule} from "ng-zorro-antd/statistic"
+import zh from "@angular/common/locales/zh"
+
+registerLocaleData(zh)
 
 @NgModule({
     declarations: [
@@ -60,7 +64,8 @@ import {InvoiceReportComponent} from "./reports/invoice-report/invoice-report.co
         FormsModule,
         NzInputNumberModule,
         NzDatePickerModule,
-        NzSelectModule
+        NzSelectModule,
+        NzStatisticModule
     ],
     providers: [
         TypeService,

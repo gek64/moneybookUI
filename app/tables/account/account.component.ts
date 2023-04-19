@@ -3,8 +3,9 @@ import {NzMessageService} from "ng-zorro-antd/message"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
 import {AccountEditorComponent} from "./account-editor/account-editor.component"
-import {Account, AccountColumnItem} from "../../../internal/interface/account"
+import {Account} from "../../../internal/interface/account"
 import {AccountService} from "../../../internal/service/account.service"
+import {InvoiceColumns} from "../../../internal/definition/account"
 
 @Component({
     selector: "app-table-account",
@@ -16,100 +17,28 @@ export class AccountComponent implements OnInit {
     // 子组件观察器
     @ViewChild("editor")
     editor: AccountEditorComponent
-
-    showPagination: boolean = true
-    showSizeChanger: boolean = true
-    checkedAll: boolean = false
-    indeterminate: boolean = false
-    loading: boolean = false
-
+    checkedAll = false
+    indeterminate = false
+    loading = false
     listOfData: readonly Account[] = []
     listOfCurrentPageData: readonly Account[] = []
-    setOfCheckedItems: Set<string> = new Set<string>()
-
-    // 表头
-    columns: AccountColumnItem[] = [
-        {
-            name: "Id",
-            sortOrder: null,
-            sortFn: (a: Account, b: Account) => a.id.localeCompare(b.id),
-            sortDirections: ["ascend", "descend", null]
-        },
-        {
-            name: "Name",
-            sortOrder: null,
-            sortFn: (a: Account, b: Account) => a.name.localeCompare(b.name),
-            sortDirections: ["ascend", "descend", null]
-        },
-        {
-            name: "Number",
-            sortOrder: null,
-            sortFn: (a: Account, b: Account) => {
-                let string1: string, string2: string
-                if (a.number == null) {
-                    string1 = ""
-                } else {
-                    string1 = a.number
-                }
-                if (b.number == null) {
-                    string2 = ""
-                } else {
-                    string2 = b.number
-                }
-                return string1.localeCompare(string2)
-            },
-            sortDirections: ["ascend", "descend", null]
-        },
-        {
-            name: "Type",
-            sortOrder: null,
-            sortFn: (a: Account, b: Account) => a.type.localeCompare(b.type),
-            sortDirections: ["ascend", "descend", null]
-        },
-        {
-            name: "Funds",
-            sortOrder: null,
-            sortFn: (a: Account, b: Account) => {
-                let number1: number, number2: number
-                if (a.funds == null) {
-                    number1 = -1
-                } else {
-                    number1 = a.funds
-                }
-                if (b.funds == null) {
-                    number2 = -1
-                } else {
-                    number2 = b.funds
-                }
-                return number1 - number2
-            },
-            sortDirections: ["ascend", "descend", null]
-        }
-    ]
-
+    setOfCheckedItems = new Set<string>()
+    tableHeaderColumns = InvoiceColumns
 
     constructor(private accountService: AccountService, private message: NzMessageService) {
     }
 
-    // 初始化时获取类型数据
+    // 生命周期
     ngOnInit() {
         this.getAccounts()
     }
 
-    // 清除所有已选择的项目
-    clearSetOfCheckedItems() {
-        this.setOfCheckedItems.clear()
-        this.checkedAll = false
-        this.refreshCheckedAllStatus()
-    }
-
-    // 刷新全选框的状态
+    // 中间功能
     refreshCheckedAllStatus() {
         this.checkedAll = this.listOfCurrentPageData.every(item => this.setOfCheckedItems.has(item.id))
         this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
     }
 
-    // 当前表单页发生变化时触发
     onCurrentPageDataChange(listOfCurrentPageData: readonly Account[]) {
         this.listOfCurrentPageData = listOfCurrentPageData
         this.refreshCheckedAllStatus()
@@ -123,6 +52,18 @@ export class AccountComponent implements OnInit {
         }
     }
 
+    getEditorResult(event: Account) {
+        let newAccount: Account = {funds: 0, number: "", type: "", id: undefined, name: ""}
+        Object.assign(newAccount, event)
+
+        if (newAccount.id !== undefined) {
+            this.updateAccount(event)
+        } else {
+            this.createAccount(event)
+        }
+    }
+
+    // 按键
     onItemChecked(id: string, checked: boolean) {
         this.updateCheckedSet(id, checked)
         this.refreshCheckedAllStatus()
@@ -131,6 +72,17 @@ export class AccountComponent implements OnInit {
     onAllChecked(checked: boolean) {
         this.listOfCurrentPageData
             .forEach(({id}) => this.updateCheckedSet(id, checked))
+        this.refreshCheckedAllStatus()
+    }
+
+    clearSetOfCheckedItems() {
+        this.setOfCheckedItems.clear()
+        this.checkedAll = false
+        this.refreshCheckedAllStatus()
+    }
+
+    selectAllItemsButton() {
+        this.listOfData.forEach(invoice => this.setOfCheckedItems.add(invoice.id))
         this.refreshCheckedAllStatus()
     }
 
@@ -143,17 +95,6 @@ export class AccountComponent implements OnInit {
 
     createTypeButton() {
         this.editor.showModal(undefined)
-    }
-
-    getEditorResult(event: Account) {
-        let newAccount: Account = {funds: 0, number: "", type: "", id: undefined, name: ""}
-        Object.assign(newAccount, event)
-
-        if (newAccount.id !== undefined) {
-            this.updateAccount(event)
-        } else {
-            this.createAccount(event)
-        }
     }
 
     // 网络请求

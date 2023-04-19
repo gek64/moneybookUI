@@ -5,7 +5,6 @@
         <nz-table [nzData]="[{}]" [nzShowPagination]="false">
             <thead>
             <tr>
-                <th *ngIf="newAccount.id != undefined">Id</th>
                 <th>Name</th>
                 <th>Number</th>
                 <th>Type</th>
@@ -15,9 +14,6 @@
 
             <tbody>
             <tr>
-                <td *ngIf="newAccount.id != undefined">
-                    {{ newAccount.id }}
-                </td>
                 <td>
                     <input [(ngModel)]="newAccount.name" nz-input/>
                 </td>

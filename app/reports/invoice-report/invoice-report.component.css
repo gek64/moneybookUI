@@ -1,0 +1,21 @@
+.button-header {
+    display: flex;
+    margin-bottom: 4px;
+}
+
+.button-header .function-button {
+    margin-left: auto;
+}
+
+.button-header * button {
+    margin-left: 4px;
+}
+
+nz-range-picker {
+    margin: 0 8px 12px 0;
+}
+
+nz-select {
+    margin: 0 8px 12px 0;
+    min-width: 200px;
+}

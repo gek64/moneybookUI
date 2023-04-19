@@ -1,10 +1,11 @@
 import {Component, OnInit, ViewChild} from "@angular/core"
 import {HttpErrorResponse} from "@angular/common/http"
-import {Type, TypeColumnItem} from "../../../internal/interface/type"
+import {Type} from "../../../internal/interface/type"
 import {catchError, retry, throwError} from "rxjs"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {TypeService} from "../../../internal/service/type.service"
 import {TypeEditorComponent} from "./type-editor/type-editor.component"
+import {TypeColumns} from "../../../internal/definition/type"
 
 @Component({
     selector: "app-table-type",
@@ -15,56 +16,28 @@ export class TypeComponent implements OnInit {
     // 子组件观察器
     @ViewChild("editor")
     editor: TypeEditorComponent
-
-    showPagination: boolean = true
-    showSizeChanger: boolean = true
-    checkedAll: boolean = false
-    indeterminate: boolean = false
-    loading: boolean = false
-
+    checkedAll = false
+    indeterminate = false
+    loading = false
     listOfData: readonly Type[] = []
     listOfCurrentPageData: readonly Type[] = []
-    setOfCheckedItems: Set<string> = new Set<string>()
-
-    // 表头
-    columns: TypeColumnItem[] = [
-        {
-            name: "Id",
-            sortOrder: null,
-            sortFn: (a: Type, b: Type) => a.id.localeCompare(b.id),
-            sortDirections: ["ascend", "descend", null]
-        },
-        {
-            name: "Name",
-            sortOrder: null,
-            sortFn: (a: Type, b: Type) => a.name.localeCompare(b.name),
-            sortDirections: ["ascend", "descend", null]
-        }
-    ]
-
+    setOfCheckedItems = new Set<string>()
+    tableHeaderColumns = TypeColumns
 
     constructor(private typeService: TypeService, private message: NzMessageService) {
     }
 
-    // 初始化时获取类型数据
+    // 生命周期
     ngOnInit() {
         this.getTypes()
     }
 
-    // 清除所有已选择的项目
-    clearSetOfCheckedItems() {
-        this.setOfCheckedItems.clear()
-        this.checkedAll = false
-        this.refreshCheckedAllStatus()
-    }
-
-    // 刷新全选框的状态
+    // 中间功能
     refreshCheckedAllStatus() {
         this.checkedAll = this.listOfCurrentPageData.every(item => this.setOfCheckedItems.has(item.id))
         this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
     }
 
-    // 当前表单页发生变化时触发
     onCurrentPageDataChange(listOfCurrentPageData: readonly Type[]) {
         this.listOfCurrentPageData = listOfCurrentPageData
         this.refreshCheckedAllStatus()
@@ -78,6 +51,18 @@ export class TypeComponent implements OnInit {
         }
     }
 
+    getEditorResult(event: Type) {
+        let newType: Type = {id: undefined, name: ""}
+        Object.assign(newType, event)
+
+        if (newType.id !== undefined) {
+            this.updateType(event)
+        } else {
+            this.createType(event)
+        }
+    }
+
+    // 按键
     onItemChecked(id: string, checked: boolean) {
         this.updateCheckedSet(id, checked)
         this.refreshCheckedAllStatus()
@@ -86,6 +71,17 @@ export class TypeComponent implements OnInit {
     onAllChecked(checked: boolean) {
         this.listOfCurrentPageData
             .forEach(({id}) => this.updateCheckedSet(id, checked))
+        this.refreshCheckedAllStatus()
+    }
+
+    clearSetOfCheckedItems() {
+        this.setOfCheckedItems.clear()
+        this.checkedAll = false
+        this.refreshCheckedAllStatus()
+    }
+
+    selectAllItemsButton() {
+        this.listOfData.forEach(invoice => this.setOfCheckedItems.add(invoice.id))
         this.refreshCheckedAllStatus()
     }
 
@@ -98,17 +94,6 @@ export class TypeComponent implements OnInit {
 
     createTypeButton() {
         this.editor.showModal(undefined)
-    }
-
-    getEditorResult(event: Type) {
-        let newType: Type = {id: undefined, name: ""}
-        Object.assign(newType, event)
-
-        if (newType.id !== undefined) {
-            this.updateType(event)
-        } else {
-            this.createType(event)
-        }
     }
 
     // 网络请求

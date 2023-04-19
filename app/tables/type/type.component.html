@@ -1,6 +1,15 @@
 <app-table-type-editor #editor (editorResult)="getEditorResult($event)"></app-table-type-editor>
 
-<div class="function-header">
+<div class="button-header">
+    <button
+            (click)="selectAllItemsButton()"
+            [disabled]="setOfCheckedItems.size === listOfData.length"
+            [nzLoading]="loading"
+            nz-button
+    >
+        全选
+    </button>
+
     <nz-badge [nzCount]="setOfCheckedItems.size">
         <button
                 (click)="clearSetOfCheckedItems()"
@@ -49,17 +58,17 @@
     (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
     [nzData]="listOfData"
     [nzLoading]="loading"
-    [nzShowPagination]="showPagination"
-    [nzShowSizeChanger]="showSizeChanger">
+    [nzShowPagination]="true"
+    [nzShowSizeChanger]="true">
 
     <thead>
     <tr>
-        <th
-                (nzCheckedChange)="onAllChecked($event)"
-                [(nzChecked)]="checkedAll"
-                [nzIndeterminate]="indeterminate">
+        <th (nzCheckedChange)="onAllChecked($event)"
+            [(nzChecked)]="checkedAll"
+            [nzIndeterminate]="indeterminate"
+            [nzWidth]="'80px'">
         </th>
-        <th *ngFor="let column of columns"
+        <th *ngFor="let column of tableHeaderColumns"
             [nzSortDirections]="column.sortDirections"
             [nzSortFn]="column.sortFn"
             [nzSortOrder]="column.sortOrder">
@@ -74,7 +83,6 @@
                 (nzCheckedChange)="onItemChecked(type.id,$event)"
                 [nzChecked]="setOfCheckedItems.has(type.id)">
         </td>
-        <td>{{ type.id }}</td>
         <td>{{ type.name }}</td>
     </tr>
     </tbody>

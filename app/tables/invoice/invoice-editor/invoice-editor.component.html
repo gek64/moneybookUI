@@ -5,7 +5,6 @@
         <nz-table [nzData]="[{}]" [nzShowPagination]="false">
             <thead>
             <tr>
-                <th *ngIf="newInvoice.id != undefined">Id</th>
                 <th>Title</th>
                 <th>Type</th>
                 <th>Account</th>
@@ -17,9 +16,6 @@
 
             <tbody>
             <tr>
-                <td *ngIf="newInvoice.id != undefined">
-                    {{ newInvoice.id }}
-                </td>
                 <td>
                     <input [(ngModel)]="newInvoice.title" nz-input/>
                 </td>
@@ -38,7 +34,7 @@
                     <nz-input-number [(ngModel)]="newInvoice.amount" [nzStep]="1"></nz-input-number>
                 </td>
                 <td>
-                    <nz-date-picker [(ngModel)]="newInvoice.datetime"></nz-date-picker>
+                    <nz-date-picker [(ngModel)]="newInvoice.datetime" [nzShowTime]="true"></nz-date-picker>
                 </td>
                 <td>
                     <nz-select [(ngModel)]="newInvoice.status" nzPlaceHolder="Select a status">

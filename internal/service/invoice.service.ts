@@ -16,6 +16,15 @@ export class InvoiceService {
         return this.http.put<Invoice>(new URL("/invoice", environment.backend_server).toString(), updateInvoice)
     }
 
+    patchManyInvoicesStatus(ids: string[], status: string) {
+        return this.http.patch<{
+            count: number
+        }>(new URL("/invoice/many/status", environment.backend_server).toString(), {
+            ids: ids,
+            status: status
+        })
+    }
+
     getInvoiceById(id: string) {
         return this.http.get<Invoice>(new URL("/invoice", environment.backend_server).toString(), {
             params: {

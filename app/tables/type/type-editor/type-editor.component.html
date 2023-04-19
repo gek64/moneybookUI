@@ -5,14 +5,12 @@
         <nz-table [nzData]="[{}]" [nzShowPagination]="false">
             <thead>
             <tr>
-                <th *ngIf="newType.id != undefined">Id</th>
                 <th>Name</th>
             </tr>
             </thead>
 
             <tbody>
             <tr>
-                <td *ngIf="newType.id != undefined">{{ newType.id }}</td>
                 <td><input [(ngModel)]="newType.name" nz-input/></td>
             </tr>
             </tbody>

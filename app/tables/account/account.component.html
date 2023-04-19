@@ -1,6 +1,15 @@
 <app-table-account-editor #editor (editorResult)="getEditorResult($event)"></app-table-account-editor>
 
-<div class="function-header">
+<div class="button-header">
+    <button
+            (click)="selectAllItemsButton()"
+            [disabled]="setOfCheckedItems.size === listOfData.length"
+            [nzLoading]="loading"
+            nz-button
+    >
+        全选
+    </button>
+
     <nz-badge [nzCount]="setOfCheckedItems.size">
         <button
                 (click)="clearSetOfCheckedItems()"
@@ -49,8 +58,8 @@
     (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
     [nzData]="listOfData"
     [nzLoading]="loading"
-    [nzShowPagination]="showPagination"
-    [nzShowSizeChanger]="showSizeChanger">
+    [nzShowPagination]="true"
+    [nzShowSizeChanger]="true">
 
     <thead>
     <tr>
@@ -59,7 +68,7 @@
                 [(nzChecked)]="checkedAll"
                 [nzIndeterminate]="indeterminate">
         </th>
-        <th *ngFor="let column of columns"
+        <th *ngFor="let column of tableHeaderColumns"
             [nzSortDirections]="column.sortDirections"
             [nzSortFn]="column.sortFn"
             [nzSortOrder]="column.sortOrder">
@@ -74,7 +83,6 @@
                 (nzCheckedChange)="onItemChecked(account.id,$event)"
                 [nzChecked]="setOfCheckedItems.has(account.id)">
         </td>
-        <td>{{ account.id }}</td>
         <td>{{ account.name }}</td>
         <td>{{ account.number }}</td>
         <td>{{ account.type }}</td>

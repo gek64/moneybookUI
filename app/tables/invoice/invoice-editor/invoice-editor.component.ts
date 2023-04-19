@@ -2,15 +2,12 @@ import {Component, EventEmitter, OnInit, Output} from "@angular/core"
 import {Invoice} from "../../../../internal/interface/invoice"
 import {Account} from "../../../../internal/interface/account"
 import {Type} from "../../../../internal/interface/type"
-import {registerLocaleData} from "@angular/common"
-import zh from "@angular/common/locales/zh"
 import {TypeService} from "../../../../internal/service/type.service"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {AccountService} from "../../../../internal/service/account.service"
-
-registerLocaleData(zh)
+import {InvoiceStatus} from "../../../../internal/definition/invoice"
 
 
 @Component({
@@ -21,16 +18,7 @@ registerLocaleData(zh)
 export class InvoiceEditorComponent implements OnInit {
     accounts: Account[] = []
     types: Type[] = []
-    status = [
-        {
-            key: "已完成",
-            value: "FINISHED"
-        },
-        {
-            key: "未完成",
-            value: "UNFINISHED"
-        }
-    ]
+    status = InvoiceStatus
     selectedAccount: Account
     selectedType: Type
 

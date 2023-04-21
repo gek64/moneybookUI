@@ -17,9 +17,9 @@ const routes: Routes = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes, {useHash: true})],
+    imports: [RouterModule.forRoot(routes)],
     // 使用 hash 路由, 类似于 http://loaclhost/#/home 的路径形式
-    // providers: [{provide: LocationStrategy, useClass: PathLocationStrategy}],
+    providers: [{provide: LocationStrategy, useClass: PathLocationStrategy}],
     exports: [RouterModule]
 })
 export class AppRoutingModule {

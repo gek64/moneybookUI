@@ -31,8 +31,12 @@ import {NzSelectModule} from "ng-zorro-antd/select"
 import {InvoiceReportComponent} from "./reports/invoice-report/invoice-report.component"
 import {NzStatisticModule} from "ng-zorro-antd/statistic"
 import zh from "@angular/common/locales/zh"
+import {IconDefinition} from "@ant-design/icons-angular"
+import {FileDoneOutline, TableOutline} from "@ant-design/icons-angular/icons"
+
 
 registerLocaleData(zh)
+const icons: IconDefinition[] = [TableOutline, FileDoneOutline]
 
 @NgModule({
     declarations: [
@@ -48,6 +52,7 @@ registerLocaleData(zh)
     ],
     imports: [
         AppRoutingModule,
+        NzIconModule.forRoot(icons),
         BrowserModule,
         HttpClientModule,
         NoopAnimationsModule,

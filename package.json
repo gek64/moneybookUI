@@ -1,5 +1,5 @@
 {
-  "name": "financial_accounting_frontend",
+  "name": "final-money-frontend",
   "version": "1.0.0",
   "description": "",
   "main": "main.ts",
@@ -28,7 +28,6 @@
     "@types/jasmine": "latest",
     "jasmine-core": "latest",
     "typescript": "latest",
-    "@types/node": "latest",
-    "npm-check-updates": "latest"
+    "@types/node": "latest"
   }
 }

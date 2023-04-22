@@ -1,13 +1,13 @@
 import {Component, EventEmitter, OnInit, Output} from "@angular/core"
-import {Invoice} from "../../../../internal/interface/invoice"
-import {Account} from "../../../../internal/interface/account"
-import {Type} from "../../../../internal/interface/type"
-import {TypeService} from "../../../../internal/service/type.service"
+import {Invoice} from "../../../../../internal/interface/invoice"
+import {Account} from "../../../../../internal/interface/account"
+import {Type} from "../../../../../internal/interface/type"
+import {TypeService} from "../../../../../internal/service/type.service"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
 import {NzMessageService} from "ng-zorro-antd/message"
-import {AccountService} from "../../../../internal/service/account.service"
-import {InvoiceStatus} from "../../../../internal/definition/invoice"
+import {AccountService} from "../../../../../internal/service/account.service"
+import {InvoiceStatus} from "../../../../../internal/definition/invoice"
 
 
 @Component({

@@ -1,15 +1,15 @@
 import {Component, OnInit} from "@angular/core"
-import {Invoice} from "../../../internal/interface/invoice"
-import {InvoiceService} from "../../../internal/service/invoice.service"
+import {Invoice} from "../../../../internal/interface/invoice"
+import {InvoiceService} from "../../../../internal/service/invoice.service"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
-import {InvoiceColumns, InvoiceStatus} from "../../../internal/definition/invoice"
-import {AccountService} from "../../../internal/service/account.service"
-import {TypeService} from "../../../internal/service/type.service"
-import {Type} from "../../../internal/interface/type"
-import {Account} from "../../../internal/interface/account"
-import {EndOfDay, EndOfMonth, EndOfYear, StartOfDay, StartOfMonth, StartOfYear} from "../../../internal/date/range"
+import {InvoiceColumns, InvoiceStatus} from "../../../../internal/definition/invoice"
+import {AccountService} from "../../../../internal/service/account.service"
+import {TypeService} from "../../../../internal/service/type.service"
+import {Type} from "../../../../internal/interface/type"
+import {Account} from "../../../../internal/interface/account"
+import {EndOfDay, EndOfMonth, EndOfYear, StartOfDay, StartOfMonth, StartOfYear} from "../../../../internal/date/range"
 
 @Component({
     selector: "app-invoice-report",

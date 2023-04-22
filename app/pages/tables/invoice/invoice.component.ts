@@ -1,11 +1,11 @@
 import {Component, OnInit, ViewChild} from "@angular/core"
-import {InvoiceService} from "../../../internal/service/invoice.service"
+import {InvoiceService} from "../../../../internal/service/invoice.service"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
 import {InvoiceEditorComponent} from "./invoice-editor/invoice-editor.component"
-import {Invoice} from "../../../internal/interface/invoice"
-import {InvoiceColumns} from "../../../internal/definition/invoice"
+import {Invoice} from "../../../../internal/interface/invoice"
+import {InvoiceColumns} from "../../../../internal/definition/invoice"
 
 
 @Component({

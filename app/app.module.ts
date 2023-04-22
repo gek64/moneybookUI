@@ -7,32 +7,33 @@ import {NoopAnimationsModule} from "@angular/platform-browser/animations"
 import {NzLayoutModule} from "ng-zorro-antd/layout"
 import {NzMenuModule} from "ng-zorro-antd/menu"
 import {NzIconModule} from "ng-zorro-antd/icon"
-import {InvoiceComponent} from "./tables/invoice/invoice.component"
-import {TypeComponent} from "./tables/type/type.component"
-import {AccountComponent} from "./tables/account/account.component"
-import {HomeComponent} from "./home/home.component"
+import {InvoiceComponent} from "./pages/tables/invoice/invoice.component"
+import {TypeComponent} from "./pages/tables/type/type.component"
+import {AccountComponent} from "./pages/tables/account/account.component"
+import {HomeComponent} from "./pages/home/home.component"
 import {NgOptimizedImage, registerLocaleData} from "@angular/common"
 import {NzButtonModule} from "ng-zorro-antd/button"
 import {NzMessageModule} from "ng-zorro-antd/message"
 import {TypeService} from "../internal/service/type.service"
 import {NzTableModule} from "ng-zorro-antd/table"
 import {NzBadgeModule} from "ng-zorro-antd/badge"
-import {TypeEditorComponent} from "./tables/type/type-editor/type-editor.component"
+import {TypeEditorComponent} from "./pages/tables/type/type-editor/type-editor.component"
 import {NzModalModule} from "ng-zorro-antd/modal"
 import {NzInputModule} from "ng-zorro-antd/input"
 import {FormsModule} from "@angular/forms"
-import {InvoiceEditorComponent} from "./tables/invoice/invoice-editor/invoice-editor.component"
-import {AccountEditorComponent} from "./tables/account/account-editor/account-editor.component"
+import {InvoiceEditorComponent} from "./pages/tables/invoice/invoice-editor/invoice-editor.component"
+import {AccountEditorComponent} from "./pages/tables/account/account-editor/account-editor.component"
 import {AccountService} from "../internal/service/account.service"
 import {NzInputNumberModule} from "ng-zorro-antd/input-number"
 import {InvoiceService} from "../internal/service/invoice.service"
 import {NzDatePickerModule} from "ng-zorro-antd/date-picker"
 import {NzSelectModule} from "ng-zorro-antd/select"
-import {InvoiceReportComponent} from "./reports/invoice-report/invoice-report.component"
+import {InvoiceReportComponent} from "./pages/reports/invoice-report/invoice-report.component"
 import {NzStatisticModule} from "ng-zorro-antd/statistic"
 import zh from "@angular/common/locales/zh"
 import {IconDefinition} from "@ant-design/icons-angular"
 import {FileDoneOutline, HomeOutline, TableOutline} from "@ant-design/icons-angular/icons"
+import {StatusPipe} from "./pipes/status.pipe"
 
 
 registerLocaleData(zh)
@@ -49,6 +50,7 @@ const icons: IconDefinition[] = [TableOutline, FileDoneOutline, HomeOutline]
         InvoiceEditorComponent,
         AccountEditorComponent,
         InvoiceReportComponent,
+        StatusPipe,
     ],
     imports: [
         AppRoutingModule,
@@ -70,7 +72,8 @@ const icons: IconDefinition[] = [TableOutline, FileDoneOutline, HomeOutline]
         NzInputNumberModule,
         NzDatePickerModule,
         NzSelectModule,
-        NzStatisticModule
+        NzStatisticModule,
+
     ],
     providers: [
         TypeService,

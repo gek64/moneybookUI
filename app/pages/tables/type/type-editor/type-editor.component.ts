@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Output} from "@angular/core"
-import {Type} from "../../../../internal/interface/type"
+import {Type} from "../../../../../internal/interface/type"
 
 @Component({
     selector: "app-table-type-editor",

@@ -90,7 +90,7 @@
         <td>{{ invoice.amount }}</td>
         <!--https://angular.cn/api/common/DatePipe-->
         <td>{{ invoice.datetime| date:"short":"+0800":"zh" }}</td>
-        <td>{{ invoice.status }}</td>
+        <td>{{ invoice.status | status }}</td>
     </tr>
     </tbody>
 </nz-table>

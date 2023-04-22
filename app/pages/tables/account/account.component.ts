@@ -1,35 +1,36 @@
 import {Component, OnInit, ViewChild} from "@angular/core"
-import {HttpErrorResponse} from "@angular/common/http"
-import {Type} from "../../../internal/interface/type"
-import {catchError, retry, throwError} from "rxjs"
 import {NzMessageService} from "ng-zorro-antd/message"
-import {TypeService} from "../../../internal/service/type.service"
-import {TypeEditorComponent} from "./type-editor/type-editor.component"
-import {TypeColumns} from "../../../internal/definition/type"
+import {catchError, retry, throwError} from "rxjs"
+import {HttpErrorResponse} from "@angular/common/http"
+import {AccountEditorComponent} from "./account-editor/account-editor.component"
+import {Account} from "../../../../internal/interface/account"
+import {AccountService} from "../../../../internal/service/account.service"
+import {InvoiceColumns} from "../../../../internal/definition/account"
 
 @Component({
-    selector: "app-table-type",
-    templateUrl: "./type.component.html",
-    styleUrls: ["./type.component.css"]
+    selector: "app-table-account",
+    templateUrl: "./account.component.html",
+    styleUrls: ["./account.component.css"]
 })
-export class TypeComponent implements OnInit {
+
+export class AccountComponent implements OnInit {
     // 子组件观察器
     @ViewChild("editor")
-    editor: TypeEditorComponent
+    editor: AccountEditorComponent
     checkedAll = false
     indeterminate = false
     loading = false
-    listOfData: readonly Type[] = []
-    listOfCurrentPageData: readonly Type[] = []
+    listOfData: readonly Account[] = []
+    listOfCurrentPageData: readonly Account[] = []
     setOfCheckedItems = new Set<string>()
-    tableHeaderColumns = TypeColumns
+    tableHeaderColumns = InvoiceColumns
 
-    constructor(private typeService: TypeService, private message: NzMessageService) {
+    constructor(private accountService: AccountService, private message: NzMessageService) {
     }
 
     // 生命周期
     ngOnInit() {
-        this.getTypes()
+        this.getAccounts()
     }
 
     // 中间功能
@@ -38,7 +39,7 @@ export class TypeComponent implements OnInit {
         this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
     }
 
-    onCurrentPageDataChange(listOfCurrentPageData: readonly Type[]) {
+    onCurrentPageDataChange(listOfCurrentPageData: readonly Account[]) {
         this.listOfCurrentPageData = listOfCurrentPageData
         this.refreshCheckedAllStatus()
     }
@@ -51,14 +52,14 @@ export class TypeComponent implements OnInit {
         }
     }
 
-    getEditorResult(event: Type) {
-        let newType: Type = {id: undefined, name: ""}
-        Object.assign(newType, event)
+    getEditorResult(event: Account) {
+        let newAccount: Account = {funds: 0, number: "", type: "", id: undefined, name: ""}
+        Object.assign(newAccount, event)
 
-        if (newType.id !== undefined) {
-            this.updateType(event)
+        if (newAccount.id !== undefined) {
+            this.updateAccount(event)
         } else {
-            this.createType(event)
+            this.createAccount(event)
         }
     }
 
@@ -86,9 +87,9 @@ export class TypeComponent implements OnInit {
     }
 
     editTypeButton() {
-        let types = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
-        if (types.length === 1) {
-            this.editor.showModal(types[0])
+        let accounts = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
+        if (accounts.length === 1) {
+            this.editor.showModal(accounts[0])
         }
     }
 
@@ -97,11 +98,11 @@ export class TypeComponent implements OnInit {
     }
 
     // 网络请求
-    createType(newType: Type) {
+    createAccount(newAccount: Account) {
         let pageThis = this
         this.loading = true
 
-        const req = this.typeService.createType(newType)
+        const req = this.accountService.createAccount(newAccount)
             .pipe(
                 retry(3),
                 catchError(this.handleError)
@@ -122,11 +123,11 @@ export class TypeComponent implements OnInit {
         })
     }
 
-    updateType(updateType: Type) {
+    updateAccount(updateAccount: Account) {
         let pageThis = this
         this.loading = true
 
-        const req = this.typeService.updateType(updateType)
+        const req = this.accountService.updateAccount(updateAccount)
             .pipe(
                 retry(3),
                 catchError(this.handleError)
@@ -154,11 +155,11 @@ export class TypeComponent implements OnInit {
         })
     }
 
-    getTypes() {
+    getAccounts() {
         let pageThis = this
         this.loading = true
 
-        const req = this.typeService.getAllTypes()
+        const req = this.accountService.getAllAccounts()
             .pipe(
                 retry(3),
                 catchError(this.handleError)
@@ -176,11 +177,11 @@ export class TypeComponent implements OnInit {
         })
     }
 
-    deleteTypes() {
+    deleteAccounts() {
         let pageThis = this
         this.loading = true
 
-        const req = this.typeService.deleteManyTypes(this.setOfCheckedItems)
+        const req = this.accountService.deleteManyAccounts(this.setOfCheckedItems)
             .pipe(
                 retry(3),
                 catchError(this.handleError)

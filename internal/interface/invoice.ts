@@ -14,6 +14,11 @@ interface Invoice {
     status?: string
 }
 
+interface InvoiceStatus {
+    key: string
+    value: string
+}
+
 interface InvoiceColumnItem {
     name: string
     sortOrder: NzTableSortOrder | null
@@ -27,5 +32,6 @@ interface InvoiceColumnItem {
 
 export {
     Invoice,
+    InvoiceStatus,
     InvoiceColumnItem
 }

@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Output} from "@angular/core"
-import {Account} from "../../../../internal/interface/account"
+import {Account} from "../../../../../internal/interface/account"
 
 @Component({
     selector: "app-table-account-editor",

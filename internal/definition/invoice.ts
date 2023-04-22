@@ -1,7 +1,7 @@
-import {Invoice, InvoiceColumnItem} from "../interface/invoice"
+import {Invoice, InvoiceColumnItem, InvoiceStatus} from "../interface/invoice"
 
 
-let InvoiceStatus = [
+let InvoiceStatus: InvoiceStatus[] = [
     {
         key: "已完成",
         value: "FINISHED"

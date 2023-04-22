@@ -5,7 +5,6 @@ import {TypeComponent} from "./tables/type/type.component"
 import {AccountComponent} from "./tables/account/account.component"
 import {HomeComponent} from "./home/home.component"
 import {InvoiceReportComponent} from "./reports/invoice-report/invoice-report.component"
-import {LocationStrategy, PathLocationStrategy} from "@angular/common"
 
 const routes: Routes = [
     {path: "", redirectTo: "home", pathMatch: "full"},
@@ -17,9 +16,8 @@ const routes: Routes = [
 ]
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes)],
     // 使用 hash 路由, 类似于 http://loaclhost/#/home 的路径形式
-    providers: [{provide: LocationStrategy, useClass: PathLocationStrategy}],
+    imports: [RouterModule.forRoot(routes, {useHash: true})],
     exports: [RouterModule]
 })
 export class AppRoutingModule {

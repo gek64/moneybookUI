@@ -32,11 +32,11 @@ import {InvoiceReportComponent} from "./reports/invoice-report/invoice-report.co
 import {NzStatisticModule} from "ng-zorro-antd/statistic"
 import zh from "@angular/common/locales/zh"
 import {IconDefinition} from "@ant-design/icons-angular"
-import {FileDoneOutline, TableOutline} from "@ant-design/icons-angular/icons"
+import {FileDoneOutline, HomeOutline, TableOutline} from "@ant-design/icons-angular/icons"
 
 
 registerLocaleData(zh)
-const icons: IconDefinition[] = [TableOutline, FileDoneOutline]
+const icons: IconDefinition[] = [TableOutline, FileDoneOutline, HomeOutline]
 
 @NgModule({
     declarations: [

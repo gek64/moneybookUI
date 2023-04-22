@@ -5,7 +5,7 @@
         </div>
     </nz-header>
     <nz-layout>
-        <nz-sider [nzCollapsedWidth]="0" nzBreakpoint="lg" nzCollapsible nzTheme="light">
+        <nz-sider nzBreakpoint="lg" [(nzCollapsed)]="isCollapsed" [nzCollapsedWidth]="0" nzCollapsible nzTheme="light">
             <ul nz-menu nzMode="inline" nzTheme="light">
                 <li nz-menu-item nzMatchRouter routerLink="/home">
                     <span nz-icon nzTheme="outline" nzType="home"></span>
@@ -13,20 +13,20 @@
                 </li>
                 <li nz-submenu nzIcon="table" nzOpen nzTitle="表单">
                     <ul>
-                        <li nz-menu-item nzMatchRouter routerLink="/invoice">
+                        <li nz-menu-item nzMatchRouter routerLink="/invoice" (click)="collapseSideBar($event)">
                             <span>账单表单</span>
                         </li>
-                        <li nz-menu-item nzMatchRouter routerLink="/account">
+                        <li nz-menu-item nzMatchRouter routerLink="/account" (click)="collapseSideBar($event)">
                             <span>账户表单</span>
                         </li>
-                        <li nz-menu-item nzMatchRouter routerLink="/type">
+                        <li nz-menu-item nzMatchRouter routerLink="/type" (click)="collapseSideBar($event)">
                             <span>类型表单</span>
                         </li>
                     </ul>
                 </li>
                 <li nz-submenu nzIcon="file-done" nzOpen nzTitle="报告">
                     <ul>
-                        <li nz-menu-item nzMatchRouter routerLink="/invoice-report">
+                        <li nz-menu-item nzMatchRouter routerLink="/invoice-report" (click)="collapseSideBar($event)">
                             <span>账单报告</span>
                         </li>
                     </ul>

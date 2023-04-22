@@ -2,13 +2,13 @@ import {Account, AccountColumnItem} from "../interface/account"
 
 let InvoiceColumns: AccountColumnItem[] = [
     {
-        name: "Name",
+        name: "名称",
         sortOrder: null,
         sortFn: (a: Account, b: Account) => a.name.localeCompare(b.name),
         sortDirections: ["ascend", "descend", null]
     },
     {
-        name: "Number",
+        name: "号码",
         sortOrder: null,
         sortFn: (a: Account, b: Account) => {
             let string1: string, string2: string
@@ -27,13 +27,13 @@ let InvoiceColumns: AccountColumnItem[] = [
         sortDirections: ["ascend", "descend", null]
     },
     {
-        name: "Type",
+        name: "类型",
         sortOrder: null,
         sortFn: (a: Account, b: Account) => a.type.localeCompare(b.type),
         sortDirections: ["ascend", "descend", null]
     },
     {
-        name: "Funds",
+        name: "资金",
         sortOrder: null,
         sortFn: (a: Account, b: Account) => {
             let number1: number, number2: number

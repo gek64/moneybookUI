@@ -6,4 +6,11 @@ import {Component} from "@angular/core"
     styleUrls: ["./app.component.css"]
 })
 export class AppComponent {
+    isCollapsed: boolean = false
+
+    collapseSideBar(event) {
+        if (event.view.innerWidth <= 900) {
+            this.isCollapsed = true
+        }
+    }
 }

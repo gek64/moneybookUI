@@ -2,17 +2,17 @@
     <nz-range-picker [(ngModel)]="selectedDatetime" [nzRanges]="DefinedDateRanges"
                      [nzShowTime]="true"></nz-range-picker>
 
-    <nz-select [(ngModel)]="selectedTypes" nzMode="multiple" nzPlaceHolder="Select types">
+    <nz-select [(ngModel)]="selectedTypes" nzMode="multiple" nzPlaceHolder="选择类型">
         <nz-option *ngFor="let type of allTypes" [nzHide]="!isTypeNotSelected(type)" [nzLabel]="type.name"
                    [nzValue]="type"></nz-option>
     </nz-select>
 
-    <nz-select [(ngModel)]="selectedAccounts" nzMode="multiple" nzPlaceHolder="Select accounts">
+    <nz-select [(ngModel)]="selectedAccounts" nzMode="multiple" nzPlaceHolder="选择账户">
         <nz-option *ngFor="let account of allAccounts" [nzHide]="!isAccountNotSelected(account)"
                    [nzLabel]="account.name" [nzValue]="account"></nz-option>
     </nz-select>
 
-    <nz-select [(ngModel)]="selectedStatus" nzMode="multiple" nzPlaceHolder="Select status">
+    <nz-select [(ngModel)]="selectedStatus" nzMode="multiple" nzPlaceHolder="选择状态">
         <nz-option *ngFor="let status of allStatus" [nzHide]="!isStatusNotSelected(status)"
                    [nzLabel]="status.key" [nzValue]="status"></nz-option>
     </nz-select>

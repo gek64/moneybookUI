@@ -7,7 +7,7 @@
     <nz-layout>
         <nz-sider [(nzCollapsed)]="isCollapsed" [nzCollapsedWidth]="0" nzBreakpoint="lg" nzCollapsible nzTheme="light">
             <ul nz-menu nzMode="inline" nzTheme="light">
-                <li nz-menu-item nzMatchRouter routerLink="/home">
+                <li (click)="collapseSideBar($event)" nz-menu-item nzMatchRouter routerLink="/home">
                     <span nz-icon nzTheme="outline" nzType="home"></span>
                     <span>主页</span>
                 </li>

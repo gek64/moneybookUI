@@ -1,7 +1,9 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "strict": false,
     "noImplicitOverride": true,
@@ -20,9 +22,6 @@
     "lib": [
       "ES2022",
       "dom"
-    ],
-    "types": [
-      "jasmine"
     ]
   },
   "angularCompilerOptions": {
@@ -30,8 +29,5 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  },
-  "files": [
-    "main.ts"
-  ]
+  }
 }

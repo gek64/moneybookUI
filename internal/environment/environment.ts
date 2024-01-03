@@ -1,4 +1,4 @@
 export const environment = {
-    production: false,
-    backend_server: "http://192.168.1.2:8000"
+    production: true,
+    backend_server: "http://debian:8000"
 }

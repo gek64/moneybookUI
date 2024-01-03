@@ -8,7 +8,7 @@ import {Component} from "@angular/core"
 export class AppComponent {
     isCollapsed: boolean = false
 
-    collapseSideBar(event) {
+    collapseSideBar(event: { view: { innerWidth: number } }) {
         if (event.view.innerWidth <= 900) {
             this.isCollapsed = true
         }

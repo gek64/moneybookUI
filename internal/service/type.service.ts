@@ -9,15 +9,15 @@ export class TypeService {
     }
 
     createType(newType: Type) {
-        return this.http.post<Type>(new URL("/type", environment.backend_server).toString(), newType)
+        return this.http.post<Type>(new URL("/type", environment.server).toString(), newType)
     }
 
     updateType(updateType: Type) {
-        return this.http.put<Type>(new URL("/type", environment.backend_server).toString(), updateType)
+        return this.http.put<Type>(new URL("/type", environment.server).toString(), updateType)
     }
 
     getTypeById(id: string) {
-        return this.http.get<Type>(new URL("/type", environment.backend_server).toString(), {
+        return this.http.get<Type>(new URL("/type", environment.server).toString(), {
             params: {
                 "id": id
             }
@@ -25,11 +25,11 @@ export class TypeService {
     }
 
     getAllTypes() {
-        return this.http.get<Type[]>(new URL("/type/all", environment.backend_server).toString())
+        return this.http.get<Type[]>(new URL("/type/all", environment.server).toString())
     }
 
     getTypesPagination(skip: number, take: number) {
-        return this.http.get<Type[]>(new URL("/type/pagination", environment.backend_server).toString(), {
+        return this.http.get<Type[]>(new URL("/type/pagination", environment.server).toString(), {
             params: {
                 "skip": skip,
                 "take": take
@@ -38,7 +38,7 @@ export class TypeService {
     }
 
     getTypesFuzzy(key: string) {
-        return this.http.get<Type[]>(new URL("/type/fuzzy", environment.backend_server).toString(), {
+        return this.http.get<Type[]>(new URL("/type/fuzzy", environment.server).toString(), {
             params: {
                 "key": key
             }
@@ -46,7 +46,7 @@ export class TypeService {
     }
 
     getTypesPaginationAndFuzzy(key: string, skip: number, take: number) {
-        return this.http.get<Type[]>(new URL("/type/fuzzy", environment.backend_server).toString(), {
+        return this.http.get<Type[]>(new URL("/type/fuzzy", environment.server).toString(), {
             params: {
                 "key": key,
                 "skip": skip,
@@ -56,7 +56,7 @@ export class TypeService {
     }
 
     deleteManyTypes(ids: Set<string>) {
-        return this.http.delete<{ count: number }>(new URL("/type/many", environment.backend_server).toString(), {
+        return this.http.delete<{ count: number }>(new URL("/type/many", environment.server).toString(), {
             params: {
                 "ids": Array.from(ids)
             }

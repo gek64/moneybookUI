@@ -9,24 +9,24 @@ export class InvoiceService {
     }
 
     createInvoice(newInvoice: Invoice) {
-        return this.http.post<Invoice>(new URL("/invoice", environment.backend_server).toString(), newInvoice)
+        return this.http.post<Invoice>(new URL("/invoice", environment.server).toString(), newInvoice)
     }
 
     updateInvoice(updateInvoice: Invoice) {
-        return this.http.put<Invoice>(new URL("/invoice", environment.backend_server).toString(), updateInvoice)
+        return this.http.put<Invoice>(new URL("/invoice", environment.server).toString(), updateInvoice)
     }
 
     patchManyInvoicesStatus(ids: string[], status: string) {
         return this.http.patch<{
             count: number
-        }>(new URL("/invoice/many/status", environment.backend_server).toString(), {
+        }>(new URL("/invoice/many/status", environment.server).toString(), {
             ids: ids,
             status: status
         })
     }
 
     getInvoiceById(id: string) {
-        return this.http.get<Invoice>(new URL("/invoice", environment.backend_server).toString(), {
+        return this.http.get<Invoice>(new URL("/invoice", environment.server).toString(), {
             params: {
                 "id": id
             }
@@ -34,11 +34,11 @@ export class InvoiceService {
     }
 
     getAllInvoices() {
-        return this.http.get<Invoice[]>(new URL("/invoice/all", environment.backend_server).toString())
+        return this.http.get<Invoice[]>(new URL("/invoice/all", environment.server).toString())
     }
 
     getInvoicesPagination(skip: number, take: number) {
-        return this.http.get<Invoice[]>(new URL("/invoice/pagination", environment.backend_server).toString(), {
+        return this.http.get<Invoice[]>(new URL("/invoice/pagination", environment.server).toString(), {
             params: {
                 "skip": skip,
                 "take": take
@@ -47,7 +47,7 @@ export class InvoiceService {
     }
 
     getInvoicesFuzzy(key: string) {
-        return this.http.get<Invoice[]>(new URL("/invoice/fuzzy", environment.backend_server).toString(), {
+        return this.http.get<Invoice[]>(new URL("/invoice/fuzzy", environment.server).toString(), {
             params: {
                 "key": key
             }
@@ -55,7 +55,7 @@ export class InvoiceService {
     }
 
     getInvoicesPaginationAndFuzzy(key: string, skip: number, take: number) {
-        return this.http.get<Invoice[]>(new URL("/invoice/fuzzy", environment.backend_server).toString(), {
+        return this.http.get<Invoice[]>(new URL("/invoice/fuzzy", environment.server).toString(), {
             params: {
                 "key": key,
                 "skip": skip,
@@ -65,7 +65,7 @@ export class InvoiceService {
     }
 
     deleteManyInvoices(ids: Set<string>) {
-        return this.http.delete<{ count: number }>(new URL("/invoice/many", environment.backend_server).toString(), {
+        return this.http.delete<{ count: number }>(new URL("/invoice/many", environment.server).toString(), {
             params: {
                 "ids": Array.from(ids)
             }

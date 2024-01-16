@@ -55,6 +55,14 @@ export class TypeService {
         })
     }
 
+    deleteType(id: Set<string>) {
+        return this.http.delete<{ count: number }>(new URL("/type", environment.server).toString(), {
+            params: {
+                "id": Array.from(id)
+            }
+        })
+    }
+
     deleteManyTypes(ids: Set<string>) {
         return this.http.delete<{ count: number }>(new URL("/type/many", environment.server).toString(), {
             params: {

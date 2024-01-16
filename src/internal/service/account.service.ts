@@ -55,6 +55,14 @@ export class AccountService {
         })
     }
 
+    deleteAccount(id: Set<string>) {
+        return this.http.delete<{ count: number }>(new URL("/account", environment.server).toString(), {
+            params: {
+                "id": Array.from(id)
+            }
+        })
+    }
+
     deleteManyAccounts(ids: Set<string>) {
         return this.http.delete<{ count: number }>(new URL("/account/many", environment.server).toString(), {
             params: {

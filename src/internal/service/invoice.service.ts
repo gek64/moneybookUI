@@ -64,6 +64,14 @@ export class InvoiceService {
         })
     }
 
+    deleteInvoice(id: Set<string>) {
+        return this.http.delete<{ count: number }>(new URL("/invoice", environment.server).toString(), {
+            params: {
+                "id": Array.from(id)
+            }
+        })
+    }
+
     deleteManyInvoices(ids: Set<string>) {
         return this.http.delete<{ count: number }>(new URL("/invoice/many", environment.server).toString(), {
             params: {

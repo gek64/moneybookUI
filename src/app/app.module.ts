@@ -73,7 +73,6 @@ const icons: IconDefinition[] = [TableOutline, FileDoneOutline, HomeOutline]
         NzDatePickerModule,
         NzSelectModule,
         NzStatisticModule,
-
     ],
     providers: [
         TypeService,

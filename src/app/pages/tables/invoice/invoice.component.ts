@@ -200,11 +200,10 @@ export class InvoiceComponent implements OnInit {
         let pageThis = this
         this.loading = true
 
-        const req = this.invoiceService.deleteManyInvoices(this.setOfCheckedItems)
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
+        let req = this.invoiceService.deleteManyInvoices(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
+        if (this.setOfCheckedItems.size == 1) {
+            req = this.invoiceService.deleteInvoice(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
+        }
 
         req.subscribe({
             next: function (resp) {

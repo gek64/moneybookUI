@@ -9,7 +9,7 @@
   "projects": {
     "app": {
       "root": "",
-      "sourceRoot": "./",
+      "sourceRoot": "src",
       "projectType": "application",
       "prefix": "app",
       "schematics": {},
@@ -18,21 +18,17 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "dist",
-            "index": "index.html",
-            "main": "main.ts",
+            "index": "src/index.html",
+            "main": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
             "tsConfig": "tsconfig.json",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "assets/",
-                "output": "assets/"
-              }
+              "src/favicon.ico"
             ],
             "styles": [
-              "style.css"
+              "src/style.css"
             ],
             "scripts": []
           },
@@ -55,10 +51,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "app:production"
+              "buildTarget": "app:build:production"
             },
             "development": {
-              "browserTarget": "app:build:development"
+              "buildTarget": "app:build:development"
             }
           },
           "defaultConfiguration": "development"

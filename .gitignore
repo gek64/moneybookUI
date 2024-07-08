@@ -728,3 +728,6 @@ FodyWeavers.xsd
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/vue,node,linux,macos,vuejs,windows,visualstudio,jetbrains+all,visualstudiocode
+
+package-lock.json
+pnpm-lock.yaml

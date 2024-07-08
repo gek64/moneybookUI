@@ -1,0 +1,13 @@
+{
+  "name": "moneybookui",
+  "version": "2.0.0",
+  "description": "",
+  "main": "src/main.ts",
+  "scripts": {
+    "init": "npx -y pnpm update && npx -y pnpm install"
+  },
+  "devDependencies": {
+    "pnpm": "^9.5.0",
+    "typescript": "^5.5.3"
+  }
+}

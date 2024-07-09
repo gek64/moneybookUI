@@ -1,18 +1,18 @@
 import {NgModule} from "@angular/core"
 import {RouterModule, Routes} from "@angular/router"
-import {InvoiceComponent} from "./pages/tables/invoice/invoice.component"
+import {TransactionComponent} from "./pages/tables/transaction/transaction.component"
 import {TypeComponent} from "./pages/tables/type/type.component"
 import {AccountComponent} from "./pages/tables/account/account.component"
 import {HomeComponent} from "./pages/home/home.component"
-import {InvoiceReportComponent} from "./pages/reports/invoice-report/invoice-report.component"
+import {TransactionReportComponent} from "./pages/reports/transaction-report/transaction-report.component"
 
 const routes: Routes = [
     {path: "", redirectTo: "home", pathMatch: "full"},
     {path: "home", component: HomeComponent},
-    {path: "invoice", component: InvoiceComponent},
+    {path: "transaction", component: TransactionComponent},
     {path: "type", component: TypeComponent},
     {path: "account", component: AccountComponent},
-    {path: "invoice-report", component: InvoiceReportComponent},
+    {path: "transaction-report", component: TransactionReportComponent},
 ]
 
 @NgModule({

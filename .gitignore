@@ -742,3 +742,4 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,windows,visualstudio,jetbrains+all,visualstudiocode,angular
 
 package-lock.json
+pnpm-lock.yaml

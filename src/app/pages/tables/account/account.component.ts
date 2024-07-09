@@ -5,7 +5,7 @@ import {HttpErrorResponse} from "@angular/common/http"
 import {AccountEditorComponent} from "./account-editor/account-editor.component"
 import {Account} from "../../../../internal/interface/account"
 import {AccountService} from "../../../../internal/service/account.service"
-import {InvoiceColumns} from "../../../../internal/definition/account"
+import {AccountColumns} from "../../../../internal/definition/account"
 
 @Component({
     selector: "app-table-account",
@@ -23,7 +23,7 @@ export class AccountComponent implements OnInit {
     listOfData: readonly Account[] = []
     listOfCurrentPageData: readonly Account[] = []
     setOfCheckedItems = new Set<string>()
-    tableHeaderColumns = InvoiceColumns
+    tableHeaderColumns = AccountColumns
 
     constructor(private accountService: AccountService, private message: NzMessageService) {
     }
@@ -82,7 +82,7 @@ export class AccountComponent implements OnInit {
     }
 
     selectAllItemsButton() {
-        this.listOfData.forEach(invoice => this.setOfCheckedItems.add(invoice.id))
+        this.listOfData.forEach(a => this.setOfCheckedItems.add(a.id))
         this.refreshCheckedAllStatus()
     }
 

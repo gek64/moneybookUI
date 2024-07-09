@@ -1,7 +1,7 @@
-import {Invoice, InvoiceColumnItem, InvoiceStatus} from "../interface/invoice"
+import {Transaction, TransactionColumnItem, TransactionStatus} from "../interface/transaction"
 
 
-let InvoiceStatus: InvoiceStatus[] = [
+let TransactionStatus: TransactionStatus[] = [
     {
         key: "已完成",
         value: "FINISHED"
@@ -12,39 +12,39 @@ let InvoiceStatus: InvoiceStatus[] = [
     }
 ]
 
-let InvoiceColumns: InvoiceColumnItem[] = [
+let TransactionColumnItems: TransactionColumnItem[] = [
     {
         name: "标题",
         sortOrder: null,
-        sortFn: (a: Invoice, b: Invoice) => a.title.localeCompare(b.title),
+        sortFn: (a: Transaction, b: Transaction) => a.title.localeCompare(b.title),
         sortDirections: ["ascend", "descend", null],
         priority: false
     },
     {
         name: "类型",
         sortOrder: null,
-        sortFn: (a: Invoice, b: Invoice) => a.type.name.localeCompare(b.type.name),
+        sortFn: (a: Transaction, b: Transaction) => a.type.name.localeCompare(b.type.name),
         sortDirections: ["ascend", "descend", null],
         priority: false,
     },
     {
         name: "账户",
         sortOrder: null,
-        sortFn: (a: Invoice, b: Invoice) => a.account.name.localeCompare(b.account.name),
+        sortFn: (a: Transaction, b: Transaction) => a.account.name.localeCompare(b.account.name),
         sortDirections: ["ascend", "descend", null],
         priority: false
     },
     {
         name: "金额",
         sortOrder: null,
-        sortFn: (a: Invoice, b: Invoice) => a.amount - b.amount,
+        sortFn: (a: Transaction, b: Transaction) => a.amount - b.amount,
         sortDirections: ["ascend", "descend", null],
         priority: 1
     },
     {
         name: "日期",
         sortOrder: "descend",
-        sortFn(a: Invoice, b: Invoice) {
+        sortFn(a: Transaction, b: Transaction) {
             return a.datetime.getTime() - b.datetime.getTime()
         },
         sortDirections: ["ascend", "descend", null],
@@ -53,7 +53,7 @@ let InvoiceColumns: InvoiceColumnItem[] = [
     {
         name: "状态",
         sortOrder: null,
-        sortFn: (a: Invoice, b: Invoice) => {
+        sortFn: (a: Transaction, b: Transaction) => {
             let string1: string, string2: string
             if (a.status == null) {
                 string1 = ""
@@ -73,6 +73,6 @@ let InvoiceColumns: InvoiceColumnItem[] = [
 ]
 
 export {
-    InvoiceStatus,
-    InvoiceColumns
+    TransactionStatus,
+    TransactionColumnItems
 }

@@ -25,11 +25,11 @@ export class AccountService {
     }
 
     getAllAccounts() {
-        return this.http.get<Account[]>(new URL("/account/all", environment.server).toString())
+        return this.http.get<Account[]>(new URL("/accounts", environment.server).toString())
     }
 
     getAccountsPagination(skip: number, take: number) {
-        return this.http.get<Account[]>(new URL("/account/pagination", environment.server).toString(), {
+        return this.http.get<Account[]>(new URL("/accounts/pagination", environment.server).toString(), {
             params: {
                 "skip": skip,
                 "take": take
@@ -38,7 +38,7 @@ export class AccountService {
     }
 
     getAccountsFuzzy(key: string) {
-        return this.http.get<Account[]>(new URL("/account/fuzzy", environment.server).toString(), {
+        return this.http.get<Account[]>(new URL("/accounts/fuzzy", environment.server).toString(), {
             params: {
                 "key": key
             }
@@ -46,7 +46,7 @@ export class AccountService {
     }
 
     getAccountsPaginationAndFuzzy(key: string, skip: number, take: number) {
-        return this.http.get<Account[]>(new URL("/account/fuzzy", environment.server).toString(), {
+        return this.http.get<Account[]>(new URL("/accounts/paginationAndFuzzy", environment.server).toString(), {
             params: {
                 "key": key,
                 "skip": skip,
@@ -64,7 +64,7 @@ export class AccountService {
     }
 
     deleteManyAccounts(ids: Set<string>) {
-        return this.http.delete<{ count: number }>(new URL("/account/many", environment.server).toString(), {
+        return this.http.delete<{ count: number }>(new URL("/accounts", environment.server).toString(), {
             params: {
                 "ids": Array.from(ids)
             }

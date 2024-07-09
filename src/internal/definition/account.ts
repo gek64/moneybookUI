@@ -1,6 +1,6 @@
 import {Account, AccountColumnItem} from "../interface/account"
 
-let InvoiceColumns: AccountColumnItem[] = [
+let AccountColumns: AccountColumnItem[] = [
     {
         name: "名称",
         sortOrder: null,
@@ -54,5 +54,5 @@ let InvoiceColumns: AccountColumnItem[] = [
 ]
 
 export {
-    InvoiceColumns
+    AccountColumns
 }

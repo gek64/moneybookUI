@@ -1,37 +1,37 @@
 import {Component, OnInit, ViewChild} from "@angular/core"
-import {InvoiceService} from "../../../../internal/service/invoice.service"
+import {TransactionService} from "../../../../internal/service/transaction.service"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
-import {InvoiceEditorComponent} from "./invoice-editor/invoice-editor.component"
-import {Invoice} from "../../../../internal/interface/invoice"
-import {InvoiceColumns} from "../../../../internal/definition/invoice"
+import {TransactionEditorComponent} from "./transaction-editor/transaction-editor.component"
+import {Transaction} from "../../../../internal/interface/transaction"
+import {TransactionColumnItems} from "../../../../internal/definition/transaction"
 
 
 @Component({
-    selector: "app-table-invoice",
-    templateUrl: "./invoice.component.html",
-    styleUrls: ["./invoice.component.css"]
+    selector: "app-table-transaction",
+    templateUrl: "./transaction.component.html",
+    styleUrls: ["./transaction.component.css"]
 })
 
-export class InvoiceComponent implements OnInit {
+export class TransactionComponent implements OnInit {
     // 子组件观察器
     @ViewChild("editor")
-    editor: InvoiceEditorComponent
+    editor: TransactionEditorComponent
     checkedAll = false
     indeterminate = false
     loading = false
-    listOfData: readonly Invoice[] = []
-    listOfCurrentPageData: readonly Invoice[] = []
+    listOfData: readonly Transaction[] = []
+    listOfCurrentPageData: readonly Transaction[] = []
     setOfCheckedItems = new Set<string>()
-    tableHeaderColumns = InvoiceColumns
+    tableHeaderColumns = TransactionColumnItems
 
-    constructor(private invoiceService: InvoiceService, private message: NzMessageService) {
+    constructor(private transactionService: TransactionService, private message: NzMessageService) {
     }
 
     // 生命周期
     ngOnInit() {
-        this.getInvoices()
+        this.getTransactions()
     }
 
     // 中间功能
@@ -40,7 +40,7 @@ export class InvoiceComponent implements OnInit {
         this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
     }
 
-    onCurrentPageDataChange(listOfCurrentPageData: readonly Invoice[]) {
+    onCurrentPageDataChange(listOfCurrentPageData: readonly Transaction[]) {
         this.listOfCurrentPageData = listOfCurrentPageData
         this.refreshCheckedAllStatus()
     }
@@ -53,8 +53,8 @@ export class InvoiceComponent implements OnInit {
         }
     }
 
-    getEditorResult(event: Invoice) {
-        let newInvoice: Invoice = {
+    getEditorResult(event: Transaction) {
+        let newTransaction: Transaction = {
             account: undefined,
             accountId: "",
             amount: 0,
@@ -65,12 +65,12 @@ export class InvoiceComponent implements OnInit {
             type: undefined,
             typeId: ""
         }
-        Object.assign(newInvoice, event)
+        Object.assign(newTransaction, event)
 
-        if (newInvoice.id !== undefined) {
-            this.updateInvoice(event)
+        if (newTransaction.id !== undefined) {
+            this.updateTransaction(event)
         } else {
-            this.createInvoice(event)
+            this.createTransaction(event)
         }
     }
 
@@ -93,14 +93,14 @@ export class InvoiceComponent implements OnInit {
     }
 
     selectAllItemsButton() {
-        this.listOfData.forEach(invoice => this.setOfCheckedItems.add(invoice.id))
+        this.listOfData.forEach(t => this.setOfCheckedItems.add(t.id))
         this.refreshCheckedAllStatus()
     }
 
     editTypeButton() {
-        let invoices = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
-        if (invoices.length === 1) {
-            this.editor.showModal(invoices[0])
+        let transactions = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
+        if (transactions.length === 1) {
+            this.editor.showModal(transactions[0])
         }
     }
 
@@ -108,11 +108,11 @@ export class InvoiceComponent implements OnInit {
         this.editor.showModal(undefined)
     }
 
-    createInvoice(newInvoice: Invoice) {
+    createTransaction(newTransaction: Transaction) {
         let pageThis = this
         this.loading = true
 
-        const req = this.invoiceService.createInvoice(newInvoice)
+        const req = this.transactionService.createTransaction(newTransaction)
             .pipe(
                 retry(3),
                 catchError(this.handleError)
@@ -122,7 +122,7 @@ export class InvoiceComponent implements OnInit {
             next: function (resp) {
                 if (resp.id !== undefined) {
                     // 查询一遍新更改的值是否在数据库中存在
-                    const req = pageThis.invoiceService.getInvoiceById(resp.id)
+                    const req = pageThis.transactionService.getTransaction(resp.id)
                         .pipe(
                             retry(3),
                             catchError(pageThis.handleError)
@@ -150,11 +150,11 @@ export class InvoiceComponent implements OnInit {
         })
     }
 
-    updateInvoice(updateInvoice: Invoice) {
+    updateTransaction(updateTransaction: Transaction) {
         let pageThis = this
         this.loading = true
 
-        const req = this.invoiceService.updateInvoice(updateInvoice)
+        const req = this.transactionService.updateTransaction(updateTransaction)
             .pipe(
                 retry(3),
                 catchError(this.handleError)
@@ -163,15 +163,15 @@ export class InvoiceComponent implements OnInit {
         req.subscribe({
             next: function (resp) {
                 if (resp.id !== undefined) {
-                    const req = pageThis.invoiceService.getInvoiceById(resp.id)
+                    const req = pageThis.transactionService.getTransaction(resp.id)
                         .pipe(
                             retry(3),
                             catchError(pageThis.handleError)
                         )
                     req.subscribe({
                         next: function (resp) {
-                            pageThis.listOfData.forEach(function (invoice) {
-                                if (invoice.id == resp.id) {
+                            pageThis.listOfData.forEach(function (transaction) {
+                                if (transaction.id == resp.id) {
                                     // 先筛选出不含更改项的所有数据
                                     let newData = pageThis.listOfData.filter(item => item.id != resp.id)
                                     // 时间字符串变换为Date
@@ -196,13 +196,13 @@ export class InvoiceComponent implements OnInit {
         })
     }
 
-    deleteInvoices() {
+    deleteTransactions() {
         let pageThis = this
         this.loading = true
 
-        let req = this.invoiceService.deleteManyInvoices(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
+        let req = this.transactionService.deleteTransactions(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
         if (this.setOfCheckedItems.size == 1) {
-            req = this.invoiceService.deleteInvoice(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
+            req = this.transactionService.deleteTransaction(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
         }
 
         req.subscribe({
@@ -221,11 +221,11 @@ export class InvoiceComponent implements OnInit {
         })
     }
 
-    getInvoices() {
+    getTransactions() {
         let pageThis = this
         this.loading = true
 
-        const req = this.invoiceService.getAllInvoices()
+        const req = this.transactionService.getTransactions()
             .pipe(
                 retry(3),
                 catchError(this.handleError)

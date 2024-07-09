@@ -1,10 +1,10 @@
 import {Component, OnInit} from "@angular/core"
-import {Invoice} from "../../../../internal/interface/invoice"
-import {InvoiceService} from "../../../../internal/service/invoice.service"
+import {Transaction} from "../../../../internal/interface/transaction"
+import {TransactionService} from "../../../../internal/service/transaction.service"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
-import {InvoiceColumns, InvoiceStatus} from "../../../../internal/definition/invoice"
+import {TransactionColumnItems, TransactionStatus} from "../../../../internal/definition/transaction"
 import {AccountService} from "../../../../internal/service/account.service"
 import {TypeService} from "../../../../internal/service/type.service"
 import {Type} from "../../../../internal/interface/type"
@@ -12,22 +12,22 @@ import {Account} from "../../../../internal/interface/account"
 import {EndOfDay, EndOfMonth, EndOfYear, StartOfDay, StartOfMonth, StartOfYear} from "../../../../internal/date/range"
 
 @Component({
-    selector: "app-invoice-report",
-    templateUrl: "./invoice-report.component.html",
-    styleUrls: ["./invoice-report.component.css"]
+    selector: "app-transaction-report",
+    templateUrl: "./transaction-report.component.html",
+    styleUrls: ["./transaction-report.component.css"]
 })
-export class InvoiceReportComponent implements OnInit {
+export class TransactionReportComponent implements OnInit {
     checkedAll = false
     indeterminate = false
     loading = false
-    listOfData: readonly Invoice[] = []
-    listOfCurrentPageData: readonly Invoice[] = []
+    listOfData: readonly Transaction[] = []
+    listOfCurrentPageData: readonly Transaction[] = []
     setOfCheckedItems = new Set<string>()
-    tableHeaderColumns = InvoiceColumns
-    allInvoices: readonly Invoice[] = []
+    tableHeaderColumns = TransactionColumnItems
+    allTransactions: readonly Transaction[] = []
     allTypes: readonly  Type[] = []
     allAccounts: readonly  Account[] = []
-    allStatus: { key: string, value: string }[] = InvoiceStatus
+    allStatus: { key: string, value: string }[] = TransactionStatus
     selectedTypes: Type[] = []
     selectedAccounts: Account[] = []
     selectedStatus: { key: string, value: string }[] = []
@@ -41,14 +41,14 @@ export class InvoiceReportComponent implements OnInit {
     }
 
 
-    constructor(private invoiceService: InvoiceService, private accountService: AccountService, private typeService: TypeService, private message: NzMessageService) {
+    constructor(private transactionService: TransactionService, private accountService: AccountService, private typeService: TypeService, private message: NzMessageService) {
     }
 
     // 生命周期
     ngOnInit() {
         this.getTypes()
         this.getAccounts()
-        this.getInvoices()
+        this.getTransactions()
     }
 
     // 中间功能
@@ -57,7 +57,7 @@ export class InvoiceReportComponent implements OnInit {
         this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
     }
 
-    onCurrentPageDataChange(listOfCurrentPageData: readonly Invoice[]) {
+    onCurrentPageDataChange(listOfCurrentPageData: readonly Transaction[]) {
         this.listOfCurrentPageData = listOfCurrentPageData
         this.refreshCheckedAllStatus()
     }
@@ -73,25 +73,25 @@ export class InvoiceReportComponent implements OnInit {
     // 按键
     go() {
         let pageThis = this
-        this.listOfData = this.allInvoices.filter(function (invoice) {
+        this.listOfData = this.allTransactions.filter(function (transaction) {
             let isType: boolean, isAccount: boolean, isStatus: boolean, isDatetime = false
 
             if (pageThis.selectedTypes.length == 0) {
                 isType = true
             } else {
-                isType = pageThis.selectedTypes.some((type) => type.id == invoice.typeId)
+                isType = pageThis.selectedTypes.some((type) => type.id == transaction.typeId)
             }
 
             if (pageThis.selectedAccounts.length == 0) {
                 isAccount = true
             } else {
-                isAccount = pageThis.selectedAccounts.some((account) => account.id == invoice.accountId)
+                isAccount = pageThis.selectedAccounts.some((account) => account.id == transaction.accountId)
             }
 
             if (pageThis.selectedStatus.length == 0) {
                 isStatus = true
             } else {
-                isStatus = pageThis.selectedStatus.some((status) => status.value == invoice.status)
+                isStatus = pageThis.selectedStatus.some((status) => status.value == transaction.status)
             }
 
             if (pageThis.selectedDatetime.length < 2) {
@@ -100,15 +100,15 @@ export class InvoiceReportComponent implements OnInit {
                 // 将日期选择器的时间毫秒位设置为0
                 let time1 = new Date(pageThis.selectedDatetime[0].setMilliseconds(0))
                 let time2 = new Date(pageThis.selectedDatetime[1].setMilliseconds(0))
-                isDatetime = time1 <= invoice.datetime && invoice.datetime <= time2
+                isDatetime = time1 <= transaction.datetime && transaction.datetime <= time2
             }
 
             return isType && isAccount && isStatus && isDatetime
         })
 
         pageThis.selectedAmount = 0
-        this.listOfData.forEach(function (invoice) {
-            pageThis.selectedAmount += invoice.amount
+        this.listOfData.forEach(function (transaction) {
+            pageThis.selectedAmount += transaction.amount
         })
     }
 
@@ -129,7 +129,7 @@ export class InvoiceReportComponent implements OnInit {
     }
 
     selectAllItemsButton() {
-        this.listOfData.forEach(invoice => this.setOfCheckedItems.add(invoice.id))
+        this.listOfData.forEach(t => this.setOfCheckedItems.add(t.id))
         this.refreshCheckedAllStatus()
     }
 
@@ -149,7 +149,7 @@ export class InvoiceReportComponent implements OnInit {
         let pageThis = this
         this.loading = true
 
-        const req = this.invoiceService.patchManyInvoicesStatus(Array.from(this.setOfCheckedItems), status)
+        const req = this.transactionService.patchTransactionsStatus(Array.from(this.setOfCheckedItems), status)
             .pipe(
                 retry(3),
                 catchError(this.handleError)
@@ -158,9 +158,9 @@ export class InvoiceReportComponent implements OnInit {
         req.subscribe({
             next: function (resp) {
                 if (resp.count != undefined && resp.count != 0) {
-                    pageThis.listOfData.forEach(function (invoice, index, array) {
+                    pageThis.listOfData.forEach(function (transaction, index, array) {
                         pageThis.setOfCheckedItems.forEach(function (selectedId) {
-                            if (invoice.id == selectedId) {
+                            if (transaction.id == selectedId) {
                                 array[index].status = status
                             }
                         })
@@ -175,11 +175,11 @@ export class InvoiceReportComponent implements OnInit {
         })
     }
 
-    getInvoices() {
+    getTransactions() {
         let pageThis = this
         this.loading = true
 
-        const req = this.invoiceService.getAllInvoices()
+        const req = this.transactionService.getTransactions()
             .pipe(
                 retry(3),
                 catchError(this.handleError)
@@ -190,7 +190,7 @@ export class InvoiceReportComponent implements OnInit {
                 resp.forEach(function (value, index, array) {
                     resp[index].datetime = new Date(Date.parse(value.datetime as unknown as string))
                 })
-                pageThis.allInvoices = resp
+                pageThis.allTransactions = resp
             },
             error: function (err: HttpErrorResponse) {
                 pageThis.message.error(err.message)

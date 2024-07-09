@@ -81,7 +81,7 @@ export class TypeComponent implements OnInit {
     }
 
     selectAllItemsButton() {
-        this.listOfData.forEach(invoice => this.setOfCheckedItems.add(invoice.id))
+        this.listOfData.forEach(t => this.setOfCheckedItems.add(t.id))
         this.refreshCheckedAllStatus()
     }
 

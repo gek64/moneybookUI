@@ -8,7 +8,7 @@
                 </li>
                 <li nz-submenu nzIcon="table" nzOpen nzTitle="表单">
                     <ul>
-                        <li (click)="collapseSideBar($event)" nz-menu-item nzMatchRouter routerLink="/invoice">
+                        <li (click)="collapseSideBar($event)" nz-menu-item nzMatchRouter routerLink="/transaction">
                             <span>账单表单</span>
                         </li>
                         <li (click)="collapseSideBar($event)" nz-menu-item nzMatchRouter routerLink="/account">
@@ -21,7 +21,8 @@
                 </li>
                 <li nz-submenu nzIcon="file-done" nzOpen nzTitle="报告">
                     <ul>
-                        <li (click)="collapseSideBar($event)" nz-menu-item nzMatchRouter routerLink="/invoice-report">
+                        <li (click)="collapseSideBar($event)" nz-menu-item nzMatchRouter
+                            routerLink="/transaction-report">
                             <span>账单报告</span>
                         </li>
                     </ul>

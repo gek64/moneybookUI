@@ -2,7 +2,7 @@ import {NzTableFilterFn, NzTableFilterList, NzTableSortFn, NzTableSortOrder} fro
 import {Type} from "./type"
 import {Account} from "./account"
 
-interface Invoice {
+interface Transaction {
     id: string
     title: string
     type: Type
@@ -14,24 +14,24 @@ interface Invoice {
     status?: string
 }
 
-interface InvoiceStatus {
+interface TransactionStatus {
     key: string
     value: string
 }
 
-interface InvoiceColumnItem {
+interface TransactionColumnItem {
     name: string
     sortOrder: NzTableSortOrder | null
-    sortFn: NzTableSortFn<Invoice> | null
+    sortFn: NzTableSortFn<Transaction> | null
     sortDirections: NzTableSortOrder[]
     priority: number | boolean
     filters?: NzTableFilterList,
-    filterFn?: NzTableFilterFn<Invoice> | null,
+    filterFn?: NzTableFilterFn<Transaction> | null,
     filterMultiple?: boolean
 }
 
 export {
-    Invoice,
-    InvoiceStatus,
-    InvoiceColumnItem
+    Transaction,
+    TransactionStatus,
+    TransactionColumnItem
 }

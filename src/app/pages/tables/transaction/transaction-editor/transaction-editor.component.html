@@ -1,5 +1,5 @@
 <nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
-          [(nzVisible)]="isVisible" [nzOkDisabled]="newInvoice.title == ''"
+          [(nzVisible)]="isVisible" [nzOkDisabled]="newTransaction.title == ''"
           [nzTitle]="title" [nzWidth]="5000">
     <ng-container *nzModalContent>
         <nz-table [nzData]="[{}]" [nzShowPagination]="false">
@@ -17,7 +17,7 @@
             <tbody>
             <tr>
                 <td>
-                    <input [(ngModel)]="newInvoice.title" nz-input/>
+                    <input [(ngModel)]="newTransaction.title" nz-input/>
                 </td>
                 <td>
                     <nz-select [(ngModel)]="selectedType" [compareWith]="compareFn" nzPlaceHolder="Select a type">
@@ -31,13 +31,13 @@
                     </nz-select>
                 </td>
                 <td>
-                    <nz-input-number [(ngModel)]="newInvoice.amount" [nzStep]="1"></nz-input-number>
+                    <nz-input-number [(ngModel)]="newTransaction.amount" [nzStep]="1"></nz-input-number>
                 </td>
                 <td>
-                    <nz-date-picker [(ngModel)]="newInvoice.datetime" [nzShowTime]="true"></nz-date-picker>
+                    <nz-date-picker [(ngModel)]="newTransaction.datetime" [nzShowTime]="true"></nz-date-picker>
                 </td>
                 <td>
-                    <nz-select [(ngModel)]="newInvoice.status" nzPlaceHolder="Select a status">
+                    <nz-select [(ngModel)]="newTransaction.status" nzPlaceHolder="Select a status">
                         <nz-option *ngFor="let s of status" [nzLabel]="s.key"
                                    [nzValue]="s.value"></nz-option>
                     </nz-select>

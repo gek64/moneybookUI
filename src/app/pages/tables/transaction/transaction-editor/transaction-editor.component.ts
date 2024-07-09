@@ -1,5 +1,5 @@
 import {Component, EventEmitter, OnInit, Output} from "@angular/core"
-import {Invoice} from "../../../../../internal/interface/invoice"
+import {Transaction} from "../../../../../internal/interface/transaction"
 import {Account} from "../../../../../internal/interface/account"
 import {Type} from "../../../../../internal/interface/type"
 import {TypeService} from "../../../../../internal/service/type.service"
@@ -7,24 +7,24 @@ import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {AccountService} from "../../../../../internal/service/account.service"
-import {InvoiceStatus} from "../../../../../internal/definition/invoice"
+import {TransactionStatus} from "../../../../../internal/definition/transaction"
 
 
 @Component({
-    selector: "app-table-invoice-editor",
-    templateUrl: "./invoice-editor.component.html",
-    styleUrls: ["./invoice-editor.component.css"]
+    selector: "app-table-transaction-editor",
+    templateUrl: "./transaction-editor.component.html",
+    styleUrls: ["./transaction-editor.component.css"]
 })
-export class InvoiceEditorComponent implements OnInit {
+export class TransactionEditorComponent implements OnInit {
     accounts: Account[] = []
     types: Type[] = []
-    status = InvoiceStatus
+    status = TransactionStatus
     selectedAccount: Account
     selectedType: Type
 
     isVisible = false
     title = ""
-    newInvoice = new class implements Invoice {
+    newTransaction = new class implements Transaction {
         account: Account
         accountId: string
         amount: number
@@ -85,28 +85,28 @@ export class InvoiceEditorComponent implements OnInit {
         })
     }
 
-    showModal(newInvoice?: Invoice): void {
-        if (newInvoice != undefined) {
+    showModal(newTransaction?: Transaction): void {
+        if (newTransaction != undefined) {
             this.title = "Edit"
 
             // 使用 this.newX = newX是引用赋值
             // 值赋值
             // this.newX.id = newX.id
             // this.newX.name = newX.name
-            Object.assign(this.newInvoice, newInvoice)
-            this.selectedAccount = newInvoice.account
-            this.selectedType = newInvoice.type
+            Object.assign(this.newTransaction, newTransaction)
+            this.selectedAccount = newTransaction.account
+            this.selectedType = newTransaction.type
         } else {
             this.title = "Create"
-            this.newInvoice.id = undefined
-            this.newInvoice.title = undefined
-            this.newInvoice.typeId = undefined
-            this.newInvoice.type = undefined
-            this.newInvoice.accountId = undefined
-            this.newInvoice.account = undefined
-            this.newInvoice.amount = undefined
-            this.newInvoice.datetime = new Date(Date.now())
-            this.newInvoice.status = undefined
+            this.newTransaction.id = undefined
+            this.newTransaction.title = undefined
+            this.newTransaction.typeId = undefined
+            this.newTransaction.type = undefined
+            this.newTransaction.accountId = undefined
+            this.newTransaction.account = undefined
+            this.newTransaction.amount = undefined
+            this.newTransaction.datetime = new Date(Date.now())
+            this.newTransaction.status = undefined
             this.selectedAccount = null
             this.selectedType = null
         }
@@ -115,13 +115,13 @@ export class InvoiceEditorComponent implements OnInit {
 
     handleOk(): void {
         // 选择器赋值到返回的结果
-        this.newInvoice.account = this.selectedAccount
-        this.newInvoice.accountId = this.selectedAccount.id
-        this.newInvoice.type = this.selectedType
-        this.newInvoice.typeId = this.selectedType.id
+        this.newTransaction.account = this.selectedAccount
+        this.newTransaction.accountId = this.selectedAccount.id
+        this.newTransaction.type = this.selectedType
+        this.newTransaction.typeId = this.selectedType.id
 
         // 将编辑器的结果传递给父组件
-        this.editorResult.emit(this.newInvoice)
+        this.editorResult.emit(this.newTransaction)
         this.isVisible = false
     }
 

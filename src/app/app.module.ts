@@ -7,7 +7,7 @@ import {NoopAnimationsModule} from "@angular/platform-browser/animations"
 import {NzLayoutModule} from "ng-zorro-antd/layout"
 import {NzMenuModule} from "ng-zorro-antd/menu"
 import {NzIconModule} from "ng-zorro-antd/icon"
-import {InvoiceComponent} from "./pages/tables/invoice/invoice.component"
+import {TransactionComponent} from "./pages/tables/transaction/transaction.component"
 import {TypeComponent} from "./pages/tables/type/type.component"
 import {AccountComponent} from "./pages/tables/account/account.component"
 import {HomeComponent} from "./pages/home/home.component"
@@ -21,14 +21,14 @@ import {TypeEditorComponent} from "./pages/tables/type/type-editor/type-editor.c
 import {NzModalModule} from "ng-zorro-antd/modal"
 import {NzInputModule} from "ng-zorro-antd/input"
 import {FormsModule} from "@angular/forms"
-import {InvoiceEditorComponent} from "./pages/tables/invoice/invoice-editor/invoice-editor.component"
+import {TransactionEditorComponent} from "./pages/tables/transaction/transaction-editor/transaction-editor.component"
 import {AccountEditorComponent} from "./pages/tables/account/account-editor/account-editor.component"
 import {AccountService} from "../internal/service/account.service"
 import {NzInputNumberModule} from "ng-zorro-antd/input-number"
-import {InvoiceService} from "../internal/service/invoice.service"
+import {TransactionService} from "../internal/service/transaction.service"
 import {NzDatePickerModule} from "ng-zorro-antd/date-picker"
 import {NzSelectModule} from "ng-zorro-antd/select"
-import {InvoiceReportComponent} from "./pages/reports/invoice-report/invoice-report.component"
+import {TransactionReportComponent} from "./pages/reports/transaction-report/transaction-report.component"
 import {NzStatisticModule} from "ng-zorro-antd/statistic"
 import zh from "@angular/common/locales/zh"
 import {IconDefinition} from "@ant-design/icons-angular"
@@ -42,14 +42,14 @@ const icons: IconDefinition[] = [TableOutline, FileDoneOutline, HomeOutline]
 @NgModule({
     declarations: [
         AppComponent,
-        InvoiceComponent,
+        TransactionComponent,
         TypeComponent,
         AccountComponent,
         HomeComponent,
         TypeEditorComponent,
-        InvoiceEditorComponent,
+        TransactionEditorComponent,
         AccountEditorComponent,
-        InvoiceReportComponent,
+        TransactionReportComponent,
         StatusPipe,
     ],
     imports: [
@@ -77,7 +77,7 @@ const icons: IconDefinition[] = [TableOutline, FileDoneOutline, HomeOutline]
     providers: [
         TypeService,
         AccountService,
-        InvoiceService
+        TransactionService
     ],
     bootstrap: [AppComponent]
 })

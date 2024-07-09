@@ -91,19 +91,19 @@
         </thead>
 
         <tbody>
-        <tr *ngFor="let invoice of rowSelectionTable.data">
+        <tr *ngFor="let transaction of rowSelectionTable.data">
             <td
-                    (nzCheckedChange)="onItemChecked(invoice.id,$event)"
-                    [nzChecked]="setOfCheckedItems.has(invoice.id)"
+                    (nzCheckedChange)="onItemChecked(transaction.id,$event)"
+                    [nzChecked]="setOfCheckedItems.has(transaction.id)"
             >
             </td>
-            <td>{{ invoice.title }}</td>
-            <td>{{ invoice.type.name }}</td>
-            <td>{{ invoice.account.name }}</td>
-            <td>{{ invoice.amount }}</td>
+            <td>{{ transaction.title }}</td>
+            <td>{{ transaction.type.name }}</td>
+            <td>{{ transaction.account.name }}</td>
+            <td>{{ transaction.amount }}</td>
             <!--https://angular.cn/api/common/DatePipe-->
-            <td>{{ invoice.datetime| date:"short":"+0800":"zh" }}</td>
-            <td>{{ invoice.status | status }}</td>
+            <td>{{ transaction.datetime| date:"short":"+0800":"zh" }}</td>
+            <td>{{ transaction.status | status }}</td>
         </tr>
         </tbody>
     </nz-table>

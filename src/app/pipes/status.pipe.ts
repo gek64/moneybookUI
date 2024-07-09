@@ -1,19 +1,19 @@
 import {Pipe, PipeTransform} from "@angular/core"
-import {InvoiceStatus} from "../../internal/definition/invoice"
+import {TransactionStatus} from "../../internal/definition/transaction"
 
 @Pipe({
     name: "status"
 })
 export class StatusPipe implements PipeTransform {
-    transform(value: string, args?: InvoiceStatus[]): string {
-        let invoiceStatus: InvoiceStatus[] = []
+    transform(value: string, args?: TransactionStatus[]): string {
+        let transactionStatuses: TransactionStatus[] = []
 
         if (args != undefined) {
-            invoiceStatus = args
+            transactionStatuses = args
         } else {
-            invoiceStatus = InvoiceStatus
+            transactionStatuses = TransactionStatus
         }
-        for (const i of invoiceStatus) {
+        for (const i of transactionStatuses) {
             if (i.value == value) {
                 return i.key
             }

@@ -1,7 +1,7 @@
 import {Component, isDevMode, OnInit} from "@angular/core"
-import {environment} from "../environments/environment"
 import {environmentDev} from "../environments/environment.dev"
 import {environmentProd} from "../environments/environment.prod"
+import {ENVIRONMENT} from "./share/definition/environment"
 
 @Component({
     selector: "app-root",
@@ -9,19 +9,18 @@ import {environmentProd} from "../environments/environment.prod"
     styleUrls: ["./app.component.css"]
 })
 export class AppComponent implements OnInit {
+    // 初始化时判断运行环境变量
     ngOnInit() {
         if (isDevMode()) {
-            environment.server = environmentDev.server
+            environment = environmentDev
         } else {
-            environment.server = environmentProd.server
+            environment = environmentProd
         }
     }
+}
 
-    isCollapsed: boolean = false
-
-    collapseSideBar(event: { view: { innerWidth: number } }) {
-        if (event.view.innerWidth <= 900) {
-            this.isCollapsed = true
-        }
-    }
+// 导出环境变量供全局使用
+export let environment: ENVIRONMENT = {
+    production: false,
+    server: ""
 }

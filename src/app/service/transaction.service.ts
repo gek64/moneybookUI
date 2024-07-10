@@ -1,10 +1,7 @@
-import {Injectable, isDevMode} from "@angular/core"
+import {Injectable} from "@angular/core"
 import {HttpClient} from "@angular/common/http"
-import {environmentDev} from "../../environments/environment.dev"
-
 import {TRANSACTION} from "../share/definition/transaction"
-import {environmentProd} from "../../environments/environment.prod"
-import {environment} from "../../environments/environment"
+import {environment} from "../app.component"
 
 @Injectable()
 export class TransactionService {

@@ -1,11 +1,13 @@
+// angular 模块
 import {NgModule} from "@angular/core"
 import {NgOptimizedImage, registerLocaleData} from "@angular/common"
 import {BrowserModule} from "@angular/platform-browser"
 import {FormsModule} from "@angular/forms"
-import zh from "@angular/common/locales/zh"
-import {provideHttpClient} from "@angular/common/http"
 import {NoopAnimationsModule} from "@angular/platform-browser/animations"
+import {provideHttpClient} from "@angular/common/http"
+import zh from "@angular/common/locales/zh"
 
+// ant design 模块
 import {NzLayoutModule} from "ng-zorro-antd/layout"
 import {NzMenuModule} from "ng-zorro-antd/menu"
 import {NzIconModule} from "ng-zorro-antd/icon"
@@ -22,20 +24,25 @@ import {NzStatisticModule} from "ng-zorro-antd/statistic"
 import {IconDefinition} from "@ant-design/icons-angular"
 import {FileDoneOutline, HomeOutline, TableOutline} from "@ant-design/icons-angular/icons"
 
+// 页面模块
 import {AppComponent} from "./app.component"
 import {AppRoutingModule} from "./app-routing.module"
-import {TypeService} from "../internal/service/type.service"
-import {AccountService} from "../internal/service/account.service"
-import {TransactionService} from "../internal/service/transaction.service"
-import {TransactionComponent} from "./pages/tables/transaction/transaction.component"
-import {TypeComponent} from "./pages/tables/type/type.component"
-import {AccountComponent} from "./pages/tables/account/account.component"
-import {HomeComponent} from "./pages/home/home.component"
-import {TypeEditorComponent} from "./pages/tables/type/type-editor/type-editor.component"
-import {TransactionReportComponent} from "./pages/reports/transaction-report/transaction-report.component"
-import {TransactionEditorComponent} from "./pages/tables/transaction/transaction-editor/transaction-editor.component"
-import {AccountEditorComponent} from "./pages/tables/account/account-editor/account-editor.component"
-import {StatusPipe} from "./pipes/status.pipe"
+import {StatusPipe} from "./pipe/status.pipe"
+import {TransactionComponent} from "./component/tables/transaction/transaction.component"
+import {TypeComponent} from "./component/tables/type/type.component"
+import {AccountComponent} from "./component/tables/account/account.component"
+import {HomeComponent} from "./component/home/home.component"
+import {TypeEditorComponent} from "./component/tables/type/type-editor/type-editor.component"
+import {TransactionReportComponent} from "./component/reports/transaction-report/transaction-report.component"
+import {
+    TransactionEditorComponent
+} from "./component/tables/transaction/transaction-editor/transaction-editor.component"
+import {AccountEditorComponent} from "./component/tables/account/account-editor/account-editor.component"
+
+// http 服务
+import {TypeService} from "./service/type.service"
+import {AccountService} from "./service/account.service"
+import {TransactionService} from "./service/transaction.service"
 
 registerLocaleData(zh)
 const icons: IconDefinition[] = [TableOutline, FileDoneOutline, HomeOutline]

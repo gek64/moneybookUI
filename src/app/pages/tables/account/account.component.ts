@@ -136,8 +136,8 @@ export class AccountComponent implements OnInit {
         req.subscribe({
             next: function (resp) {
                 if (resp.id !== undefined) {
-                    pageThis.listOfData.forEach(function (value, index, array) {
-                        if (value.id == resp.id) {
+                    pageThis.listOfData.forEach(function (account) {
+                        if (account.id == resp.id) {
                             // 先筛选出不含更改项的所有数据
                             let newData = pageThis.listOfData.filter(item => item.id != resp.id)
                             // 将筛选出的数据添加修改后的更改项的数据

@@ -187,8 +187,8 @@ export class TransactionReportComponent implements OnInit {
 
         req.subscribe({
             next: function (resp) {
-                resp.forEach(function (value, index, array) {
-                    resp[index].datetime = new Date(Date.parse(value.datetime as unknown as string))
+                resp.forEach(function (transaction, index) {
+                    resp[index].datetime = new Date(Date.parse(transaction.datetime as unknown as string))
                 })
                 pageThis.allTransactions = resp
             },

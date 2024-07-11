@@ -1,7 +1,7 @@
 <nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
           [(nzVisible)]="isVisible" [nzOkDisabled]="newAccount.name == ''"
-          [nzTitle]="title" [nzWidth]="5000">
-    <ng-container *nzModalContent>
+          [nzTitle]="title" nzWidth>
+    <div *nzModalContent>
         <nz-table [nzData]="[{}]" [nzShowPagination]="false">
             <thead>
             <tr>
@@ -30,5 +30,5 @@
             </tr>
             </tbody>
         </nz-table>
-    </ng-container>
+    </div>
 </nz-modal>

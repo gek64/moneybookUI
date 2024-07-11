@@ -157,7 +157,7 @@ export class TypeComponent implements OnInit {
         let pageThis = this
         this.loading = true
 
-        const req = this.typeService.getAllTypes()
+        const req = this.typeService.getTypes()
             .pipe(
                 retry(3),
                 catchError(this.handleError)

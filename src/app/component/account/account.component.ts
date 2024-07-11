@@ -158,7 +158,7 @@ export class AccountComponent implements OnInit {
         let pageThis = this
         this.loading = true
 
-        const req = this.accountService.getAllAccounts()
+        const req = this.accountService.getAccounts()
             .pipe(
                 retry(3),
                 catchError(this.handleError)

@@ -54,6 +54,10 @@ export class TransactionComponent implements OnInit {
 
     getEditorResult(event: TRANSACTION) {
         let newTransaction: TRANSACTION = {
+            product: undefined,
+            productId: "",
+            type: undefined,
+            typeId: "",
             account: undefined,
             accountId: "",
             amount: 0,
@@ -61,8 +65,6 @@ export class TransactionComponent implements OnInit {
             id: "",
             status: "",
             title: "",
-            type: undefined,
-            typeId: ""
         }
         Object.assign(newTransaction, event)
 

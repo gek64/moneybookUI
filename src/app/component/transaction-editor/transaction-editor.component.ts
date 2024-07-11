@@ -5,10 +5,11 @@ import {HttpErrorResponse} from "@angular/common/http"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {AccountService} from "../../service/account.service"
 import {TRANSACTION} from "../../share/definition/transaction"
+import {PRODUCT} from "../../share/definition/product"
 import {ACCOUNT} from "../../share/definition/account"
 import {TYPE} from "../../share/definition/type"
 import {TransactionStatus} from "../../share/definition/transactionStatus"
-
+import {ProductService} from "../../service/product.service"
 
 @Component({
     selector: "app-component-transaction-editor",
@@ -16,15 +17,20 @@ import {TransactionStatus} from "../../share/definition/transactionStatus"
     styleUrls: ["./transaction-editor.component.css"]
 })
 export class TransactionEditorComponent implements OnInit {
+    products: PRODUCT[] = []
     accounts: ACCOUNT[] = []
     types: TYPE[] = []
     status = TransactionStatus
+    selectedProduct: PRODUCT
     selectedAccount: ACCOUNT
     selectedType: TYPE
-
     isVisible = false
     title = ""
     newTransaction = new class implements TRANSACTION {
+        product?: PRODUCT
+        productId?: string
+        type: TYPE
+        typeId: string
         account: ACCOUNT
         accountId: string
         amount: number
@@ -32,15 +38,14 @@ export class TransactionEditorComponent implements OnInit {
         id: string
         status?: string
         title: string
-        type: TYPE
-        typeId: string
     }
     @Output() editorResult = new EventEmitter()
 
-    constructor(private accountService: AccountService, private typeService: TypeService, private message: NzMessageService) {
+    constructor(private productService: ProductService, private accountService: AccountService, private typeService: TypeService, private message: NzMessageService) {
     }
 
     ngOnInit(): void {
+        this.getProducts()
         this.getTypes()
         this.getAccounts()
     }
@@ -49,9 +54,27 @@ export class TransactionEditorComponent implements OnInit {
         return o1 && o2 ? o1.id === o2.id : o1 === o2
     }
 
+    getProducts() {
+        let pageThis = this
+        const req = this.productService.getProducts()
+            .pipe(
+                retry(3),
+                catchError(this.handleError)
+            )
+
+        req.subscribe({
+            next: function (resp) {
+                pageThis.products = resp
+            },
+            error: function (err: HttpErrorResponse) {
+                pageThis.message.error(err.message)
+            }
+        })
+    }
+
     getTypes() {
         let pageThis = this
-        const req = this.typeService.getAllTypes()
+        const req = this.typeService.getTypes()
             .pipe(
                 retry(3),
                 catchError(this.handleError)
@@ -69,7 +92,7 @@ export class TransactionEditorComponent implements OnInit {
 
     getAccounts() {
         let pageThis = this
-        const req = this.accountService.getAllAccounts()
+        const req = this.accountService.getAccounts()
             .pipe(
                 retry(3),
                 catchError(this.handleError)
@@ -94,12 +117,15 @@ export class TransactionEditorComponent implements OnInit {
             // this.newX.id = newX.id
             // this.newX.name = newX.name
             Object.assign(this.newTransaction, newTransaction)
-            this.selectedAccount = newTransaction.account
+            this.selectedProduct = newTransaction.product
             this.selectedType = newTransaction.type
+            this.selectedAccount = newTransaction.account
         } else {
             this.title = "Create"
             this.newTransaction.id = undefined
             this.newTransaction.title = undefined
+            this.newTransaction.product = undefined
+            this.newTransaction.productId = undefined
             this.newTransaction.typeId = undefined
             this.newTransaction.type = undefined
             this.newTransaction.accountId = undefined
@@ -107,18 +133,22 @@ export class TransactionEditorComponent implements OnInit {
             this.newTransaction.amount = undefined
             this.newTransaction.datetime = new Date(Date.now())
             this.newTransaction.status = undefined
-            this.selectedAccount = null
+            this.selectedProduct = null
             this.selectedType = null
+            this.selectedAccount = null
         }
         this.isVisible = true
     }
 
     handleOk(): void {
-        // 选择器赋值到返回的结果
-        this.newTransaction.account = this.selectedAccount
-        this.newTransaction.accountId = this.selectedAccount.id
+        this.newTransaction.product = this.selectedProduct
+        // 可选链运算符 https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Optional_chaining
+        // 三元运算符 https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Conditional_operator
+        this.newTransaction.productId = this.selectedProduct == null ? null : this.selectedProduct?.id
         this.newTransaction.type = this.selectedType
         this.newTransaction.typeId = this.selectedType.id
+        this.newTransaction.account = this.selectedAccount
+        this.newTransaction.accountId = this.selectedAccount.id
 
         // 将编辑器的结果传递给父组件
         this.editorResult.emit(this.newTransaction)

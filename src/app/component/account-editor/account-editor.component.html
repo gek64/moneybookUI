@@ -1,32 +1,31 @@
-<nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
-          [(nzVisible)]="isVisible" [nzOkDisabled]="newAccount.name == ''"
-          [nzTitle]="title" nzWidth>
+<nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()" [(nzVisible)]="isVisible"
+          [nzOkDisabled]="newAccount.name == ''" [nzTitle]="title" nzWidth>
     <div *nzModalContent>
         <nz-table [nzData]="[{}]" [nzShowPagination]="false">
+            <!--两行不显示的空表头-->
             <thead>
-            <tr>
-                <th>Name</th>
-                <th>Number</th>
-                <th>Type</th>
-                <th>Funds</th>
+            <tr *ngIf="false">
+                <th></th>
+                <th></th>
             </tr>
             </thead>
 
             <tbody>
             <tr>
-                <td>
-                    <input [(ngModel)]="newAccount.name" nz-input/>
-                </td>
-                <td>
-                    <input [(ngModel)]="newAccount.number" nz-input/>
-                </td>
-                <td>
-                    <input [(ngModel)]="newAccount.type" nz-input/>
-                </td>
-                <td>
-                    <nz-input-number [(ngModel)]="newAccount.funds" [nzMin]="0" [nzStep]="100">
-                    </nz-input-number>
-                </td>
+                <td>名称</td>
+                <td><input [(ngModel)]="newAccount.name" nz-input/></td>
+            </tr>
+            <tr>
+                <td>号码</td>
+                <td><input [(ngModel)]="newAccount.number" nz-input/></td>
+            </tr>
+            <tr>
+                <td>类型</td>
+                <td><input [(ngModel)]="newAccount.type" nz-input/></td>
+            </tr>
+            <tr>
+                <td>资金</td>
+                <td><input [(ngModel)]="newAccount.funds" nz-input type="number"/></td>
             </tr>
             </tbody>
         </nz-table>

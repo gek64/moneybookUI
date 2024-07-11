@@ -1,3 +1,4 @@
+import {PRODUCT} from "./product"
 import {TYPE} from "./type"
 import {ACCOUNT} from "./account"
 import {NzTableFilterFn, NzTableFilterList, NzTableSortFn, NzTableSortOrder} from "ng-zorro-antd/table"
@@ -6,6 +7,8 @@ import {NzTableFilterFn, NzTableFilterList, NzTableSortFn, NzTableSortOrder} fro
 interface TRANSACTION {
     id: string
     title: string
+    product?: PRODUCT
+    productId?: string
     type: TYPE
     typeId: string
     account: ACCOUNT

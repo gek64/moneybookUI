@@ -18,7 +18,7 @@ export class AccountService {
         return this.http.put<ACCOUNT>(new URL("/account", this.server).toString(), updateAccount)
     }
 
-    getAllAccounts() {
+    getAccounts() {
         return this.http.get<ACCOUNT[]>(new URL("/accounts", this.server).toString())
     }
 

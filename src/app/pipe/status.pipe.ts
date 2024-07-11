@@ -6,7 +6,7 @@ import {TRANSACTION_STATUS, TransactionStatus} from "../share/definition/transac
 })
 export class StatusPipe implements PipeTransform {
     transform(value: string, args?: TRANSACTION_STATUS[]): string {
-        let transactionStatuses: TRANSACTION_STATUS[] = []
+        let transactionStatuses: TRANSACTION_STATUS[]
 
         if (args != undefined) {
             transactionStatuses = args

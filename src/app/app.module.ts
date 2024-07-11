@@ -16,7 +16,6 @@ import {NzTableModule} from "ng-zorro-antd/table"
 import {NzBadgeModule} from "ng-zorro-antd/badge"
 import {NzModalModule} from "ng-zorro-antd/modal"
 import {NzInputModule} from "ng-zorro-antd/input"
-import {NzInputNumberModule} from "ng-zorro-antd/input-number"
 import {NzDatePickerModule} from "ng-zorro-antd/date-picker"
 import {NzSelectModule} from "ng-zorro-antd/select"
 import {NzStatisticModule} from "ng-zorro-antd/statistic"
@@ -41,6 +40,7 @@ import {AccountEditorComponent} from "./component/account-editor/account-editor.
 import {TypeService} from "./service/type.service"
 import {AccountService} from "./service/account.service"
 import {TransactionService} from "./service/transaction.service"
+import {ProductService} from "./service/product.service"
 
 registerLocaleData(zh)
 
@@ -71,7 +71,6 @@ registerLocaleData(zh)
         NzModalModule,
         NzInputModule,
         FormsModule,
-        NzInputNumberModule,
         NzDatePickerModule,
         NzSelectModule,
         NzStatisticModule,
@@ -79,6 +78,7 @@ registerLocaleData(zh)
         NzIconModule.forRoot([HomeOutline, SearchOutline, TableOutline]),
     ],
     providers: [
+        ProductService,
         TypeService,
         AccountService,
         TransactionService,

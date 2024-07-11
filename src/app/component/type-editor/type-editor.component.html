@@ -3,14 +3,17 @@
           [nzTitle]="title">
     <ng-container *nzModalContent>
         <nz-table [nzData]="[{}]" [nzShowPagination]="false">
+            <!--两行不显示的空表头-->
             <thead>
-            <tr>
-                <th>Name</th>
+            <tr *ngIf="false">
+                <th></th>
+                <th></th>
             </tr>
             </thead>
 
             <tbody>
             <tr>
+                <td>名称</td>
                 <td><input [(ngModel)]="newType.name" nz-input/></td>
             </tr>
             </tbody>

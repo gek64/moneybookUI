@@ -74,7 +74,7 @@ export class TransactionSearchComponent implements OnInit {
     go() {
         let pageThis = this
         this.listOfData = this.allTransactions.filter(function (transaction) {
-            let isType: boolean, isAccount: boolean, isStatus: boolean, isDatetime = false
+            let isType: boolean, isAccount: boolean, isStatus: boolean, isDatetime: boolean
 
             if (pageThis.selectedTypes.length == 0) {
                 isType = true
@@ -202,7 +202,7 @@ export class TransactionSearchComponent implements OnInit {
 
     getTypes() {
         let pageThis = this
-        const req = this.typeService.getAllTypes()
+        const req = this.typeService.getTypes()
             .pipe(
                 retry(3),
                 catchError(this.handleError)
@@ -220,7 +220,7 @@ export class TransactionSearchComponent implements OnInit {
 
     getAccounts() {
         let pageThis = this
-        const req = this.accountService.getAllAccounts()
+        const req = this.accountService.getAccounts()
             .pipe(
                 retry(3),
                 catchError(this.handleError)

@@ -12,7 +12,7 @@ import {TYPE} from "../../share/definition/type"
 import {TransactionStatus} from "../../share/definition/transactionStatus"
 
 @Component({
-    selector: "app-transaction-search",
+    selector: "app-component-transaction-search",
     templateUrl: "./transaction-search.component.html",
     styleUrls: ["./transaction-search.component.css"]
 })

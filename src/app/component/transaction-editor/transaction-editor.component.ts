@@ -11,7 +11,7 @@ import {TransactionStatus} from "../../share/definition/transactionStatus"
 
 
 @Component({
-    selector: "app-table-transaction-editor",
+    selector: "app-component-transaction-editor",
     templateUrl: "./transaction-editor.component.html",
     styleUrls: ["./transaction-editor.component.css"]
 })

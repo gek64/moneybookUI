@@ -8,7 +8,7 @@ import {TRANSACTION, TransactionColumns} from "../../share/definition/transactio
 
 
 @Component({
-    selector: "app-table-transaction",
+    selector: "app-component-transaction",
     templateUrl: "./transaction.component.html",
     styleUrls: ["./transaction.component.css"]
 })

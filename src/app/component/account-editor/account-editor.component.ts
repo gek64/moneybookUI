@@ -3,7 +3,7 @@ import {Component, EventEmitter, Output} from "@angular/core"
 import {ACCOUNT} from "../../share/definition/account"
 
 @Component({
-    selector: "app-table-account-editor",
+    selector: "app-component-account-editor",
     templateUrl: "./account-editor.component.html",
     styleUrls: ["./account-editor.component.css"]
 })

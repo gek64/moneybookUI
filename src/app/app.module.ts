@@ -21,6 +21,7 @@ import {NzDatePickerModule} from "ng-zorro-antd/date-picker"
 import {NzSelectModule} from "ng-zorro-antd/select"
 import {NzStatisticModule} from "ng-zorro-antd/statistic"
 import {NzIconModule} from "ng-zorro-antd/icon"
+import {NzFlexModule} from "ng-zorro-antd/flex"
 import {HomeOutline, SearchOutline, TableOutline} from "@ant-design/icons-angular/icons"
 
 // 页面模块
@@ -74,6 +75,7 @@ registerLocaleData(zh)
         NzDatePickerModule,
         NzSelectModule,
         NzStatisticModule,
+        NzFlexModule,
         NzIconModule.forRoot([HomeOutline, SearchOutline, TableOutline]),
     ],
     providers: [

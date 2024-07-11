@@ -7,7 +7,7 @@ import {TypeEditorComponent} from "../type-editor/type-editor.component"
 import {TYPE, TypeColumns} from "../../share/definition/type"
 
 @Component({
-    selector: "app-table-type",
+    selector: "app-component-type",
     templateUrl: "./type.component.html",
     styleUrls: ["./type.component.css"]
 })

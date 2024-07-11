@@ -1,6 +1,6 @@
 <nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
           [(nzVisible)]="isVisible" [nzOkDisabled]="newType.name == ''"
-          [nzTitle]="title">
+          [nzTitle]="title" nzWidth>
     <ng-container *nzModalContent>
         <nz-table [nzData]="[{}]" [nzShowPagination]="false">
             <!--两行不显示的空表头-->

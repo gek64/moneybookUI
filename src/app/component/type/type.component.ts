@@ -2,9 +2,9 @@ import {Component, OnInit, ViewChild} from "@angular/core"
 import {HttpErrorResponse} from "@angular/common/http"
 import {catchError, retry, throwError} from "rxjs"
 import {NzMessageService} from "ng-zorro-antd/message"
-import {TypeService} from "../../../service/type.service"
-import {TypeEditorComponent} from "./type-editor/type-editor.component"
-import {TYPE, TypeColumns} from "../../../share/definition/type"
+import {TypeService} from "../../service/type.service"
+import {TypeEditorComponent} from "../type-editor/type-editor.component"
+import {TYPE, TypeColumns} from "../../share/definition/type"
 
 @Component({
     selector: "app-table-type",

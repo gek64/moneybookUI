@@ -1,10 +1,10 @@
 import {Component, OnInit, ViewChild} from "@angular/core"
-import {TransactionService} from "../../../service/transaction.service"
+import {TransactionService} from "../../service/transaction.service"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
-import {TransactionEditorComponent} from "./transaction-editor/transaction-editor.component"
-import {TRANSACTION, TransactionColumns} from "../../../share/definition/transaction"
+import {TransactionEditorComponent} from "../transaction-editor/transaction-editor.component"
+import {TRANSACTION, TransactionColumns} from "../../share/definition/transaction"
 
 
 @Component({

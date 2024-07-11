@@ -1,22 +1,22 @@
 import {Component, OnInit} from "@angular/core"
-import {TransactionService} from "../../../service/transaction.service"
+import {TransactionService} from "../../service/transaction.service"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
-import {TRANSACTION, TransactionColumns} from "../../../share/definition/transaction"
-import {AccountService} from "../../../service/account.service"
-import {TypeService} from "../../../service/type.service"
-import {EndOfDay, EndOfMonth, EndOfYear, StartOfDay, StartOfMonth, StartOfYear} from "../../../share/date/dataRange"
-import {ACCOUNT} from "../../../share/definition/account"
-import {TYPE} from "../../../share/definition/type"
-import {TransactionStatus} from "../../../share/definition/transactionStatus"
+import {TRANSACTION, TransactionColumns} from "../../share/definition/transaction"
+import {AccountService} from "../../service/account.service"
+import {TypeService} from "../../service/type.service"
+import {EndOfDay, EndOfMonth, EndOfYear, StartOfDay, StartOfMonth, StartOfYear} from "../../share/date/dataRange"
+import {ACCOUNT} from "../../share/definition/account"
+import {TYPE} from "../../share/definition/type"
+import {TransactionStatus} from "../../share/definition/transactionStatus"
 
 @Component({
-    selector: "app-transaction-report",
-    templateUrl: "./transaction-report.component.html",
-    styleUrls: ["./transaction-report.component.css"]
+    selector: "app-transaction-search",
+    templateUrl: "./transaction-search.component.html",
+    styleUrls: ["./transaction-search.component.css"]
 })
-export class TransactionReportComponent implements OnInit {
+export class TransactionSearchComponent implements OnInit {
     checkedAll = false
     indeterminate = false
     loading = false

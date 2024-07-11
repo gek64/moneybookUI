@@ -2,9 +2,9 @@ import {Component, OnInit, ViewChild} from "@angular/core"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
-import {AccountEditorComponent} from "./account-editor/account-editor.component"
-import {AccountService} from "../../../service/account.service"
-import {ACCOUNT, AccountColumns} from "../../../share/definition/account"
+import {AccountEditorComponent} from "../account-editor/account-editor.component"
+import {AccountService} from "../../service/account.service"
+import {ACCOUNT, AccountColumns} from "../../share/definition/account"
 
 @Component({
     selector: "app-table-account",

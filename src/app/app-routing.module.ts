@@ -1,10 +1,10 @@
 import {NgModule} from "@angular/core"
 import {RouterModule, Routes} from "@angular/router"
-import {TransactionComponent} from "./component/tables/transaction/transaction.component"
-import {TypeComponent} from "./component/tables/type/type.component"
-import {AccountComponent} from "./component/tables/account/account.component"
+import {TransactionComponent} from "./component/transaction/transaction.component"
+import {TypeComponent} from "./component/type/type.component"
+import {AccountComponent} from "./component/account/account.component"
 import {HomeComponent} from "./component/home/home.component"
-import {TransactionReportComponent} from "./component/reports/transaction-report/transaction-report.component"
+import {TransactionSearchComponent} from "./component/transaction-search/transaction-search.component"
 
 const routes: Routes = [
     {path: "", redirectTo: "home", pathMatch: "full"},
@@ -12,7 +12,7 @@ const routes: Routes = [
     {path: "transaction", component: TransactionComponent},
     {path: "type", component: TypeComponent},
     {path: "account", component: AccountComponent},
-    {path: "transaction-report", component: TransactionReportComponent},
+    {path: "transaction-search", component: TransactionSearchComponent},
 ]
 
 @NgModule({

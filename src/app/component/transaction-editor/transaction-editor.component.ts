@@ -1,13 +1,13 @@
 import {Component, EventEmitter, OnInit, Output} from "@angular/core"
-import {TypeService} from "../../../../service/type.service"
+import {TypeService} from "../../service/type.service"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
 import {NzMessageService} from "ng-zorro-antd/message"
-import {AccountService} from "../../../../service/account.service"
-import {TRANSACTION} from "../../../../share/definition/transaction"
-import {ACCOUNT} from "../../../../share/definition/account"
-import {TYPE} from "../../../../share/definition/type"
-import {TransactionStatus} from "../../../../share/definition/transactionStatus"
+import {AccountService} from "../../service/account.service"
+import {TRANSACTION} from "../../share/definition/transaction"
+import {ACCOUNT} from "../../share/definition/account"
+import {TYPE} from "../../share/definition/type"
+import {TransactionStatus} from "../../share/definition/transactionStatus"
 
 
 @Component({

@@ -10,7 +10,6 @@ import zh from "@angular/common/locales/zh"
 // ant design 模块
 import {NzLayoutModule} from "ng-zorro-antd/layout"
 import {NzMenuModule} from "ng-zorro-antd/menu"
-import {NzIconModule} from "ng-zorro-antd/icon"
 import {NzButtonModule} from "ng-zorro-antd/button"
 import {NzMessageModule} from "ng-zorro-antd/message"
 import {NzTableModule} from "ng-zorro-antd/table"
@@ -21,23 +20,21 @@ import {NzInputNumberModule} from "ng-zorro-antd/input-number"
 import {NzDatePickerModule} from "ng-zorro-antd/date-picker"
 import {NzSelectModule} from "ng-zorro-antd/select"
 import {NzStatisticModule} from "ng-zorro-antd/statistic"
-import {IconDefinition} from "@ant-design/icons-angular"
-import {FileDoneOutline, HomeOutline, TableOutline} from "@ant-design/icons-angular/icons"
+import {NzIconModule} from "ng-zorro-antd/icon"
+import {HomeOutline, SearchOutline, TableOutline} from "@ant-design/icons-angular/icons"
 
 // 页面模块
 import {AppComponent} from "./app.component"
 import {AppRoutingModule} from "./app-routing.module"
 import {StatusPipe} from "./pipe/status.pipe"
-import {TransactionComponent} from "./component/tables/transaction/transaction.component"
-import {TypeComponent} from "./component/tables/type/type.component"
-import {AccountComponent} from "./component/tables/account/account.component"
+import {TransactionComponent} from "./component/transaction/transaction.component"
+import {TypeComponent} from "./component/type/type.component"
+import {AccountComponent} from "./component/account/account.component"
 import {HomeComponent} from "./component/home/home.component"
-import {TypeEditorComponent} from "./component/tables/type/type-editor/type-editor.component"
-import {TransactionReportComponent} from "./component/reports/transaction-report/transaction-report.component"
-import {
-    TransactionEditorComponent
-} from "./component/tables/transaction/transaction-editor/transaction-editor.component"
-import {AccountEditorComponent} from "./component/tables/account/account-editor/account-editor.component"
+import {TypeEditorComponent} from "./component/type-editor/type-editor.component"
+import {TransactionSearchComponent} from "./component/transaction-search/transaction-search.component"
+import {TransactionEditorComponent} from "./component/transaction-editor/transaction-editor.component"
+import {AccountEditorComponent} from "./component/account-editor/account-editor.component"
 
 // http 服务
 import {TypeService} from "./service/type.service"
@@ -45,30 +42,27 @@ import {AccountService} from "./service/account.service"
 import {TransactionService} from "./service/transaction.service"
 
 registerLocaleData(zh)
-const icons: IconDefinition[] = [TableOutline, FileDoneOutline, HomeOutline]
 
 @NgModule({
     declarations: [
         AppComponent,
-        TransactionComponent,
-        TypeComponent,
-        AccountComponent,
         HomeComponent,
+        TransactionComponent,
+        AccountComponent,
+        TypeComponent,
         TypeEditorComponent,
         TransactionEditorComponent,
         AccountEditorComponent,
-        TransactionReportComponent,
+        TransactionSearchComponent,
         StatusPipe,
     ],
     imports: [
         AppRoutingModule,
-        NzIconModule.forRoot(icons),
         BrowserModule,
         NoopAnimationsModule,
         NgOptimizedImage,
         NzLayoutModule,
         NzMenuModule,
-        NzIconModule,
         NzButtonModule,
         NzMessageModule,
         NzTableModule,
@@ -80,6 +74,7 @@ const icons: IconDefinition[] = [TableOutline, FileDoneOutline, HomeOutline]
         NzDatePickerModule,
         NzSelectModule,
         NzStatisticModule,
+        NzIconModule.forRoot([HomeOutline, SearchOutline, TableOutline]),
     ],
     providers: [
         TypeService,

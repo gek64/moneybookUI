@@ -4,7 +4,7 @@ import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {AccountService} from "../../service/account.service"
-import {TRANSACTION} from "../../share/definition/transaction"
+import {TRANSACTION_INPUT, TRANSACTION_OUTPUT} from "../../share/definition/transaction"
 import {PRODUCT} from "../../share/definition/product"
 import {ACCOUNT} from "../../share/definition/account"
 import {TYPE} from "../../share/definition/type"
@@ -21,23 +21,22 @@ export class TransactionEditorComponent implements OnInit {
     accounts: ACCOUNT[] = []
     types: TYPE[] = []
     status = TransactionStatus
-    selectedProduct: PRODUCT
+    selectedProduct: PRODUCT[]
     selectedAccount: ACCOUNT
     selectedType: TYPE
     isVisible = false
     title = ""
-    newTransaction = new class implements TRANSACTION {
-        product?: PRODUCT
-        productId?: string
-        type: TYPE
-        typeId: string
-        account: ACCOUNT
-        accountId: string
-        amount: number
-        datetime?: Date
-        id: string
-        status?: string
-        title: string
+    newTransaction: TRANSACTION_INPUT = {
+        account: undefined,
+        accountId: undefined,
+        amount: undefined,
+        datetime: new Date(Date.now()),
+        id: undefined,
+        productIds: [],
+        status: undefined,
+        title: undefined,
+        type: undefined,
+        typeId: undefined
     }
     @Output() editorResult = new EventEmitter()
 
@@ -50,7 +49,7 @@ export class TransactionEditorComponent implements OnInit {
         this.getAccounts()
     }
 
-    compareFn(o1: any, o2: any) {
+    nzSelectCompareFn(o1: any, o2: any) {
         return o1 && o2 ? o1.id === o2.id : o1 === o2
     }
 
@@ -108,24 +107,17 @@ export class TransactionEditorComponent implements OnInit {
         })
     }
 
-    showModal(newTransaction?: TRANSACTION): void {
-        if (newTransaction != undefined) {
+    showModal(t?: TRANSACTION_OUTPUT): void {
+        if (t != undefined) {
             this.title = "Edit"
-
-            // 使用 this.newX = newX是引用赋值
-            // 值赋值
-            // this.newX.id = newX.id
-            // this.newX.name = newX.name
-            Object.assign(this.newTransaction, newTransaction)
-            this.selectedProduct = newTransaction.product
-            this.selectedType = newTransaction.type
-            this.selectedAccount = newTransaction.account
+            this.newTransaction = Object.assign(this.newTransaction, t)
+            this.selectedProduct = t.ProductOnTransaction.map(p => p.product)
+            this.selectedType = t.type
+            this.selectedAccount = t.account
         } else {
             this.title = "Create"
             this.newTransaction.id = undefined
             this.newTransaction.title = undefined
-            this.newTransaction.product = undefined
-            this.newTransaction.productId = undefined
             this.newTransaction.typeId = undefined
             this.newTransaction.type = undefined
             this.newTransaction.accountId = undefined
@@ -133,7 +125,7 @@ export class TransactionEditorComponent implements OnInit {
             this.newTransaction.amount = undefined
             this.newTransaction.datetime = new Date(Date.now())
             this.newTransaction.status = undefined
-            this.selectedProduct = null
+            this.selectedProduct = []
             this.selectedType = null
             this.selectedAccount = null
         }
@@ -141,14 +133,11 @@ export class TransactionEditorComponent implements OnInit {
     }
 
     handleOk(): void {
-        this.newTransaction.product = this.selectedProduct
-        // 可选链运算符 https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Optional_chaining
-        // 三元运算符 https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Conditional_operator
-        this.newTransaction.productId = this.selectedProduct == null ? null : this.selectedProduct?.id
         this.newTransaction.type = this.selectedType
         this.newTransaction.typeId = this.selectedType.id
         this.newTransaction.account = this.selectedAccount
         this.newTransaction.accountId = this.selectedAccount.id
+        this.newTransaction.productIds = this.selectedProduct.map(p => p.id)
 
         // 将编辑器的结果传递给父组件
         this.editorResult.emit(this.newTransaction)

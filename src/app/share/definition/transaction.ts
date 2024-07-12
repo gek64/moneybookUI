@@ -1,14 +1,11 @@
-import {PRODUCT} from "./product"
 import {TYPE} from "./type"
 import {ACCOUNT} from "./account"
+import {PRODUCT} from "./product"
 import {NzTableFilterFn, NzTableFilterList, NzTableSortFn, NzTableSortOrder} from "ng-zorro-antd/table"
-
 
 interface TRANSACTION {
     id: string
     title: string
-    product?: PRODUCT
-    productId?: string
     type: TYPE
     typeId: string
     account: ACCOUNT
@@ -16,6 +13,14 @@ interface TRANSACTION {
     amount: number
     datetime?: Date
     status?: string
+}
+
+interface TRANSACTION_INPUT extends TRANSACTION {
+    productIds?: string[]
+}
+
+interface TRANSACTION_OUTPUT extends TRANSACTION {
+    ProductOnTransaction?: { product: PRODUCT }[]
 }
 
 interface transaction_column_item {
@@ -91,5 +96,7 @@ let TransactionColumns: transaction_column_item[] = [
 
 export {
     TRANSACTION,
+    TRANSACTION_INPUT,
+    TRANSACTION_OUTPUT,
     TransactionColumns
 }

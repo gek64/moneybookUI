@@ -22,8 +22,6 @@
                 </button>
             </nz-badge>
         </div>
-
-
         <div nz-flex nzGap="small">
             <button
                     (click)="deleteTransactions()"
@@ -64,10 +62,7 @@
 
         <thead>
         <tr>
-            <th
-                    (nzCheckedChange)="onAllChecked($event)"
-                    [(nzChecked)]="checkedAll"
-                    [nzIndeterminate]="indeterminate">
+            <th (nzCheckedChange)="onAllChecked($event)" [(nzChecked)]="checkedAll" [nzIndeterminate]="indeterminate">
             </th>
             <th *ngFor="let column of tableHeaderColumns"
                 [nzSortDirections]="column.sortDirections"
@@ -81,9 +76,8 @@
 
         <tbody>
         <tr *ngFor="let transaction of rowSelectionTable.data">
-            <td
-                    (nzCheckedChange)="onItemChecked(transaction.id,$event)"
-                    [nzChecked]="setOfCheckedItems.has(transaction.id)">
+            <td (nzCheckedChange)="onItemChecked(transaction.id,$event)"
+                [nzChecked]="setOfCheckedItems.has(transaction.id)">
             </td>
             <td>{{ transaction.title }}</td>
             <td>{{ transaction.type.name }}</td>

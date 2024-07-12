@@ -26,12 +26,7 @@ export class AccountEditorComponent {
     showModal(newAccount?: ACCOUNT): void {
         if (newAccount != undefined) {
             this.title = "Edit"
-
-            // 使用 this.newX = newX是引用赋值
-            // 值赋值
-            // this.newX.id = newX.id
-            // this.newX.name = newX.name
-            Object.assign(this.newAccount, newAccount)
+            this.newAccount = Object.assign(this.newAccount, newAccount)
         } else {
             this.title = "Create"
             this.newAccount.id = undefined

@@ -4,7 +4,12 @@ import {NzMessageService} from "ng-zorro-antd/message"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
 import {TransactionEditorComponent} from "../transaction-editor/transaction-editor.component"
-import {TRANSACTION, TransactionColumns} from "../../share/definition/transaction"
+import {
+    TRANSACTION,
+    TRANSACTION_INPUT,
+    TRANSACTION_OUTPUT,
+    TransactionColumns
+} from "../../share/definition/transaction"
 
 
 @Component({
@@ -20,8 +25,8 @@ export class TransactionComponent implements OnInit {
     checkedAll = false
     indeterminate = false
     loading = false
-    listOfData: readonly TRANSACTION[] = []
-    listOfCurrentPageData: readonly TRANSACTION[] = []
+    listOfData: readonly TRANSACTION_OUTPUT[] = []
+    listOfCurrentPageData: readonly TRANSACTION_OUTPUT[] = []
     setOfCheckedItems = new Set<string>()
     tableHeaderColumns = TransactionColumns
 
@@ -30,7 +35,77 @@ export class TransactionComponent implements OnInit {
 
     // 生命周期
     ngOnInit() {
-        this.getTransactions()
+        this.readTransactions()
+    }
+
+    // 数据库操作
+    createTransaction(t: TRANSACTION_INPUT) {
+        this.loading = true
+
+        this.transactionService.createTransaction(t)
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: (resp: TRANSACTION) => {
+                    if (resp.id !== undefined) {
+                        this.readTransactions()
+                    }
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.loading = false)
+    }
+
+    updateTransaction(t: TRANSACTION_INPUT) {
+        this.loading = true
+
+        this.transactionService.updateTransaction(t)
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: (resp: TRANSACTION) => {
+                    if (resp.id !== undefined) {
+                        this.readTransactions()
+                    }
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.loading = false)
+    }
+
+    deleteTransactions() {
+        this.loading = true
+
+        this.transactionService.deleteTransactions([...this.setOfCheckedItems])
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: resp => {
+                    if (resp.count > 0) {
+                        this.listOfData = this.listOfData.filter(item => !this.setOfCheckedItems.has(item.id))
+                        this.setOfCheckedItems.clear()
+                        this.message.success("deleted successfully")
+                    }
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.loading = false)
+    }
+
+    readTransactions() {
+        let pageThis = this
+        this.loading = true
+
+        this.transactionService.getTransactions()
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: (ts) => {
+                    // 获取到的日期为字符串,需要处理每一条交易数据中的日期
+                    ts.forEach((t, i) => {
+                        ts[i].datetime = new Date(Date.parse(t.datetime as unknown as string))
+                    })
+                    pageThis.listOfData = ts
+                },
+                error: (err: HttpErrorResponse) => pageThis.message.error(err.message)
+            })
+            .add(() => pageThis.loading = false)
     }
 
     // 中间功能
@@ -52,26 +127,11 @@ export class TransactionComponent implements OnInit {
         }
     }
 
-    getEditorResult(event: TRANSACTION) {
-        let newTransaction: TRANSACTION = {
-            product: undefined,
-            productId: "",
-            type: undefined,
-            typeId: "",
-            account: undefined,
-            accountId: "",
-            amount: 0,
-            datetime: undefined,
-            id: "",
-            status: "",
-            title: "",
-        }
-        Object.assign(newTransaction, event)
-
-        if (newTransaction.id !== undefined) {
-            this.updateTransaction(event)
+    getEditorResult(e: TRANSACTION_INPUT) {
+        if (e.id !== undefined) {
+            this.updateTransaction(e)
         } else {
-            this.createTransaction(event)
+            this.createTransaction(e)
         }
     }
 
@@ -99,9 +159,9 @@ export class TransactionComponent implements OnInit {
     }
 
     editTypeButton() {
-        let transactions = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
-        if (transactions.length === 1) {
-            this.editor.showModal(transactions[0])
+        let ts = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
+        if (ts.length === 1) {
+            this.editor.showModal(ts[0])
         }
     }
 
@@ -109,143 +169,6 @@ export class TransactionComponent implements OnInit {
         this.editor.showModal(undefined)
     }
 
-    createTransaction(newTransaction: TRANSACTION) {
-        let pageThis = this
-        this.loading = true
-
-        const req = this.transactionService.createTransaction(newTransaction)
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
-
-        req.subscribe({
-            next: function (resp) {
-                if (resp.id !== undefined) {
-                    // 查询一遍新更改的值是否在数据库中存在
-                    const req = pageThis.transactionService.getTransaction(resp.id)
-                        .pipe(
-                            retry(3),
-                            catchError(pageThis.handleError)
-                        )
-                    req.subscribe({
-                        next: function (resp) {
-                            if (resp.id !== undefined) {
-                                // 时间字符串变换为Date
-                                resp.datetime = new Date(Date.parse(resp.datetime as unknown as string))
-                                pageThis.listOfData = pageThis.listOfData.concat(resp)
-                                pageThis.message.success("created successfully")
-                            }
-                        },
-                        error: function (err: HttpErrorResponse) {
-                            pageThis.message.error(err.message)
-                        }
-                    })
-                }
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        }).add(function () {
-            pageThis.loading = false
-        })
-    }
-
-    updateTransaction(updateTransaction: TRANSACTION) {
-        let pageThis = this
-        this.loading = true
-
-        const req = this.transactionService.updateTransaction(updateTransaction)
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
-
-        req.subscribe({
-            next: function (resp) {
-                if (resp.id !== undefined) {
-                    const req = pageThis.transactionService.getTransaction(resp.id)
-                        .pipe(
-                            retry(3),
-                            catchError(pageThis.handleError)
-                        )
-                    req.subscribe({
-                        next: function (resp) {
-                            pageThis.listOfData.forEach(function (transaction) {
-                                if (transaction.id == resp.id) {
-                                    // 先筛选出不含更改项的所有数据
-                                    let newData = pageThis.listOfData.filter(item => item.id != resp.id)
-                                    // 时间字符串变换为Date
-                                    resp.datetime = new Date(Date.parse(resp.datetime as unknown as string))
-                                    // 将筛选出的数据添加修改后的更改项的数据
-                                    pageThis.listOfData = newData.concat(resp)
-                                    pageThis.message.success("updated successfully")
-                                }
-                            })
-                        },
-                        error: function (err: HttpErrorResponse) {
-                            pageThis.message.error(err.message)
-                        }
-                    })
-                }
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        }).add(function () {
-            pageThis.loading = false
-        })
-    }
-
-    deleteTransactions() {
-        let pageThis = this
-        this.loading = true
-
-        let req = this.transactionService.deleteTransactions(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
-        if (this.setOfCheckedItems.size == 1) {
-            req = this.transactionService.deleteTransaction(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
-        }
-
-        req.subscribe({
-            next: function (resp) {
-                if (resp.count !== 0) {
-                    pageThis.listOfData = pageThis.listOfData.filter(item => !pageThis.setOfCheckedItems.has(item.id))
-                    pageThis.setOfCheckedItems.clear()
-                    pageThis.message.success("deleted successfully")
-                }
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        }).add(function () {
-            pageThis.loading = false
-        })
-    }
-
-    getTransactions() {
-        let pageThis = this
-        this.loading = true
-
-        const req = this.transactionService.getTransactions()
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
-
-        req.subscribe({
-            next: function (resp) {
-                resp.forEach(function (transaction, index) {
-                    resp[index].datetime = new Date(Date.parse(transaction.datetime as unknown as string))
-                })
-                pageThis.listOfData = resp
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        }).add(function () {
-            pageThis.loading = false
-        })
-    }
 
     // 网络请求
     private handleError(error: HttpErrorResponse) {

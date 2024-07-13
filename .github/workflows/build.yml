@@ -61,7 +61,7 @@ jobs:
       - name: Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "moneybook.zip,SHA256SUMS.txt"
+          artifacts: "moneybookUI.zip,SHA256SUMS.txt"
           tag: "latest"
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true

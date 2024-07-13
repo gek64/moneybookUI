@@ -8,7 +8,8 @@
     "update": "npx -y pnpm update",
     "dev": "ng serve --configuration=development --host 127.0.0.1",
     "start": "ng serve --configuration=production --host 127.0.0.1",
-    "build": "ng build"
+    "dist": "ng build",
+    "build": "node build"
   },
   "dependencies": {
     "@angular/animations": "^18.1.0",

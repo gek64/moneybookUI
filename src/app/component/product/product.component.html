@@ -1,0 +1,93 @@
+<app-component-product-editor #editor (editorResult)="getEditorResult($event)"></app-component-product-editor>
+
+<div nz-flex nzGap="small" nzVertical>
+    <div nz-flex nzJustify="space-between">
+        <div nz-flex nzGap="small">
+            <button
+                    (click)="selectAllItemsButton()"
+                    [disabled]="setOfCheckedItems.size === listOfData.length"
+                    [nzLoading]="loading"
+                    nz-button
+            >
+                全选
+            </button>
+
+            <nz-badge [nzCount]="setOfCheckedItems.size">
+                <button
+                        (click)="clearSetOfCheckedItems()"
+                        [disabled]="setOfCheckedItems.size === 0"
+                        [nzLoading]="loading"
+                        nz-button>
+                    清除
+                </button>
+            </nz-badge>
+        </div>
+
+        <div nz-flex nzGap="small">
+            <button
+                    (click)="deleteProducts()"
+                    [disabled]="setOfCheckedItems.size === 0"
+                    [nzDanger]="true"
+                    [nzLoading]="loading"
+                    nz-button
+                    nzType="primary"
+            >
+                删除
+            </button>
+            <button
+                    (click)="editTypeButton()"
+                    [disabled]="setOfCheckedItems.size !== 1"
+                    [nzLoading]="loading"
+                    nz-button
+                    nzType="primary"
+            >
+                修改
+            </button>
+            <button
+                    (click)="createTypeButton()"
+                    [nzLoading]="loading"
+                    nz-button
+                    nzType="primary"
+            >
+                新建
+            </button>
+        </div>
+    </div>
+    <nz-table
+        #rowSelectionTable
+        (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
+        [nzData]="listOfData"
+        [nzLoading]="loading"
+        [nzShowPagination]="true"
+        [nzShowSizeChanger]="true">
+
+        <thead>
+        <tr>
+            <th
+                    (nzCheckedChange)="onAllChecked($event)"
+                    [(nzChecked)]="checkedAll"
+                    [nzIndeterminate]="indeterminate">
+            </th>
+            <th *ngFor="let column of tableHeaderColumns"
+                [nzSortDirections]="column.sortDirections"
+                [nzSortFn]="column.sortFn"
+                [nzSortOrder]="column.sortOrder">
+                {{ column.name }}
+            </th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr *ngFor="let p of rowSelectionTable.data">
+            <td
+                    (nzCheckedChange)="onItemChecked(p.id,$event)"
+                    [nzChecked]="setOfCheckedItems.has(p.id)">
+            </td>
+            <td>{{ p.name }}</td>
+            <td>{{ p.code }}</td>
+            <td>{{ p.specifications }}</td>
+            <td>{{ p.remark }}</td>
+        </tr>
+        </tbody>
+    </nz-table>
+</div>

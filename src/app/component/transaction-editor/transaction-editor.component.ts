@@ -55,7 +55,7 @@ export class TransactionEditorComponent implements OnInit {
 
     getProducts() {
         let pageThis = this
-        const req = this.productService.getProducts()
+        const req = this.productService.readProducts()
             .pipe(
                 retry(3),
                 catchError(this.handleError)

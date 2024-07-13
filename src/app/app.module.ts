@@ -27,6 +27,7 @@ import {HomeOutline, SearchOutline, TableOutline} from "@ant-design/icons-angula
 import {AppComponent} from "./app.component"
 import {AppRoutingModule} from "./app-routing.module"
 import {StatusPipe} from "./pipe/status.pipe"
+import {ProductComponent} from "./component/product/product.component"
 import {TransactionComponent} from "./component/transaction/transaction.component"
 import {TypeComponent} from "./component/type/type.component"
 import {AccountComponent} from "./component/account/account.component"
@@ -41,6 +42,7 @@ import {TypeService} from "./service/type.service"
 import {AccountService} from "./service/account.service"
 import {TransactionService} from "./service/transaction.service"
 import {ProductService} from "./service/product.service"
+import {ProductEditorComponent} from "./component/product-editor/product-editor.component"
 
 registerLocaleData(zh)
 
@@ -49,12 +51,14 @@ registerLocaleData(zh)
         AppComponent,
         HomeComponent,
         TransactionComponent,
-        AccountComponent,
+        TransactionEditorComponent,
+        TransactionSearchComponent,
+        ProductComponent,
+        ProductEditorComponent,
         TypeComponent,
         TypeEditorComponent,
-        TransactionEditorComponent,
+        AccountComponent,
         AccountEditorComponent,
-        TransactionSearchComponent,
         StatusPipe,
     ],
     imports: [

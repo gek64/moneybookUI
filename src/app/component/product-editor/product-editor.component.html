@@ -1,0 +1,33 @@
+<nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()" [(nzVisible)]="isVisible"
+          [nzOkDisabled]="newProduct.name == ''" [nzTitle]="title" nzWidth>
+    <div *nzModalContent>
+        <nz-table [nzData]="[{}]" [nzShowPagination]="false">
+            <!--两行不显示的空表头-->
+            <thead>
+            <tr *ngIf="false">
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td>名称</td>
+                <td><input [(ngModel)]="newProduct.name" nz-input/></td>
+            </tr>
+            <tr>
+                <td>编号</td>
+                <td><input [(ngModel)]="newProduct.code" nz-input/></td>
+            </tr>
+            <tr>
+                <td>规格</td>
+                <td><input [(ngModel)]="newProduct.specifications" nz-input/></td>
+            </tr>
+            <tr>
+                <td>备注</td>
+                <td><input [(ngModel)]="newProduct.remark" nz-input/></td>
+            </tr>
+            </tbody>
+        </nz-table>
+    </div>
+</nz-modal>

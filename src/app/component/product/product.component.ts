@@ -1,53 +1,47 @@
 import {Component, OnInit, ViewChild} from "@angular/core"
-import {TransactionService} from "../../service/transaction.service"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
-import {TransactionEditorComponent} from "../transaction-editor/transaction-editor.component"
-import {
-    TRANSACTION,
-    TRANSACTION_INPUT,
-    TRANSACTION_OUTPUT,
-    TransactionColumns
-} from "../../share/definition/transaction"
-
+import {PRODUCT, ProductColumns} from "../../share/definition/product"
+import {ProductService} from "../../service/product.service"
+import {ProductEditorComponent} from "../product-editor/product-editor.component"
 
 @Component({
-    selector: "app-component-transaction",
-    templateUrl: "./transaction.component.html",
-    styleUrls: ["./transaction.component.css"]
+    selector: "app-component-product",
+    templateUrl: "./product.component.html",
+    styleUrls: ["./product.component.css"]
 })
 
-export class TransactionComponent implements OnInit {
+export class ProductComponent implements OnInit {
     // 子组件观察器
     @ViewChild("editor")
-    editor: TransactionEditorComponent
+    editor: ProductEditorComponent
     checkedAll = false
     indeterminate = false
     loading = false
-    listOfData: readonly TRANSACTION_OUTPUT[] = []
-    listOfCurrentPageData: readonly TRANSACTION_OUTPUT[] = []
+    listOfData: readonly PRODUCT[] = []
+    listOfCurrentPageData: readonly PRODUCT[] = []
     setOfCheckedItems = new Set<string>()
-    tableHeaderColumns = TransactionColumns
+    tableHeaderColumns = ProductColumns
 
-    constructor(private transactionService: TransactionService, private message: NzMessageService) {
+    constructor(private productService: ProductService, private message: NzMessageService) {
     }
 
     // 生命周期
     ngOnInit() {
-        this.readTransactions()
+        this.readProducts()
     }
 
-    // 数据库操作
-    createTransaction(t: TRANSACTION_INPUT) {
+    // 数据库
+    createProduct(p: PRODUCT) {
         this.loading = true
 
-        this.transactionService.createTransaction(t)
+        this.productService.createProduct(p)
             .pipe(retry(3), catchError(this.handleError))
             .subscribe({
-                next: (resp: TRANSACTION) => {
+                next: (resp) => {
                     if (resp.id !== undefined) {
-                        this.readTransactions()
+                        this.readProducts()
                     }
                 },
                 error: (err: HttpErrorResponse) => this.message.error(err.message)
@@ -55,15 +49,15 @@ export class TransactionComponent implements OnInit {
             .add(() => this.loading = false)
     }
 
-    updateTransaction(t: TRANSACTION_INPUT) {
+    updateProduct(p: PRODUCT) {
         this.loading = true
 
-        this.transactionService.updateTransaction(t)
+        this.productService.updateProduct(p)
             .pipe(retry(3), catchError(this.handleError))
             .subscribe({
-                next: (resp: TRANSACTION) => {
+                next: (resp) => {
                     if (resp.id !== undefined) {
-                        this.readTransactions()
+                        this.readProducts()
                     }
                 },
                 error: (err: HttpErrorResponse) => this.message.error(err.message)
@@ -71,37 +65,34 @@ export class TransactionComponent implements OnInit {
             .add(() => this.loading = false)
     }
 
-    deleteTransactions() {
+    deleteProducts() {
         this.loading = true
 
-        this.transactionService.deleteTransactions([...this.setOfCheckedItems])
-            .pipe(retry(3), catchError(this.handleError))
-            .subscribe({
-                next: resp => {
-                    if (resp.count > 0) {
-                        this.listOfData = this.listOfData.filter(item => !this.setOfCheckedItems.has(item.id))
-                        this.setOfCheckedItems.clear()
-                        this.message.success("deleted successfully")
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
+        let req = this.productService.deleteProducts(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
+        if (this.setOfCheckedItems.size == 1) {
+            req = this.productService.deleteProduct(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
+        }
+
+        req.subscribe({
+            next: (resp) => {
+                if (resp.count !== 0) {
+                    this.listOfData = this.listOfData.filter(item => !this.setOfCheckedItems.has(item.id))
+                    this.setOfCheckedItems.clear()
+                    this.message.success("deleted successfully")
+                }
+            },
+            error: (err: HttpErrorResponse) => this.message.error(err.message)
+        })
             .add(() => this.loading = false)
     }
 
-    readTransactions() {
+    readProducts() {
         this.loading = true
 
-        this.transactionService.getTransactions()
+        this.productService.readProducts()
             .pipe(retry(3), catchError(this.handleError))
             .subscribe({
-                next: (ts) => {
-                    // 获取到的日期为字符串,需要处理每一条交易数据中的日期
-                    ts.forEach((t, i) => {
-                        ts[i].datetime = new Date(Date.parse(t.datetime as unknown as string))
-                    })
-                    this.listOfData = ts
-                },
+                next: ps => this.listOfData = ps,
                 error: (err: HttpErrorResponse) => this.message.error(err.message)
             })
             .add(() => this.loading = false)
@@ -113,7 +104,7 @@ export class TransactionComponent implements OnInit {
         this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
     }
 
-    onCurrentPageDataChange(listOfCurrentPageData: readonly TRANSACTION[]) {
+    onCurrentPageDataChange(listOfCurrentPageData: readonly PRODUCT[]) {
         this.listOfCurrentPageData = listOfCurrentPageData
         this.refreshCheckedAllStatus()
     }
@@ -126,11 +117,11 @@ export class TransactionComponent implements OnInit {
         }
     }
 
-    getEditorResult(e: TRANSACTION_INPUT) {
+    getEditorResult(e: PRODUCT) {
         if (e.id !== undefined) {
-            this.updateTransaction(e)
+            this.updateProduct(e)
         } else {
-            this.createTransaction(e)
+            this.createProduct(e)
         }
     }
 
@@ -146,21 +137,21 @@ export class TransactionComponent implements OnInit {
         this.refreshCheckedAllStatus()
     }
 
-    clearSetOfCheckedItemsButton() {
+    clearSetOfCheckedItems() {
         this.setOfCheckedItems.clear()
         this.checkedAll = false
         this.refreshCheckedAllStatus()
     }
 
     selectAllItemsButton() {
-        this.listOfData.forEach(t => this.setOfCheckedItems.add(t.id))
+        this.listOfData.forEach(a => this.setOfCheckedItems.add(a.id))
         this.refreshCheckedAllStatus()
     }
 
     editTypeButton() {
-        let ts = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
-        if (ts.length === 1) {
-            this.editor.showModal(ts[0])
+        let ps = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
+        if (ps.length === 1) {
+            this.editor.showModal(ps[0])
         }
     }
 
@@ -169,7 +160,6 @@ export class TransactionComponent implements OnInit {
     }
 
 
-    // 网络请求
     private handleError(error: HttpErrorResponse) {
         let err: string
 

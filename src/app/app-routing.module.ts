@@ -1,5 +1,6 @@
 import {NgModule} from "@angular/core"
 import {RouterModule, Routes} from "@angular/router"
+import {ProductComponent} from "./component/product/product.component"
 import {TransactionComponent} from "./component/transaction/transaction.component"
 import {TypeComponent} from "./component/type/type.component"
 import {AccountComponent} from "./component/account/account.component"
@@ -9,6 +10,7 @@ import {TransactionSearchComponent} from "./component/transaction-search/transac
 const routes: Routes = [
     {path: "", redirectTo: "home", pathMatch: "full"},
     {path: "home", component: HomeComponent},
+    {path: "product", component: ProductComponent},
     {path: "transaction", component: TransactionComponent},
     {path: "type", component: TypeComponent},
     {path: "account", component: AccountComponent},

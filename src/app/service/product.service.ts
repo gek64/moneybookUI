@@ -18,7 +18,7 @@ export class ProductService {
         return this.http.put<PRODUCT>(new URL("/product", this.server).toString(), updateProduct)
     }
 
-    getProducts() {
+    readProducts() {
         return this.http.get<PRODUCT[]>(new URL("/products", this.server).toString())
     }
 

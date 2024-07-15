@@ -18,7 +18,7 @@ export class TypeService {
         return this.http.put<TYPE>(new URL("/type", this.server).toString(), updateType)
     }
 
-    getTypes() {
+    readTypes() {
         return this.http.get<TYPE[]>(new URL("/types", this.server).toString())
     }
 

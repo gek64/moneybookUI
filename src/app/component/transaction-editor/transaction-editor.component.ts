@@ -73,7 +73,7 @@ export class TransactionEditorComponent implements OnInit {
 
     getTypes() {
         let pageThis = this
-        const req = this.typeService.getTypes()
+        const req = this.typeService.readTypes()
             .pipe(
                 retry(3),
                 catchError(this.handleError)
@@ -91,7 +91,7 @@ export class TransactionEditorComponent implements OnInit {
 
     getAccounts() {
         let pageThis = this
-        const req = this.accountService.getAccounts()
+        const req = this.accountService.readAccounts()
             .pipe(
                 retry(3),
                 catchError(this.handleError)

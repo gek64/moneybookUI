@@ -143,7 +143,7 @@ export class TypeComponent implements OnInit {
         let pageThis = this
         this.loading = true
 
-        this.typeService.getTypes()
+        this.typeService.readTypes()
             .pipe(retry(3), catchError(this.handleError))
             .subscribe({
                 next: function (resp) {

@@ -1,15 +1,17 @@
 import {Component, OnInit} from "@angular/core"
-import {TransactionService} from "../../service/transaction.service"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
-import {TRANSACTION, TransactionColumns} from "../../share/definition/transaction"
-import {AccountService} from "../../service/account.service"
-import {TypeService} from "../../service/type.service"
-import {EndOfDay, EndOfMonth, EndOfYear, StartOfDay, StartOfMonth, StartOfYear} from "../../share/date/dataRange"
-import {ACCOUNT} from "../../share/definition/account"
-import {TYPE} from "../../share/definition/type"
 import {TransactionStatus} from "../../share/definition/transactionStatus"
+import {EndOfDay, EndOfMonth, EndOfYear, StartOfDay, StartOfMonth, StartOfYear} from "../../share/date/dataRange"
+import {TRANSACTION_OUTPUT, TransactionColumns} from "../../share/definition/transaction"
+import {PRODUCT} from "../../share/definition/product"
+import {TYPE} from "../../share/definition/type"
+import {ACCOUNT} from "../../share/definition/account"
+import {TransactionService} from "../../service/transaction.service"
+import {ProductService} from "../../service/product.service"
+import {TypeService} from "../../service/type.service"
+import {AccountService} from "../../service/account.service"
 
 @Component({
     selector: "app-component-transaction-search",
@@ -20,14 +22,16 @@ export class TransactionSearchComponent implements OnInit {
     checkedAll = false
     indeterminate = false
     loading = false
-    listOfData: readonly TRANSACTION[] = []
-    listOfCurrentPageData: readonly TRANSACTION[] = []
+    listOfData: readonly TRANSACTION_OUTPUT[] = []
+    listOfCurrentPageData: readonly TRANSACTION_OUTPUT[] = []
     setOfCheckedItems = new Set<string>()
     tableHeaderColumns = TransactionColumns
-    allTransactions: readonly TRANSACTION[] = []
+    allTransactions: readonly TRANSACTION_OUTPUT[] = []
+    allProducts: readonly PRODUCT[] = []
     allTypes: readonly  TYPE[] = []
     allAccounts: readonly  ACCOUNT[] = []
     allStatus: { key: string, value: string }[] = TransactionStatus
+    selectedProducts: PRODUCT[] = []
     selectedTypes: TYPE[] = []
     selectedAccounts: ACCOUNT[] = []
     selectedStatus: { key: string, value: string }[] = []
@@ -40,15 +44,15 @@ export class TransactionSearchComponent implements OnInit {
         "This Year": [StartOfYear(new Date()), EndOfYear(new Date())]
     }
 
-
-    constructor(private transactionService: TransactionService, private accountService: AccountService, private typeService: TypeService, private message: NzMessageService) {
+    constructor(private transactionService: TransactionService, private productService: ProductService, private accountService: AccountService, private typeService: TypeService, private message: NzMessageService) {
     }
 
     // 生命周期
     ngOnInit() {
-        this.getTypes()
-        this.getAccounts()
-        this.getTransactions()
+        this.readTransactions()
+        this.readProducts()
+        this.readTypes()
+        this.readAccounts()
     }
 
     // 中间功能
@@ -57,7 +61,7 @@ export class TransactionSearchComponent implements OnInit {
         this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
     }
 
-    onCurrentPageDataChange(listOfCurrentPageData: readonly TRANSACTION[]) {
+    onCurrentPageDataChange(listOfCurrentPageData: readonly TRANSACTION_OUTPUT[]) {
         this.listOfCurrentPageData = listOfCurrentPageData
         this.refreshCheckedAllStatus()
     }
@@ -71,10 +75,18 @@ export class TransactionSearchComponent implements OnInit {
     }
 
     // 按键
-    go() {
+    submitButton() {
         let pageThis = this
-        this.listOfData = this.allTransactions.filter(function (transaction) {
-            let isType: boolean, isAccount: boolean, isStatus: boolean, isDatetime: boolean
+        this.listOfData = this.allTransactions.filter((transaction) => {
+            let isProduct: boolean, isType: boolean, isAccount: boolean, isStatus: boolean, isDatetime: boolean
+
+            if (pageThis.selectedProducts.length == 0) {
+                isProduct = true
+            } else {
+                isProduct = pageThis.selectedProducts.some((product) => {
+                    console.log(transaction.ProductOnTransaction?.length != 0)
+                })
+            }
 
             if (pageThis.selectedTypes.length == 0) {
                 isType = true
@@ -133,6 +145,10 @@ export class TransactionSearchComponent implements OnInit {
         this.refreshCheckedAllStatus()
     }
 
+    isProductNotSelected(value: PRODUCT): boolean {
+        return this.selectedProducts.indexOf(value) === -1
+    }
+
     isTypeNotSelected(value: TYPE): boolean {
         return this.selectedTypes.indexOf(value) === -1
     }
@@ -149,91 +165,74 @@ export class TransactionSearchComponent implements OnInit {
         let pageThis = this
         this.loading = true
 
-        const req = this.transactionService.patchTransactionsStatus(Array.from(this.setOfCheckedItems), status)
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
-
-        req.subscribe({
-            next: function (resp) {
-                if (resp.count != undefined && resp.count != 0) {
-                    pageThis.listOfData.forEach(function (transaction, index, array) {
-                        pageThis.setOfCheckedItems.forEach(function (selectedId) {
-                            if (transaction.id == selectedId) {
-                                array[index].status = status
-                            }
+        this.transactionService.patchTransactionsStatus(Array.from(this.setOfCheckedItems), status)
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: (resp) => {
+                    if (resp.count != undefined && resp.count != 0) {
+                        pageThis.listOfData.forEach(function (transaction, index, array) {
+                            pageThis.setOfCheckedItems.forEach(function (selectedId) {
+                                if (transaction.id == selectedId) {
+                                    array[index].status = status
+                                }
+                            })
                         })
-                    })
-                }
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        }).add(function () {
-            pageThis.loading = false
-        })
+                    }
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.loading = false)
     }
 
-    getTransactions() {
+    readTransactions() {
         let pageThis = this
         this.loading = true
 
-        const req = this.transactionService.getTransactions()
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
-
-        req.subscribe({
-            next: function (resp) {
-                resp.forEach(function (transaction, index) {
-                    resp[index].datetime = new Date(Date.parse(transaction.datetime as unknown as string))
-                })
-                pageThis.allTransactions = resp
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        }).add(function () {
-            pageThis.loading = false
-        })
+        this.transactionService.readTransactions()
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: function (resp) {
+                    resp.forEach(function (transaction, index) {
+                        resp[index].datetime = new Date(Date.parse(transaction.datetime as unknown as string))
+                    })
+                    pageThis.allTransactions = resp
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.loading = false)
     }
 
-    getTypes() {
-        let pageThis = this
-        const req = this.typeService.getTypes()
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
-
-        req.subscribe({
-            next: function (resp) {
-                pageThis.allTypes = resp
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        })
+    readProducts() {
+        this.productService.readProducts()
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: (resp) => {
+                    this.allProducts = resp
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
     }
 
-    getAccounts() {
-        let pageThis = this
-        const req = this.accountService.getAccounts()
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
+    readTypes() {
+        this.typeService.readTypes()
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: (resp) => {
+                    this.allTypes = resp
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+    }
 
-        req.subscribe({
-            next: function (resp) {
-                pageThis.allAccounts = resp
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        })
+    readAccounts() {
+        this.accountService.readAccounts()
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: (resp) => {
+                    this.allAccounts = resp
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
     }
 
     // 网络请求

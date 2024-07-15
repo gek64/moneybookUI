@@ -3,6 +3,12 @@
         <nz-range-picker [(ngModel)]="selectedDatetime" [nzRanges]="DefinedDateRanges"
                          [nzShowTime]="true"></nz-range-picker>
 
+        <nz-select [(ngModel)]="selectedProducts" [nzDropdownMatchSelectWidth]="false" nzAllowClear nzMode="multiple"
+                   nzPlaceHolder="选择商品">
+            <nz-option *ngFor="let product of allProducts" [nzHide]="!isProductNotSelected(product)"
+                       [nzLabel]="product.name" [nzValue]="product"></nz-option>
+        </nz-select>
+
         <nz-select [(ngModel)]="selectedTypes" [nzDropdownMatchSelectWidth]="false" nzAllowClear nzMode="multiple"
                    nzPlaceHolder="选择类型">
             <nz-option *ngFor="let type of allTypes" [nzHide]="!isTypeNotSelected(type)" [nzLabel]="type.name"
@@ -22,7 +28,7 @@
         </nz-select>
     </div>
     <div nz-flex nzGap="small" nzJustify="flex-end">
-        <button (click)="go()" nz-button nzType="primary">提交</button>
+        <button (click)="submitButton()" nz-button nzType="primary">提交</button>
     </div>
     <div *ngIf="listOfData.length != 0" nz-flex nzGap="small" nzVertical>
         <div nz-flex nzJustify="space-between">

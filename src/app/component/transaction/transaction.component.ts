@@ -92,7 +92,7 @@ export class TransactionComponent implements OnInit {
     readTransactions() {
         this.loading = true
 
-        this.transactionService.getTransactions()
+        this.transactionService.readTransactions()
             .pipe(retry(3), catchError(this.handleError))
             .subscribe({
                 next: (ts) => {

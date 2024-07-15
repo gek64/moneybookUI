@@ -27,7 +27,7 @@ export class TransactionService {
         })
     }
 
-    getTransaction(id: string) {
+    readTransaction(id: string) {
         return this.http.get<TRANSACTION_OUTPUT>(new URL("/transaction", this.server).toString(), {
             params: {
                 "id": id
@@ -35,7 +35,7 @@ export class TransactionService {
         })
     }
 
-    getTransactions() {
+    readTransactions() {
         return this.http.get<TRANSACTION_OUTPUT[]>(new URL("/transactions", this.server).toString())
     }
 

@@ -39,6 +39,21 @@ export class TransactionService {
         return this.http.get<TRANSACTION_OUTPUT[]>(new URL("/transactions", this.server).toString())
     }
 
+    readTransactionsWithConditions(ids?: string[], title?: string, productIds?: string[], typeIds?: string[], accountIds?: string[], startTime?: string, endTime?: string, status?: string[]) {
+        return this.http.get<TRANSACTION_OUTPUT[]>(new URL("/transactions/conditions", this.server).toString(), {
+            params: JSON.parse(JSON.stringify({
+                "ids": ids,
+                "title": title,
+                "productIds": productIds,
+                "typeIds": typeIds,
+                "accountIds": accountIds,
+                "startTime": startTime?.toString(),
+                "endTime": endTime?.toString(),
+                "status": status
+            }).toString())
+        })
+    }
+
     deleteTransaction(id: string) {
         return this.http.delete<{ count: number }>(new URL("/transaction", this.server).toString(), {
             params: {

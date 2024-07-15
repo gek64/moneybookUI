@@ -55,112 +55,7 @@ export class TransactionSearchComponent implements OnInit {
         this.readAccounts()
     }
 
-    // 中间功能
-    refreshCheckedAllStatus() {
-        this.checkedAll = this.listOfCurrentPageData.every(item => this.setOfCheckedItems.has(item.id))
-        this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
-    }
-
-    onCurrentPageDataChange(listOfCurrentPageData: readonly TRANSACTION_OUTPUT[]) {
-        this.listOfCurrentPageData = listOfCurrentPageData
-        this.refreshCheckedAllStatus()
-    }
-
-    updateCheckedSet(id: string, checked: boolean) {
-        if (checked) {
-            this.setOfCheckedItems.add(id)
-        } else {
-            this.setOfCheckedItems.delete(id)
-        }
-    }
-
-    // 按键
-    submitButton() {
-        let pageThis = this
-        this.listOfData = this.allTransactions.filter((transaction) => {
-            let isProduct: boolean, isType: boolean, isAccount: boolean, isStatus: boolean, isDatetime: boolean
-
-            if (pageThis.selectedProducts.length == 0) {
-                isProduct = true
-            } else {
-                isProduct = pageThis.selectedProducts.some((product) => {
-                    console.log(transaction.ProductOnTransaction?.length != 0)
-                })
-            }
-
-            if (pageThis.selectedTypes.length == 0) {
-                isType = true
-            } else {
-                isType = pageThis.selectedTypes.some((type) => type.id == transaction.typeId)
-            }
-
-            if (pageThis.selectedAccounts.length == 0) {
-                isAccount = true
-            } else {
-                isAccount = pageThis.selectedAccounts.some((account) => account.id == transaction.accountId)
-            }
-
-            if (pageThis.selectedStatus.length == 0) {
-                isStatus = true
-            } else {
-                isStatus = pageThis.selectedStatus.some((status) => status.value == transaction.status)
-            }
-
-            if (pageThis.selectedDatetime.length < 2) {
-                isDatetime = true
-            } else {
-                // 将日期选择器的时间毫秒位设置为0
-                let time1 = new Date(pageThis.selectedDatetime[0].setMilliseconds(0))
-                let time2 = new Date(pageThis.selectedDatetime[1].setMilliseconds(0))
-                isDatetime = time1 <= transaction.datetime && transaction.datetime <= time2
-            }
-
-            return isType && isAccount && isStatus && isDatetime
-        })
-
-        pageThis.selectedAmount = 0
-        this.listOfData.forEach(function (transaction) {
-            pageThis.selectedAmount += transaction.amount
-        })
-    }
-
-    onItemChecked(id: string, checked: boolean) {
-        this.updateCheckedSet(id, checked)
-        this.refreshCheckedAllStatus()
-    }
-
-    onAllChecked(checked: boolean) {
-        this.listOfCurrentPageData
-            .forEach(({id}) => this.updateCheckedSet(id, checked))
-        this.refreshCheckedAllStatus()
-    }
-
-    clearSetOfCheckedItemsButton() {
-        this.setOfCheckedItems.clear()
-        this.refreshCheckedAllStatus()
-    }
-
-    selectAllItemsButton() {
-        this.listOfData.forEach(t => this.setOfCheckedItems.add(t.id))
-        this.refreshCheckedAllStatus()
-    }
-
-    isProductNotSelected(value: PRODUCT): boolean {
-        return this.selectedProducts.indexOf(value) === -1
-    }
-
-    isTypeNotSelected(value: TYPE): boolean {
-        return this.selectedTypes.indexOf(value) === -1
-    }
-
-    isAccountNotSelected(value: ACCOUNT): boolean {
-        return this.selectedAccounts.indexOf(value) === -1
-    }
-
-    isStatusNotSelected(value: { key: string, value: string }): boolean {
-        return this.selectedStatus.indexOf(value) === -1
-    }
-
+    // 数据库操作
     updateStatus(status: string) {
         let pageThis = this
         this.loading = true
@@ -233,6 +128,127 @@ export class TransactionSearchComponent implements OnInit {
                 },
                 error: (err: HttpErrorResponse) => this.message.error(err.message)
             })
+    }
+
+    // 中间功能
+    refreshCheckedAllStatus() {
+        this.checkedAll = this.listOfCurrentPageData.every(item => this.setOfCheckedItems.has(item.id))
+        this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
+    }
+
+    onCurrentPageDataChange(listOfCurrentPageData: readonly TRANSACTION_OUTPUT[]) {
+        this.listOfCurrentPageData = listOfCurrentPageData
+        this.refreshCheckedAllStatus()
+    }
+
+    updateCheckedSet(id: string, checked: boolean) {
+        if (checked) {
+            this.setOfCheckedItems.add(id)
+        } else {
+            this.setOfCheckedItems.delete(id)
+        }
+    }
+
+    // 按键
+    submitButton() {
+        // 服务端筛选
+        this.selectedAmount = 0
+        this.transactionService.readTransactionsWithConditions(undefined, undefined, this.selectedProducts?.map(p => p.id), this.selectedTypes?.map(t => t.id), this.selectedAccounts?.map(a => a.id), this.selectedDatetime[0]?.toString(), this?.selectedDatetime[1]?.toString(), this.selectedStatus?.map(s => s.value))
+            .pipe(retry(1), catchError(this.handleError))
+            .subscribe({
+                next: (resp) => {
+                    this.listOfData = resp
+
+                    // 统计金额
+                    this.listOfData.forEach((transaction, index) => {
+                        this.listOfData[index].datetime = new Date(this.listOfData[index].datetime)
+                        this.selectedAmount += transaction.amount
+                    })
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.loading = false)
+
+        // 客户端筛选
+        // this.listOfData = this.allTransactions.filter((transaction) => {
+        //     let isProduct: boolean, isType: boolean, isAccount: boolean, isStatus: boolean, isDatetime: boolean
+        //
+        //     if (this.selectedProducts.length == 0) {
+        //         isProduct = true
+        //     } else {
+        //         isProduct = transaction.ProductOnTransaction.map(p => p.product.id).some(id => this.selectedProducts.some(product => product.id == id))
+        //     }
+        //
+        //     if (this.selectedTypes.length == 0) {
+        //         isType = true
+        //     } else {
+        //         isType = this.selectedTypes.some((type) => type.id == transaction.typeId)
+        //     }
+        //
+        //     if (this.selectedAccounts.length == 0) {
+        //         isAccount = true
+        //     } else {
+        //         isAccount = this.selectedAccounts.some((account) => account.id == transaction.accountId)
+        //     }
+        //
+        //     if (this.selectedStatus.length == 0) {
+        //         isStatus = true
+        //     } else {
+        //         isStatus = this.selectedStatus.some((status) => status.value == transaction.status)
+        //     }
+        //
+        //     if (this.selectedDatetime.length < 2) {
+        //         isDatetime = true
+        //     } else {
+        //         // 将日期选择器的时间毫秒位设置为0
+        //         let time1 = new Date(this.selectedDatetime[0].setMilliseconds(0))
+        //         let time2 = new Date(this.selectedDatetime[1].setMilliseconds(0))
+        //         isDatetime = time1 <= transaction.datetime && transaction.datetime <= time2
+        //     }
+        //     return isProduct && isType && isAccount && isStatus && isDatetime
+        // })
+        //
+        // this.selectedAmount = 0
+        // this.listOfData.forEach((transaction, index) => {
+        //     this.selectedAmount += transaction.amount
+        // })
+    }
+
+    onItemChecked(id: string, checked: boolean) {
+        this.updateCheckedSet(id, checked)
+        this.refreshCheckedAllStatus()
+    }
+
+    onAllChecked(checked: boolean) {
+        this.listOfCurrentPageData
+            .forEach(({id}) => this.updateCheckedSet(id, checked))
+        this.refreshCheckedAllStatus()
+    }
+
+    clearSetOfCheckedItemsButton() {
+        this.setOfCheckedItems.clear()
+        this.refreshCheckedAllStatus()
+    }
+
+    selectAllItemsButton() {
+        this.listOfData.forEach(t => this.setOfCheckedItems.add(t.id))
+        this.refreshCheckedAllStatus()
+    }
+
+    isProductNotSelected(value: PRODUCT): boolean {
+        return this.selectedProducts.indexOf(value) === -1
+    }
+
+    isTypeNotSelected(value: TYPE): boolean {
+        return this.selectedTypes.indexOf(value) === -1
+    }
+
+    isAccountNotSelected(value: ACCOUNT): boolean {
+        return this.selectedAccounts.indexOf(value) === -1
+    }
+
+    isStatusNotSelected(value: { key: string, value: string }): boolean {
+        return this.selectedStatus.indexOf(value) === -1
     }
 
     // 网络请求

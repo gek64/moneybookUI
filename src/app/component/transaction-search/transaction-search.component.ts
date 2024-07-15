@@ -1,10 +1,16 @@
-import {Component, OnInit} from "@angular/core"
+import {Component, OnInit, ViewChild} from "@angular/core"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
 import {TransactionStatus} from "../../share/definition/transactionStatus"
 import {EndOfDay, EndOfMonth, EndOfYear, StartOfDay, StartOfMonth, StartOfYear} from "../../share/date/dataRange"
-import {TRANSACTION_OUTPUT, TransactionColumns} from "../../share/definition/transaction"
+import {
+    TRANSACTION,
+    TRANSACTION_INPUT,
+    TRANSACTION_OUTPUT,
+    TransactionColumns
+} from "../../share/definition/transaction"
+import {TransactionEditorComponent} from "../transaction-editor/transaction-editor.component"
 import {PRODUCT} from "../../share/definition/product"
 import {TYPE} from "../../share/definition/type"
 import {ACCOUNT} from "../../share/definition/account"
@@ -19,6 +25,9 @@ import {AccountService} from "../../service/account.service"
     styleUrls: ["./transaction-search.component.css"]
 })
 export class TransactionSearchComponent implements OnInit {
+    // 子组件观察器
+    @ViewChild("editor")
+    editor: TransactionEditorComponent
     checkedAll = false
     indeterminate = false
     loading = false
@@ -31,6 +40,7 @@ export class TransactionSearchComponent implements OnInit {
     allTypes: readonly  TYPE[] = []
     allAccounts: readonly  ACCOUNT[] = []
     allStatus: { key: string, value: string }[] = TransactionStatus
+    selectedKeyword: string = ""
     selectedProducts: PRODUCT[] = []
     selectedTypes: TYPE[] = []
     selectedAccounts: ACCOUNT[] = []
@@ -49,7 +59,8 @@ export class TransactionSearchComponent implements OnInit {
 
     // 生命周期
     ngOnInit() {
-        this.readTransactions()
+        // 使用客户端筛选时才需要
+        // this.readTransactions()
         this.readProducts()
         this.readTypes()
         this.readAccounts()
@@ -72,6 +83,39 @@ export class TransactionSearchComponent implements OnInit {
                                 }
                             })
                         })
+                    }
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.loading = false)
+    }
+
+    updateTransaction(t: TRANSACTION_INPUT) {
+        this.loading = true
+
+        this.transactionService.updateTransaction(t)
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: (resp: TRANSACTION) => {
+                    if (resp.id !== undefined) {
+                        this.readTransactions()
+                    }
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.loading = false)
+    }
+
+    deleteTransactions() {
+        this.loading = true
+
+        this.transactionService.deleteTransactions([...this.setOfCheckedItems])
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: resp => {
+                    if (resp.count > 0) {
+                        this.listOfData = this.listOfData.filter(item => !this.setOfCheckedItems.has(item.id))
+                        this.setOfCheckedItems.clear()
                     }
                 },
                 error: (err: HttpErrorResponse) => this.message.error(err.message)
@@ -131,6 +175,12 @@ export class TransactionSearchComponent implements OnInit {
     }
 
     // 中间功能
+    getEditorResult(e: TRANSACTION_INPUT) {
+        if (e.id !== undefined) {
+            this.updateTransaction(e)
+        }
+    }
+
     refreshCheckedAllStatus() {
         this.checkedAll = this.listOfCurrentPageData.every(item => this.setOfCheckedItems.has(item.id))
         this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
@@ -153,7 +203,7 @@ export class TransactionSearchComponent implements OnInit {
     submitButton() {
         // 服务端筛选
         this.selectedAmount = 0
-        this.transactionService.readTransactionsWithConditions(undefined, undefined, this.selectedProducts?.map(p => p.id), this.selectedTypes?.map(t => t.id), this.selectedAccounts?.map(a => a.id), this.selectedDatetime[0]?.toString(), this?.selectedDatetime[1]?.toString(), this.selectedStatus?.map(s => s.value))
+        this.transactionService.readTransactionsWithConditions(undefined, this.selectedKeyword, this.selectedProducts?.map(p => p.id), this.selectedTypes?.map(t => t.id), this.selectedAccounts?.map(a => a.id), this.selectedDatetime[0]?.toString(), this?.selectedDatetime[1]?.toString(), this.selectedStatus?.map(s => s.value))
             .pipe(retry(1), catchError(this.handleError))
             .subscribe({
                 next: (resp) => {
@@ -212,6 +262,13 @@ export class TransactionSearchComponent implements OnInit {
         // this.listOfData.forEach((transaction, index) => {
         //     this.selectedAmount += transaction.amount
         // })
+    }
+
+    editTypeButton() {
+        let ts = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
+        if (ts.length === 1) {
+            this.editor.showModal(ts[0])
+        }
     }
 
     onItemChecked(id: string, checked: boolean) {

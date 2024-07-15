@@ -1,5 +1,13 @@
+<app-component-transaction-editor #editor
+                                  (editorResult)="getEditorResult($event)"></app-component-transaction-editor>
+
 <div nz-flex nzGap="small" nzVertical>
     <div nz-flex nzGap="small" nzJustify="space-between" nzVertical nzWrap="wrap">
+        <nz-input-group [nzPrefix]="prefixIcon">
+            <ng-template #prefixIcon><span nz-icon nzType="search"></span></ng-template>
+            <input [(ngModel)]="selectedKeyword" nz-input placeholder="输入查询交易标题关键词"/>
+        </nz-input-group>
+
         <nz-range-picker [(ngModel)]="selectedDatetime" [nzRanges]="DefinedDateRanges"
                          [nzShowTime]="true"></nz-range-picker>
 
@@ -55,6 +63,25 @@
             </div>
 
             <div nz-flex nzGap="small">
+                <button
+                        (click)="deleteTransactions()"
+                        [disabled]="setOfCheckedItems.size === 0"
+                        [nzDanger]="true"
+                        [nzLoading]="loading"
+                        nz-button
+                        nzType="primary"
+                >
+                    删除
+                </button>
+                <button
+                        (click)="editTypeButton()"
+                        [disabled]="setOfCheckedItems.size !== 1"
+                        [nzLoading]="loading"
+                        nz-button
+                        nzType="primary"
+                >
+                    修改
+                </button>
                 <button
                         (click)="updateStatus('FINISHED')"
                         [disabled]="setOfCheckedItems.size === 0"

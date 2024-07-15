@@ -100,104 +100,77 @@ export class TypeComponent implements OnInit {
         let pageThis = this
         this.loading = true
 
-        const req = this.typeService.createType(newType)
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
-
-        req.subscribe({
-            next: function (resp) {
-                if (resp.id !== undefined) {
-                    pageThis.listOfData = pageThis.listOfData.concat(resp)
-                    pageThis.message.success("created successfully")
-                }
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        }).add(function () {
-            pageThis.loading = false
-        })
+        this.typeService.createType(newType)
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: function (resp) {
+                    if (resp.id !== undefined) {
+                        pageThis.listOfData = pageThis.listOfData.concat(resp)
+                        pageThis.message.success("created successfully")
+                    }
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.loading = false)
     }
 
     updateType(updateType: TYPE) {
         let pageThis = this
         this.loading = true
 
-        const req = this.typeService.updateType(updateType)
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
-
-        req.subscribe({
-            next: function (resp) {
-                if (resp.id !== undefined) {
-                    pageThis.listOfData.forEach(function (type) {
-                        if (type.id == resp.id) {
-                            // 先筛选出不含更改项的所有数据
-                            let newData = pageThis.listOfData.filter(item => item.id != resp.id)
-                            // 将筛选出的数据添加修改后的更改项的数据
-                            pageThis.listOfData = newData.concat(resp)
-                        }
-                    })
-                    pageThis.message.success("updated successfully")
-                }
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        }).add(function () {
-            pageThis.loading = false
-        })
+        this.typeService.updateType(updateType)
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: function (resp) {
+                    if (resp.id !== undefined) {
+                        pageThis.listOfData.forEach(function (type) {
+                            if (type.id == resp.id) {
+                                // 先筛选出不含更改项的所有数据
+                                let newData = pageThis.listOfData.filter(item => item.id != resp.id)
+                                // 将筛选出的数据添加修改后的更改项的数据
+                                pageThis.listOfData = newData.concat(resp)
+                            }
+                        })
+                        pageThis.message.success("updated successfully")
+                    }
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.loading = false)
     }
 
     getTypes() {
         let pageThis = this
         this.loading = true
 
-        const req = this.typeService.getTypes()
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
-
-        req.subscribe({
-            next: function (resp) {
-                pageThis.listOfData = resp
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        }).add(function () {
-            pageThis.loading = false
-        })
+        this.typeService.getTypes()
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: function (resp) {
+                    pageThis.listOfData = resp
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.loading = false)
     }
 
     deleteTypes() {
         let pageThis = this
         this.loading = true
 
-        let req = this.typeService.deleteTypes(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
-        if (this.setOfCheckedItems.size == 1) {
-            req = this.typeService.deleteType(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
-        }
-
-        req.subscribe({
-            next: function (resp) {
-                if (resp.count !== 0) {
-                    pageThis.listOfData = pageThis.listOfData.filter(item => !pageThis.setOfCheckedItems.has(item.id))
-                    pageThis.setOfCheckedItems.clear()
-                    pageThis.message.success("deleted successfully")
-                }
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        }).add(function () {
-            pageThis.loading = false
-        })
+        this.typeService.deleteTypes(this.setOfCheckedItems)
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: function (resp) {
+                    if (resp.count !== 0) {
+                        pageThis.listOfData = pageThis.listOfData.filter(item => !pageThis.setOfCheckedItems.has(item.id))
+                        pageThis.setOfCheckedItems.clear()
+                        pageThis.message.success("deleted successfully")
+                    }
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.loading = false)
     }
 
     private handleError(error: HttpErrorResponse) {

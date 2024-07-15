@@ -68,21 +68,18 @@ export class ProductComponent implements OnInit {
     deleteProducts() {
         this.loading = true
 
-        let req = this.productService.deleteProducts(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
-        if (this.setOfCheckedItems.size == 1) {
-            req = this.productService.deleteProduct(this.setOfCheckedItems).pipe(retry(3), catchError(this.handleError))
-        }
-
-        req.subscribe({
-            next: (resp) => {
-                if (resp.count !== 0) {
-                    this.listOfData = this.listOfData.filter(item => !this.setOfCheckedItems.has(item.id))
-                    this.setOfCheckedItems.clear()
-                    this.message.success("deleted successfully")
-                }
-            },
-            error: (err: HttpErrorResponse) => this.message.error(err.message)
-        })
+        this.productService.deleteProducts(this.setOfCheckedItems)
+            .pipe(retry(3), catchError(this.handleError))
+            .subscribe({
+                next: (resp) => {
+                    if (resp.count !== 0) {
+                        this.listOfData = this.listOfData.filter(item => !this.setOfCheckedItems.has(item.id))
+                        this.setOfCheckedItems.clear()
+                        this.message.success("deleted successfully")
+                    }
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
             .add(() => this.loading = false)
     }
 

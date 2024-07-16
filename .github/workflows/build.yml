@@ -1,26 +1,26 @@
 name: Build and Release and Clean
 
 on:
-  push:
-    branches:
-      - main
-      - v1
-    paths-ignore:
-      - 'docs/**'
-      - '.github/**'
-      - '.git**'
-      - '**.md'
-      - 'LICENSE'
-  pull_request:
-    branches:
-      - main
-      - v1
-    paths-ignore:
-      - 'docs/**'
-      - '.github/**'
-      - '.git**'
-      - '**.md'
-      - 'LICENSE'
+  # push:
+  #   branches:
+  #     - main
+  #     - v1
+  #   paths-ignore:
+  #     - 'docs/**'
+  #     - '.github/**'
+  #     - '.git**'
+  #     - '**.md'
+  #     - 'LICENSE'
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - v1
+  #   paths-ignore:
+  #     - 'docs/**'
+  #     - '.github/**'
+  #     - '.git**'
+  #     - '**.md'
+  #     - 'LICENSE'
   workflow_dispatch:
     inputs:
       tag:
@@ -53,10 +53,8 @@ jobs:
         run: |
           # 编译
           npm run build
-          
           # 压缩
           zip -9 moneybookUI.zip dist/*
-          
           # 获取sha256 checksum
           sha256sum moneybookUI.zip > SHA256SUMS.txt
 

@@ -1,0 +1,74 @@
+name: Build and Release and Clean
+
+on:
+  # push:
+  #   branches:
+  #     - main
+  #     - v1
+  #   paths-ignore:
+  #     - 'docs/**'
+  #     - '.github/**'
+  #     - '.git**'
+  #     - '**.md'
+  #     - 'LICENSE'
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - v1
+  #   paths-ignore:
+  #     - 'docs/**'
+  #     - '.github/**'
+  #     - '.git**'
+  #     - '**.md'
+  #     - 'LICENSE'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'tag'
+        required: false
+        default: 'latest'
+        # use ${{ github.event.inputs.tag }}
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '*'
+
+      - name: Remove old Releases
+        uses: dev-drprasad/delete-older-releases@v0.3.4
+        with:
+          keep_latest: 0
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        run: |
+          # 编译
+          npm run build
+          # 压缩
+          zip -9 moneybookUI.zip dist/*
+          # 获取sha256 checksum
+          sha256sum moneybookUI.zip > SHA256SUMS.txt
+
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "moneybookUI.zip,SHA256SUMS.txt"
+          tag: "latest"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generateReleaseNotes: true
+          removeArtifacts: true
+          replacesArtifacts: true
+
+      - name: Remove old artifacts
+        uses: c-hive/gha-remove-artifacts@v1
+        with:
+          age: "0s"

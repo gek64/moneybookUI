@@ -6,8 +6,8 @@
   "scripts": {
     "init": "npx -y pnpm install",
     "update": "npx -y pnpm update",
-    "dev": "ng serve --configuration=development --host 127.0.0.1",
-    "start": "ng serve --configuration=production --host 127.0.0.1",
+    "dev": "ng serve --configuration=development --host 0.0.0.0",
+    "start": "ng serve --configuration=production --host 0.0.0.0",
     "dist": "ng build",
     "build": "node build"
   },

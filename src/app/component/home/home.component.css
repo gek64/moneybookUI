@@ -1,0 +1,21 @@
+.page {
+    height: 100%;
+    text-align: center;
+}
+
+.page a {
+    color: gray;
+}
+
+.logo {
+    color: #203451;
+    font-family: "Public Sans", sans-serif;
+    line-height: 1.5rem;
+}
+
+.logo h1 {
+    font-size: 3.5rem;
+    line-height: 3.5rem;
+    letter-spacing: -0.03em;
+}
+

@@ -4,7 +4,7 @@ on:
   # push:
   #   branches:
   #     - main
-  #     - v1
+  #     - angular
   #   paths-ignore:
   #     - 'docs/**'
   #     - '.github/**'
@@ -14,7 +14,7 @@ on:
   # pull_request:
   #   branches:
   #     - main
-  #     - v1
+  #     - angular
   #   paths-ignore:
   #     - 'docs/**'
   #     - '.github/**'

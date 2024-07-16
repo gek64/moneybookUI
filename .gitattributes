@@ -1,0 +1,6 @@
+* text=auto
+*.sh text eol=lf
+*.bat text eol=crlf
+
+# 默认所有文本文件使用LF
+#* text eol=lf

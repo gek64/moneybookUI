@@ -1,22 +1,23 @@
 <app-component-transaction-editor #editor (editorResult)="getEditorResult($event)"></app-component-transaction-editor>
 
 <div nz-flex nzGap="small" nzVertical>
+    <!--按钮区域-->
     <div nz-flex nzJustify="space-between">
         <div nz-flex nzGap="small">
             <button
-                    (click)="selectAllItemsButton()"
-                    [disabled]="setOfCheckedItems.size === listOfData.length"
-                    [nzLoading]="loading"
+                    (click)="selectAllButton()"
+                    [disabled]="selectedIds.size === data.length"
+                    [nzLoading]="isLoading"
                     nz-button
             >
                 全选
             </button>
 
-            <nz-badge [nzCount]="setOfCheckedItems.size">
+            <nz-badge [nzCount]="selectedIds.size">
                 <button
-                        (click)="clearSetOfCheckedItemsButton()"
-                        [disabled]="setOfCheckedItems.size === 0"
-                        [nzLoading]="loading"
+                        (click)="clearButton()"
+                        [disabled]="selectedIds.size === 0"
+                        [nzLoading]="isLoading"
                         nz-button>
                     清除
                 </button>
@@ -24,19 +25,19 @@
         </div>
         <div nz-flex nzGap="small">
             <button
-                    (click)="deleteTransactions()"
-                    [disabled]="setOfCheckedItems.size === 0"
+                    (click)="deleteButton()"
+                    [disabled]="selectedIds.size === 0"
                     [nzDanger]="true"
-                    [nzLoading]="loading"
+                    [nzLoading]="isLoading"
                     nz-button
                     nzType="primary"
             >
                 删除
             </button>
             <button
-                    (click)="editTypeButton()"
-                    [disabled]="setOfCheckedItems.size !== 1"
-                    [nzLoading]="loading"
+                    (click)="modifyButton()"
+                    [disabled]="selectedIds.size !== 1"
+                    [nzLoading]="isLoading"
                     nz-button
                     nzType="primary"
             >
@@ -44,7 +45,7 @@
             </button>
             <button
                     (click)="createTypeButton()"
-                    [nzLoading]="loading"
+                    [nzLoading]="isLoading"
                     nz-button
                     nzType="primary"
             >
@@ -52,32 +53,28 @@
             </button>
         </div>
     </div>
+    <!--数据展示表格区域-->
     <nz-table
-        #rowSelectionTable
-        (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
-        [nzData]="listOfData"
-        [nzLoading]="loading"
-        [nzShowPagination]="true"
-        [nzShowSizeChanger]="true">
-
+        #table nzShowSizeChanger [nzData]="data" [nzLoading]="isLoading"
+        (nzCurrentPageDataChange)="onCurrentPageDataChange($event)">
+        <!--表头-->
         <thead>
         <tr>
-            <th (nzCheckedChange)="onAllChecked($event)" [(nzChecked)]="checkedAll" [nzIndeterminate]="indeterminate">
-            </th>
-            <th *ngFor="let column of tableHeaderColumns"
-                [nzSortDirections]="column.sortDirections"
-                [nzSortFn]="column.sortFn"
-                [nzSortOrder]="column.sortOrder"
-                [nzSortPriority]="column.priority">
-                {{ column.name }}
+            <!--全选框-->
+            <th (nzCheckedChange)="checkAllBox($event)" [nzChecked]="selectAll" [nzIndeterminate]="selectSome"></th>
+            <!--表头每一栏-->
+            <th *ngFor="let tableHeader of tableHeaders"
+                [nzSortDirections]="tableHeader.sortDirections" [nzSortFn]="tableHeader.sortFn"
+                [nzSortOrder]="tableHeader.sortOrder" [nzSortPriority]="tableHeader.priority">
+                {{ tableHeader.name }}
             </th>
         </tr>
         </thead>
-
+        <!--表数据-->
         <tbody>
-        <tr *ngFor="let transaction of rowSelectionTable.data">
-            <td (nzCheckedChange)="onItemChecked(transaction.id,$event)"
-                [nzChecked]="setOfCheckedItems.has(transaction.id)">
+        <tr *ngFor="let transaction of table.data">
+            <td (nzCheckedChange)="checkItemBox($event,transaction)"
+                [nzChecked]="selectedIds.has(transaction.id)">
             </td>
             <td>{{ transaction.title }}</td>
             <td>{{ transaction.type.name }}</td>

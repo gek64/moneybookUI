@@ -23,7 +23,7 @@ interface TRANSACTION_OUTPUT extends TRANSACTION {
     ProductOnTransaction?: { product: PRODUCT }[]
 }
 
-interface transaction_column_item {
+interface transaction_table_header {
     name: string
     sortOrder: NzTableSortOrder | null
     sortFn: NzTableSortFn<TRANSACTION> | null
@@ -34,7 +34,7 @@ interface transaction_column_item {
     filterMultiple?: boolean
 }
 
-let TransactionColumns: transaction_column_item[] = [
+let TransactionTableHeaders: transaction_table_header[] = [
     {
         name: "标题",
         sortOrder: null,
@@ -98,5 +98,5 @@ export {
     TRANSACTION,
     TRANSACTION_INPUT,
     TRANSACTION_OUTPUT,
-    TransactionColumns
+    TransactionTableHeaders
 }

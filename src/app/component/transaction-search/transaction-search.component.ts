@@ -8,7 +8,7 @@ import {
     TRANSACTION,
     TRANSACTION_INPUT,
     TRANSACTION_OUTPUT,
-    TransactionColumns
+    TransactionTableHeaders
 } from "../../share/definition/transaction"
 import {TransactionEditorComponent} from "../transaction-editor/transaction-editor.component"
 import {PRODUCT} from "../../share/definition/product"
@@ -34,7 +34,7 @@ export class TransactionSearchComponent implements OnInit {
     listOfData: readonly TRANSACTION_OUTPUT[] = []
     listOfCurrentPageData: readonly TRANSACTION_OUTPUT[] = []
     setOfCheckedItems = new Set<string>()
-    tableHeaderColumns = TransactionColumns
+    tableHeaderColumns = TransactionTableHeaders
     allTransactions: readonly TRANSACTION_OUTPUT[] = []
     allProducts: readonly PRODUCT[] = []
     allTypes: readonly  TYPE[] = []

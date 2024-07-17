@@ -8,7 +8,7 @@ import {
     TRANSACTION,
     TRANSACTION_INPUT,
     TRANSACTION_OUTPUT,
-    TransactionColumns
+    TransactionTableHeaders
 } from "../../share/definition/transaction"
 
 
@@ -19,16 +19,28 @@ import {
 })
 
 export class TransactionComponent implements OnInit {
-    // 子组件观察器
+    // 编辑器子组件观察器
     @ViewChild("editor")
     editor: TransactionEditorComponent
-    checkedAll = false
-    indeterminate = false
-    loading = false
-    listOfData: readonly TRANSACTION_OUTPUT[] = []
-    listOfCurrentPageData: readonly TRANSACTION_OUTPUT[] = []
-    setOfCheckedItems = new Set<string>()
-    tableHeaderColumns = TransactionColumns
+
+    // 表头全选框变量
+    // 是否全选
+    selectAll = false
+    // 是否部分选择
+    selectSome = false
+    // 被选中的所有的id
+    selectedIds = new Set<string>()
+
+    // 表内容变量
+    // 表中所有数据
+    data: TRANSACTION_OUTPUT[] = []
+    // 当前页面中表的数据(随着页码,页面大小变化)
+    dataCurrentPage: TRANSACTION_OUTPUT[] = []
+    // 是否显示加载状态
+    isLoading = false
+
+
+    tableHeaders = TransactionTableHeaders
 
     constructor(private transactionService: TransactionService, private message: NzMessageService) {
     }
@@ -40,7 +52,7 @@ export class TransactionComponent implements OnInit {
 
     // 数据库操作
     createTransaction(t: TRANSACTION_INPUT) {
-        this.loading = true
+        this.isLoading = true
 
         this.transactionService.createTransaction(t)
             .pipe(retry(3), catchError(this.handleError))
@@ -52,11 +64,11 @@ export class TransactionComponent implements OnInit {
                 },
                 error: (err: HttpErrorResponse) => this.message.error(err.message)
             })
-            .add(() => this.loading = false)
+            .add(() => this.isLoading = false)
     }
 
     updateTransaction(t: TRANSACTION_INPUT) {
-        this.loading = true
+        this.isLoading = true
 
         this.transactionService.updateTransaction(t)
             .pipe(retry(3), catchError(this.handleError))
@@ -68,29 +80,29 @@ export class TransactionComponent implements OnInit {
                 },
                 error: (err: HttpErrorResponse) => this.message.error(err.message)
             })
-            .add(() => this.loading = false)
+            .add(() => this.isLoading = false)
     }
 
     deleteTransactions() {
-        this.loading = true
+        this.isLoading = true
 
-        this.transactionService.deleteTransactions([...this.setOfCheckedItems])
+        this.transactionService.deleteTransactions([...this.selectedIds])
             .pipe(retry(3), catchError(this.handleError))
             .subscribe({
                 next: resp => {
                     if (resp.count > 0) {
-                        this.listOfData = this.listOfData.filter(item => !this.setOfCheckedItems.has(item.id))
-                        this.setOfCheckedItems.clear()
+                        this.data = this.data.filter(item => !this.selectedIds.has(item.id))
+                        this.selectedIds.clear()
                         this.message.success("deleted successfully")
                     }
                 },
                 error: (err: HttpErrorResponse) => this.message.error(err.message)
             })
-            .add(() => this.loading = false)
+            .add(() => this.isLoading = false)
     }
 
     readTransactions() {
-        this.loading = true
+        this.isLoading = true
 
         this.transactionService.readTransactions()
             .pipe(retry(3), catchError(this.handleError))
@@ -100,31 +112,45 @@ export class TransactionComponent implements OnInit {
                     ts.forEach((t, i) => {
                         ts[i].datetime = new Date(Date.parse(t.datetime as unknown as string))
                     })
-                    this.listOfData = ts
+                    this.data = ts
                 },
                 error: (err: HttpErrorResponse) => this.message.error(err.message)
             })
-            .add(() => this.loading = false)
+            .add(() => this.isLoading = false)
     }
 
-    // 中间功能
-    refreshCheckedAllStatus() {
-        this.checkedAll = this.listOfCurrentPageData.every(item => this.setOfCheckedItems.has(item.id))
-        this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
+    // 表格中当前页的数据发生改变时刷新变量状态
+    onCurrentPageDataChange($event: readonly TRANSACTION[]) {
+        this.dataCurrentPage = [].concat($event)
+        this.refreshCheckBoxStatus()
     }
 
-    onCurrentPageDataChange(listOfCurrentPageData: readonly TRANSACTION[]) {
-        this.listOfCurrentPageData = listOfCurrentPageData
-        this.refreshCheckedAllStatus()
-    }
-
-    updateCheckedSet(id: string, checked: boolean) {
-        if (checked) {
-            this.setOfCheckedItems.add(id)
+    // 表头全选框
+    checkAllBox($event: boolean) {
+        if ($event) {
+            this.dataCurrentPage.forEach(t => this.selectedIds.add(t.id))
         } else {
-            this.setOfCheckedItems.delete(id)
+            this.dataCurrentPage.forEach(t => this.selectedIds.delete(t.id))
         }
+        this.refreshCheckBoxStatus()
     }
+
+    // 表中数据选框
+    checkItemBox($event: boolean, item: TRANSACTION_INPUT) {
+        if ($event) {
+            this.selectedIds.add(item.id)
+        } else {
+            this.selectedIds.delete(item.id)
+        }
+        this.refreshCheckBoxStatus()
+    }
+
+    // 刷新选择框的状态
+    refreshCheckBoxStatus() {
+        this.selectAll = this.dataCurrentPage.every(item => this.selectedIds.has(item.id))
+        this.selectSome = this.dataCurrentPage.some(item => this.selectedIds.has(item.id)) && !this.selectAll
+    }
+
 
     getEditorResult(e: TRANSACTION_INPUT) {
         if (e.id !== undefined) {
@@ -134,31 +160,29 @@ export class TransactionComponent implements OnInit {
         }
     }
 
-    // 按键
-    onItemChecked(id: string, checked: boolean) {
-        this.updateCheckedSet(id, checked)
-        this.refreshCheckedAllStatus()
+    // 全选按钮
+    selectAllButton() {
+        this.data.forEach(t => this.selectedIds.add(t.id))
+        this.refreshCheckBoxStatus()
     }
 
-    onAllChecked(checked: boolean) {
-        this.listOfCurrentPageData
-            .forEach(({id}) => this.updateCheckedSet(id, checked))
-        this.refreshCheckedAllStatus()
+    // 清除按钮
+    clearButton() {
+        this.selectedIds.clear()
+        this.refreshCheckBoxStatus()
     }
 
-    clearSetOfCheckedItemsButton() {
-        this.setOfCheckedItems.clear()
-        this.checkedAll = false
-        this.refreshCheckedAllStatus()
+    // 删除按钮
+    deleteButton() {
+        this.deleteTransactions()
     }
 
-    selectAllItemsButton() {
-        this.listOfData.forEach(t => this.setOfCheckedItems.add(t.id))
-        this.refreshCheckedAllStatus()
-    }
-
-    editTypeButton() {
-        let ts = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
+    // 修改按钮
+    modifyButton() {
+        if (this.selectedIds.size == 1) {
+            this.data.
+        }
+        let ts = this.data.filter(item => this.selectedIds.has(item.id))
         if (ts.length === 1) {
             this.editor.showModal(ts[0])
         }

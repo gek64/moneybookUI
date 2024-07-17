@@ -23,6 +23,9 @@ export class TransactionComponent implements OnInit {
     @ViewChild("editor")
     editor: TransactionEditorComponent
 
+    // 表头变量
+    tableHeaders = TransactionTableHeaders
+
     // 表头全选框变量
     // 是否全选
     selectAll = false
@@ -39,84 +42,13 @@ export class TransactionComponent implements OnInit {
     // 是否显示加载状态
     isLoading = false
 
-
-    tableHeaders = TransactionTableHeaders
-
+    // 构筑函数,用于注册服务
     constructor(private transactionService: TransactionService, private message: NzMessageService) {
     }
 
     // 生命周期
     ngOnInit() {
         this.readTransactions()
-    }
-
-    // 数据库操作
-    createTransaction(t: TRANSACTION_INPUT) {
-        this.isLoading = true
-
-        this.transactionService.createTransaction(t)
-            .pipe(retry(3), catchError(this.handleError))
-            .subscribe({
-                next: (resp: TRANSACTION) => {
-                    if (resp.id !== undefined) {
-                        this.readTransactions()
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.isLoading = false)
-    }
-
-    updateTransaction(t: TRANSACTION_INPUT) {
-        this.isLoading = true
-
-        this.transactionService.updateTransaction(t)
-            .pipe(retry(3), catchError(this.handleError))
-            .subscribe({
-                next: (resp: TRANSACTION) => {
-                    if (resp.id !== undefined) {
-                        this.readTransactions()
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.isLoading = false)
-    }
-
-    deleteTransactions() {
-        this.isLoading = true
-
-        this.transactionService.deleteTransactions([...this.selectedIds])
-            .pipe(retry(3), catchError(this.handleError))
-            .subscribe({
-                next: resp => {
-                    if (resp.count > 0) {
-                        this.data = this.data.filter(item => !this.selectedIds.has(item.id))
-                        this.selectedIds.clear()
-                        this.message.success("deleted successfully")
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.isLoading = false)
-    }
-
-    readTransactions() {
-        this.isLoading = true
-
-        this.transactionService.readTransactions()
-            .pipe(retry(3), catchError(this.handleError))
-            .subscribe({
-                next: (ts) => {
-                    // 获取到的日期为字符串,需要处理每一条交易数据中的日期
-                    ts.forEach((t, i) => {
-                        ts[i].datetime = new Date(Date.parse(t.datetime as unknown as string))
-                    })
-                    this.data = ts
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.isLoading = false)
     }
 
     // 表格中当前页的数据发生改变时刷新变量状态
@@ -151,15 +83,6 @@ export class TransactionComponent implements OnInit {
         this.selectSome = this.dataCurrentPage.some(item => this.selectedIds.has(item.id)) && !this.selectAll
     }
 
-
-    getEditorResult(e: TRANSACTION_INPUT) {
-        if (e.id !== undefined) {
-            this.updateTransaction(e)
-        } else {
-            this.createTransaction(e)
-        }
-    }
-
     // 全选按钮
     selectAllButton() {
         this.data.forEach(t => this.selectedIds.add(t.id))
@@ -179,37 +102,91 @@ export class TransactionComponent implements OnInit {
 
     // 修改按钮
     modifyButton() {
-        if (this.selectedIds.size == 1) {
-            this.data.
-        }
         let ts = this.data.filter(item => this.selectedIds.has(item.id))
-        if (ts.length === 1) {
+        if (ts.length == 1) {
             this.editor.showModal(ts[0])
         }
     }
 
-    createTypeButton() {
-        this.editor.showModal(undefined)
+    // 创建按钮
+    createButton() {
+        this.editor.showModal()
     }
 
+    // 表对应的数据库操作
+    createTransaction(t: TRANSACTION_INPUT) {
+        this.isLoading = true
 
-    // 网络请求
-    private handleError(error: HttpErrorResponse) {
-        let err: string
+        this.transactionService.createTransaction(t)
+            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
+            .subscribe({
+                next: (resp: TRANSACTION) => {
+                    if (resp.id !== undefined) {
+                        this.readTransactions()
+                    }
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.isLoading = false)
+    }
 
-        if (error.status === 0) {
-            // A client-side or network error occurred. Handle it accordingly.
-            err = `Network error occurred, Message: ${error.error}`
+    updateTransaction(t: TRANSACTION_INPUT) {
+        this.isLoading = true
+
+        this.transactionService.updateTransaction(t)
+            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
+            .subscribe({
+                next: (resp: TRANSACTION) => {
+                    if (resp.id !== undefined) {
+                        this.readTransactions()
+                    }
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.isLoading = false)
+    }
+
+    deleteTransactions() {
+        this.isLoading = true
+
+        this.transactionService.deleteTransactions([...this.selectedIds])
+            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
+            .subscribe({
+                next: resp => {
+                    if (resp.count > 0) {
+                        this.data = this.data.filter(item => !this.selectedIds.has(item.id))
+                        this.selectedIds.clear()
+                        this.message.success("deleted successfully")
+                    }
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.isLoading = false)
+    }
+
+    readTransactions() {
+        this.isLoading = true
+
+        this.transactionService.readTransactions()
+            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
+            .subscribe({
+                next: (ts) => {
+                    // 获取到的日期为字符串,需要处理每一条交易数据中的日期
+                    ts.forEach((t, i) => {
+                        ts[i].datetime = new Date(Date.parse(t.datetime as unknown as string))
+                    })
+                    this.data = ts
+                },
+                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            })
+            .add(() => this.isLoading = false)
+    }
+
+    getEditorResult(e: TRANSACTION_INPUT) {
+        if (e.id !== undefined) {
+            this.updateTransaction(e)
         } else {
-            // The backend returned an unsuccessful response code.
-            // The response body may contain clues as to what went wrong.
-            err = `Backend returned code ${error.status}, Message: ${error.error}`
+            this.createTransaction(e)
         }
-
-        // 控制台输出错误提示
-        console.error(err)
-
-        // Return an observable with a user-facing error message.
-        return throwError(() => new Error(err))
     }
 }

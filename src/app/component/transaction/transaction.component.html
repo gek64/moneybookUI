@@ -44,7 +44,7 @@
                 修改
             </button>
             <button
-                    (click)="createTypeButton()"
+                    (click)="createButton()"
                     [nzLoading]="isLoading"
                     nz-button
                     nzType="primary"
@@ -55,8 +55,8 @@
     </div>
     <!--数据展示表格区域-->
     <nz-table
-        #table nzShowSizeChanger [nzData]="data" [nzLoading]="isLoading"
-        (nzCurrentPageDataChange)="onCurrentPageDataChange($event)">
+        #table (nzCurrentPageDataChange)="onCurrentPageDataChange($event)" [nzData]="data" [nzLoading]="isLoading"
+        nzShowSizeChanger>
         <!--表头-->
         <thead>
         <tr>

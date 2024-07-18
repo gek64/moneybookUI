@@ -52,7 +52,7 @@ export class TransactionComponent implements OnInit {
     }
 
     // 表格中当前页的数据发生改变时刷新变量状态
-    onCurrentPageDataChange($event: readonly TRANSACTION[]) {
+    onCurrentPageDataChange($event: readonly TRANSACTION_OUTPUT[]) {
         this.dataCurrentPage = [].concat($event)
         this.refreshCheckBoxStatus()
     }

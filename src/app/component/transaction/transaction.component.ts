@@ -182,11 +182,12 @@ export class TransactionComponent implements OnInit {
             .add(() => this.isLoading = false)
     }
 
-    getEditorResult(e: TRANSACTION_INPUT) {
-        if (e.id !== undefined) {
-            this.updateTransaction(e)
+    // 处理子组件观察期传回来数据
+    getEditorResult($event: TRANSACTION_INPUT) {
+        if ($event.id !== undefined) {
+            this.updateTransaction($event)
         } else {
-            this.createTransaction(e)
+            this.createTransaction($event)
         }
     }
 }

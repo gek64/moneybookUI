@@ -1,24 +1,16 @@
 import {Pipe, PipeTransform} from "@angular/core"
-import {TRANSACTION_STATUS, TransactionStatus} from "../share/definition/transactionStatus"
+import {TransactionStatus} from "../share/definition/transactionStatus"
 
 @Pipe({
     name: "status"
 })
 export class StatusPipe implements PipeTransform {
-    transform(value: string, args?: TRANSACTION_STATUS[]): string {
-        let transactionStatuses: TRANSACTION_STATUS[]
-
-        if (args != undefined) {
-            transactionStatuses = args
-        } else {
-            transactionStatuses = TransactionStatus
-        }
-        for (const i of transactionStatuses) {
-            if (i.value == value) {
-                return i.key
+    transform($status: string): string {
+        for (const t of TransactionStatus) {
+            if ($status == t.value) {
+                return t.key
             }
         }
-
-        return value
+        return $status
     }
 }

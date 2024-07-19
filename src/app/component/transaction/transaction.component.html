@@ -2,87 +2,59 @@
 
 <div nz-flex nzGap="small" nzVertical>
     <!--按钮区域-->
-    <div nz-flex nzJustify="space-between">
+    <div nz-flex nzJustify="space-between" nzGap="small">
         <div nz-flex nzGap="small">
-            <button
-                    (click)="selectAllButton()"
-                    [disabled]="selectedIds.size === data.length"
-                    [nzLoading]="isLoading"
-                    nz-button
-            >
+            <button nz-button [disabled]="selectedIds.size === data.length" [nzLoading]="isLoading"
+                    (click)="selectAllButton()">
                 全选
             </button>
-
-            <nz-badge [nzCount]="selectedIds.size">
-                <button
-                        (click)="clearButton()"
-                        [disabled]="selectedIds.size === 0"
-                        [nzLoading]="isLoading"
-                        nz-button>
+            <nz-badge [nzCount]="selectedIds.size" [nzOverflowCount]="999">
+                <button nz-button [disabled]="selectedIds.size === 0" [nzLoading]="isLoading"
+                        (click)="clearButton()">
                     清除
                 </button>
             </nz-badge>
         </div>
         <div nz-flex nzGap="small">
-            <button
-                    (click)="deleteButton()"
-                    [disabled]="selectedIds.size === 0"
-                    [nzDanger]="true"
-                    [nzLoading]="isLoading"
-                    nz-button
-                    nzType="primary"
-            >
+            <button nz-button nzType="primary" nzDanger [disabled]="selectedIds.size === 0" [nzLoading]="isLoading"
+                    (click)="deleteButton()">
                 删除
             </button>
-            <button
-                    (click)="modifyButton()"
-                    [disabled]="selectedIds.size !== 1"
-                    [nzLoading]="isLoading"
-                    nz-button
-                    nzType="primary"
-            >
+            <button nz-button nzType="primary" [disabled]="selectedIds.size !== 1" [nzLoading]="isLoading"
+                    (click)="modifyButton()">
                 修改
             </button>
-            <button
-                    (click)="createButton()"
-                    [nzLoading]="isLoading"
-                    nz-button
-                    nzType="primary"
-            >
+            <button nz-button nzType="primary" [nzLoading]="isLoading"
+                    (click)="createButton()">
                 新建
             </button>
         </div>
     </div>
     <!--数据展示表格区域-->
-    <nz-table
-        #table (nzCurrentPageDataChange)="onCurrentPageDataChange($event)" [nzData]="data" [nzLoading]="isLoading"
-        nzShowSizeChanger>
+    <nz-table #table nzShowSizeChanger [nzData]="data" [nzLoading]="isLoading"
+              (nzCurrentPageDataChange)="onCurrentPageDataChange($event)">
         <!--表头-->
         <thead>
         <tr>
             <!--全选框-->
             <th (nzCheckedChange)="checkAllBox($event)" [nzChecked]="selectAll" [nzIndeterminate]="selectSome"></th>
             <!--表头每一栏-->
-            <th *ngFor="let tableHeader of tableHeaders"
-                [nzSortDirections]="tableHeader.sortDirections" [nzSortFn]="tableHeader.sortFn"
-                [nzSortOrder]="tableHeader.sortOrder" [nzSortPriority]="tableHeader.priority">
-                {{ tableHeader.name }}
+            <th *ngFor="let h of tableHeaders" [nzSortDirections]="h.sortDirections" [nzSortFn]="h.sortFn"
+                [nzSortOrder]="h.sortOrder" [nzSortPriority]="h.priority">
+                {{ h.name }}
             </th>
         </tr>
         </thead>
         <!--表数据-->
         <tbody>
-        <tr *ngFor="let transaction of table.data">
-            <td (nzCheckedChange)="checkItemBox($event,transaction)"
-                [nzChecked]="selectedIds.has(transaction.id)">
-            </td>
-            <td>{{ transaction.title }}</td>
-            <td>{{ transaction.type.name }}</td>
-            <td>{{ transaction.account.name }}</td>
-            <td>{{ transaction.amount }}</td>
-            <!--https://angular.cn/api/common/DatePipe-->
-            <td>{{ transaction.datetime| date:"short":"+0800":"zh" }}</td>
-            <td>{{ transaction.status | status }}</td>
+        <tr *ngFor="let t of table.data">
+            <td (nzCheckedChange)="checkItemBox($event,t)" [nzChecked]="selectedIds.has(t.id)"></td>
+            <td>{{ t.title }}</td>
+            <td>{{ t.type.name }}</td>
+            <td>{{ t.account.name }}</td>
+            <td>{{ t.amount }}</td>
+            <td>{{ t.datetime| date:"short":"+0800":"zh" }}</td>
+            <td>{{ t.status | status }}</td>
         </tr>
         </tbody>
     </nz-table>

@@ -72,7 +72,7 @@ export class TransactionSearchComponent implements OnInit {
         this.loading = true
 
         this.transactionService.patchTransactionsStatus(Array.from(this.setOfCheckedItems), status)
-            .pipe(retry(3), catchError(this.handleError))
+            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
             .subscribe({
                 next: (resp) => {
                     if (resp.count != undefined && resp.count != 0) {
@@ -94,7 +94,7 @@ export class TransactionSearchComponent implements OnInit {
         this.loading = true
 
         this.transactionService.updateTransaction(t)
-            .pipe(retry(3), catchError(this.handleError))
+            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
             .subscribe({
                 next: (resp: TRANSACTION) => {
                     if (resp.id !== undefined) {
@@ -110,7 +110,7 @@ export class TransactionSearchComponent implements OnInit {
         this.loading = true
 
         this.transactionService.deleteTransactions([...this.setOfCheckedItems])
-            .pipe(retry(3), catchError(this.handleError))
+            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
             .subscribe({
                 next: resp => {
                     if (resp.count > 0) {
@@ -128,7 +128,7 @@ export class TransactionSearchComponent implements OnInit {
         this.loading = true
 
         this.transactionService.readTransactions()
-            .pipe(retry(3), catchError(this.handleError))
+            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
             .subscribe({
                 next: function (resp) {
                     resp.forEach(function (transaction, index) {
@@ -143,7 +143,7 @@ export class TransactionSearchComponent implements OnInit {
 
     readProducts() {
         this.productService.readProducts()
-            .pipe(retry(3), catchError(this.handleError))
+            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
             .subscribe({
                 next: (resp) => {
                     this.allProducts = resp
@@ -154,7 +154,7 @@ export class TransactionSearchComponent implements OnInit {
 
     readTypes() {
         this.typeService.readTypes()
-            .pipe(retry(3), catchError(this.handleError))
+            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
             .subscribe({
                 next: (resp) => {
                     this.allTypes = resp
@@ -165,7 +165,7 @@ export class TransactionSearchComponent implements OnInit {
 
     readAccounts() {
         this.accountService.readAccounts()
-            .pipe(retry(3), catchError(this.handleError))
+            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
             .subscribe({
                 next: (resp) => {
                     this.allAccounts = resp
@@ -204,7 +204,7 @@ export class TransactionSearchComponent implements OnInit {
         // 服务端筛选
         this.selectedAmount = 0
         this.transactionService.readTransactionsWithConditions(undefined, this.selectedKeyword, this.selectedProducts?.map(p => p.id), this.selectedTypes?.map(t => t.id), this.selectedAccounts?.map(a => a.id), this.selectedDatetime[0]?.toString(), this?.selectedDatetime[1]?.toString(), this.selectedStatus?.map(s => s.value))
-            .pipe(retry(1), catchError(this.handleError))
+            .pipe(retry(1), catchError($error => throwError(() => new Error($error.error()))))
             .subscribe({
                 next: (resp) => {
                     this.listOfData = resp
@@ -218,50 +218,6 @@ export class TransactionSearchComponent implements OnInit {
                 error: (err: HttpErrorResponse) => this.message.error(err.message)
             })
             .add(() => this.loading = false)
-
-        // 客户端筛选
-        // this.listOfData = this.allTransactions.filter((transaction) => {
-        //     let isProduct: boolean, isType: boolean, isAccount: boolean, isStatus: boolean, isDatetime: boolean
-        //
-        //     if (this.selectedProducts.length == 0) {
-        //         isProduct = true
-        //     } else {
-        //         isProduct = transaction.ProductOnTransaction.map(p => p.product.id).some(id => this.selectedProducts.some(product => product.id == id))
-        //     }
-        //
-        //     if (this.selectedTypes.length == 0) {
-        //         isType = true
-        //     } else {
-        //         isType = this.selectedTypes.some((type) => type.id == transaction.typeId)
-        //     }
-        //
-        //     if (this.selectedAccounts.length == 0) {
-        //         isAccount = true
-        //     } else {
-        //         isAccount = this.selectedAccounts.some((account) => account.id == transaction.accountId)
-        //     }
-        //
-        //     if (this.selectedStatus.length == 0) {
-        //         isStatus = true
-        //     } else {
-        //         isStatus = this.selectedStatus.some((status) => status.value == transaction.status)
-        //     }
-        //
-        //     if (this.selectedDatetime.length < 2) {
-        //         isDatetime = true
-        //     } else {
-        //         // 将日期选择器的时间毫秒位设置为0
-        //         let time1 = new Date(this.selectedDatetime[0].setMilliseconds(0))
-        //         let time2 = new Date(this.selectedDatetime[1].setMilliseconds(0))
-        //         isDatetime = time1 <= transaction.datetime && transaction.datetime <= time2
-        //     }
-        //     return isProduct && isType && isAccount && isStatus && isDatetime
-        // })
-        //
-        // this.selectedAmount = 0
-        // this.listOfData.forEach((transaction, index) => {
-        //     this.selectedAmount += transaction.amount
-        // })
     }
 
     editTypeButton() {
@@ -306,25 +262,5 @@ export class TransactionSearchComponent implements OnInit {
 
     isStatusNotSelected(value: { key: string, value: string }): boolean {
         return this.selectedStatus.indexOf(value) === -1
-    }
-
-    // 网络请求
-    private handleError(error: HttpErrorResponse) {
-        let err: string
-
-        if (error.status === 0) {
-            // A client-side or network error occurred. Handle it accordingly.
-            err = `Network error occurred, Message: ${error.error}`
-        } else {
-            // The backend returned an unsuccessful response code.
-            // The response body may contain clues as to what went wrong.
-            err = `Backend returned code ${error.status}, Message: ${error.error}`
-        }
-
-        // 控制台输出错误提示
-        console.error(err)
-
-        // Return an observable with a user-facing error message.
-        return throwError(() => new Error(err))
     }
 }

@@ -1,10 +1,9 @@
 import {Component, OnInit, ViewChild} from "@angular/core"
-import {NzMessageService} from "ng-zorro-antd/message"
-import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
+import {NzMessageService} from "ng-zorro-antd/message"
+import {ACCOUNT, AccountTableHeaders} from "../../share/definition/account"
 import {AccountEditorComponent} from "../account-editor/account-editor.component"
 import {AccountService} from "../../service/account.service"
-import {ACCOUNT, AccountColumns} from "../../share/definition/account"
 
 @Component({
     selector: "app-component-account",
@@ -13,183 +12,139 @@ import {ACCOUNT, AccountColumns} from "../../share/definition/account"
 })
 
 export class AccountComponent implements OnInit {
-    // 子组件观察器
+    // 编辑器子组件观察器
     @ViewChild("editor")
     editor: AccountEditorComponent
-    checkedAll = false
-    indeterminate = false
-    loading = false
-    listOfData: readonly ACCOUNT[] = []
-    listOfCurrentPageData: readonly ACCOUNT[] = []
-    setOfCheckedItems = new Set<string>()
-    tableHeaderColumns = AccountColumns
 
+    // 表头变量
+    tableHeaders = AccountTableHeaders
+
+    // 表头全选框变量
+    // 是否全选
+    selectAll = false
+    // 是否部分选择
+    selectSome = false
+    // 被选中的所有的id
+    selectedIds = new Set<string>()
+
+    // 表内容变量
+    // 表中所有数据
+    data: ACCOUNT[] = []
+    // 当前页面中表的数据(随着页码,页面大小变化)
+    dataCurrentPage: ACCOUNT[] = []
+    // 是否显示加载状态
+    isLoading = false
+
+    // 构筑函数,用于注册服务
     constructor(private accountService: AccountService, private message: NzMessageService) {
     }
 
     // 生命周期
-    ngOnInit() {
-        this.getAccounts()
+    async ngOnInit() {
+        await this.readData()
     }
 
-    // 中间功能
-    refreshCheckedAllStatus() {
-        this.checkedAll = this.listOfCurrentPageData.every(item => this.setOfCheckedItems.has(item.id))
-        this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
+    // 表格中当前页的数据发生改变时刷新变量状态
+    onCurrentPageDataChange($event: readonly ACCOUNT[]) {
+        this.dataCurrentPage = [].concat($event)
+        this.refreshCheckBoxStatus()
     }
 
-    onCurrentPageDataChange(listOfCurrentPageData: readonly ACCOUNT[]) {
-        this.listOfCurrentPageData = listOfCurrentPageData
-        this.refreshCheckedAllStatus()
-    }
-
-    updateCheckedSet(id: string, checked: boolean) {
-        if (checked) {
-            this.setOfCheckedItems.add(id)
+    // 表头全选框
+    checkAllBox($event: boolean) {
+        if ($event) {
+            this.dataCurrentPage.forEach(t => this.selectedIds.add(t.id))
         } else {
-            this.setOfCheckedItems.delete(id)
+            this.dataCurrentPage.forEach(t => this.selectedIds.delete(t.id))
         }
+        this.refreshCheckBoxStatus()
     }
 
-    getEditorResult(event: ACCOUNT) {
-        let newAccount: ACCOUNT = {funds: 0, number: "", type: "", id: undefined, name: ""}
-        Object.assign(newAccount, event)
-
-        if (newAccount.id !== undefined) {
-            this.updateAccount(event)
+    // 表中数据选框
+    checkItemBox($event: boolean, item: ACCOUNT) {
+        if ($event) {
+            this.selectedIds.add(item.id)
         } else {
-            this.createAccount(event)
+            this.selectedIds.delete(item.id)
+        }
+        this.refreshCheckBoxStatus()
+    }
+
+    // 刷新选择框的状态
+    refreshCheckBoxStatus() {
+        this.selectAll = this.dataCurrentPage.every(item => this.selectedIds.has(item.id))
+        this.selectSome = this.dataCurrentPage.some(item => this.selectedIds.has(item.id)) && !this.selectAll
+    }
+
+    // 全选按钮
+    selectAllButton() {
+        this.data.forEach(t => this.selectedIds.add(t.id))
+        this.refreshCheckBoxStatus()
+    }
+
+    // 清除按钮
+    clearButton() {
+        this.selectedIds.clear()
+        this.refreshCheckBoxStatus()
+    }
+
+    // 删除按钮
+    async deleteButton() {
+        await this.deleteData()
+    }
+
+    // 修改按钮
+    modifyButton() {
+        let ts = this.data.filter(item => this.selectedIds.has(item.id))
+        if (ts.length == 1) {
+            this.editor.showModal(ts[0])
         }
     }
 
-    // 按键
-    onItemChecked(id: string, checked: boolean) {
-        this.updateCheckedSet(id, checked)
-        this.refreshCheckedAllStatus()
+    // 创建按钮
+    createButton() {
+        this.editor.showModal()
     }
 
-    onAllChecked(checked: boolean) {
-        this.listOfCurrentPageData
-            .forEach(({id}) => this.updateCheckedSet(id, checked))
-        this.refreshCheckedAllStatus()
-    }
-
-    clearSetOfCheckedItems() {
-        this.setOfCheckedItems.clear()
-        this.checkedAll = false
-        this.refreshCheckedAllStatus()
-    }
-
-    selectAllItemsButton() {
-        this.listOfData.forEach(a => this.setOfCheckedItems.add(a.id))
-        this.refreshCheckedAllStatus()
-    }
-
-    editTypeButton() {
-        let accounts = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
-        if (accounts.length === 1) {
-            this.editor.showModal(accounts[0])
+    // 处理子组件观察期传回来数据
+    async getEditorResult($event: ACCOUNT) {
+        if ($event.id !== undefined) {
+            await this.updateData($event)
+        } else {
+            await this.createData($event)
         }
-    }
-
-    createTypeButton() {
-        this.editor.showModal(undefined)
     }
 
     // 网络请求
-    createAccount(newAccount: ACCOUNT) {
-        let pageThis = this
-        this.loading = true
-
-        this.accountService.createAccount(newAccount)
-            .pipe(retry(3), catchError(this.handleError))
-            .subscribe({
-                next: function (resp) {
-                    if (resp.id !== undefined) {
-                        pageThis.listOfData = pageThis.listOfData.concat(resp)
-                        pageThis.message.success("created successfully")
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.loading = false)
+    async createData(body: ACCOUNT) {
+        this.isLoading = true
+        await this.accountService.createAccount(body)
+            .then(a => this.data = this.data.concat(a))
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 
-    updateAccount(updateAccount: ACCOUNT) {
-        let pageThis = this
-        this.loading = true
-
-        this.accountService.updateAccount(updateAccount)
-            .pipe(retry(3), catchError(this.handleError))
-            .subscribe({
-                next: function (resp) {
-                    if (resp.id !== undefined) {
-                        pageThis.listOfData.forEach(function (account) {
-                            if (account.id == resp.id) {
-                                // 先筛选出不含更改项的所有数据
-                                let newData = pageThis.listOfData.filter(item => item.id != resp.id)
-                                // 将筛选出的数据添加修改后的更改项的数据
-                                pageThis.listOfData = newData.concat(resp)
-                            }
-                        })
-                        pageThis.message.success("updated successfully")
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.loading = false)
+    async updateData(body: ACCOUNT) {
+        this.isLoading = true
+        await this.accountService.updateAccount(body)
+            .then(async a => await this.readData())
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 
-    getAccounts() {
-        let pageThis = this
-        this.loading = true
-
-        this.accountService.readAccounts()
-            .pipe(retry(3), catchError(this.handleError))
-            .subscribe({
-                next: function (resp) {
-                    pageThis.listOfData = resp
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.loading = false)
+    async deleteData() {
+        this.isLoading = true
+        await this.accountService.deleteAccounts(this.selectedIds)
+            .then(async a => await this.readData())
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 
-    deleteAccounts() {
-        let pageThis = this
-        this.loading = true
-
-        this.accountService.deleteAccounts(this.setOfCheckedItems)
-            .pipe(retry(3), catchError(this.handleError))
-            .subscribe({
-                next: function (resp) {
-                    if (resp.count !== 0) {
-                        pageThis.listOfData = pageThis.listOfData.filter(item => !pageThis.setOfCheckedItems.has(item.id))
-                        pageThis.setOfCheckedItems.clear()
-                        pageThis.message.success("deleted successfully")
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.loading = false)
-    }
-
-    private handleError(error: HttpErrorResponse) {
-        let err: string
-
-        if (error.status === 0) {
-            // A client-side or network error occurred. Handle it accordingly.
-            err = `Network error occurred, Message: ${error.error}`
-        } else {
-            // The backend returned an unsuccessful response code.
-            // The response body may contain clues as to what went wrong.
-            err = `Backend returned code ${error.status}, Message: ${error.error}`
-        }
-
-        // 控制台输出错误提示
-        console.error(err)
-
-        // Return an observable with a user-facing error message.
-        return throwError(() => new Error(err))
+    async readData() {
+        this.isLoading = true
+        await this.accountService.readAccounts()
+            .then(as => this.data = [...as])
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 }

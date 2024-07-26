@@ -9,14 +9,14 @@ interface ACCOUNT {
     funds?: number
 }
 
-interface accountColumnItem {
+interface account_table_header {
     name: string
     sortOrder: NzTableSortOrder | null
     sortFn: NzTableSortFn<ACCOUNT> | null
     sortDirections: NzTableSortOrder[]
 }
 
-let AccountColumns: accountColumnItem[] = [
+let AccountTableHeaders: account_table_header[] = [
     {
         name: "名称",
         sortOrder: null,
@@ -71,5 +71,5 @@ let AccountColumns: accountColumnItem[] = [
 
 export {
     ACCOUNT,
-    AccountColumns,
+    AccountTableHeaders,
 }

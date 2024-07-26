@@ -46,7 +46,7 @@ export class TransactionEditorComponent implements OnInit {
     ngOnInit(): void {
         this.getProducts()
         this.getTypes()
-        this.getAccounts()
+        this.readAccounts()
     }
 
     nzSelectCompareFn(o1: any, o2: any) {
@@ -89,22 +89,10 @@ export class TransactionEditorComponent implements OnInit {
         })
     }
 
-    getAccounts() {
-        let pageThis = this
-        const req = this.accountService.readAccounts()
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
-
-        req.subscribe({
-            next: function (resp) {
-                pageThis.accounts = resp
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        })
+    async readAccounts() {
+        await this.accountService.readAccounts()
+            .then(as => this.accounts = [...as])
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
     }
 
     showModal(t?: TRANSACTION_OUTPUT): void {

@@ -113,6 +113,15 @@ export class TransactionComponent implements OnInit {
         this.editor.showModal()
     }
 
+    // 处理子组件观察期传回来数据
+    getEditorResult($event: TRANSACTION_INPUT) {
+        if ($event.id !== undefined) {
+            this.updateTransaction($event)
+        } else {
+            this.createTransaction($event)
+        }
+    }
+
     // 表对应的数据库操作
     createTransaction(t: TRANSACTION_INPUT) {
         this.isLoading = true
@@ -180,14 +189,5 @@ export class TransactionComponent implements OnInit {
                 error: (err: HttpErrorResponse) => this.message.error(err.message)
             })
             .add(() => this.isLoading = false)
-    }
-
-    // 处理子组件观察期传回来数据
-    getEditorResult($event: TRANSACTION_INPUT) {
-        if ($event.id !== undefined) {
-            this.updateTransaction($event)
-        } else {
-            this.createTransaction($event)
-        }
     }
 }

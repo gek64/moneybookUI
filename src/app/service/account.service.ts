@@ -1,40 +1,40 @@
 import {Injectable} from "@angular/core"
 import {HttpClient} from "@angular/common/http"
+import {lastValueFrom, retry} from "rxjs"
 import {ACCOUNT} from "../share/definition/account"
 import {environment} from "../app.component"
 
+
 @Injectable()
 export class AccountService {
-    server = environment.server
+    url1 = new URL("/account", environment.server).toString()
+    url2 = new URL("/accounts", environment.server).toString()
 
     constructor(private http: HttpClient) {
     }
 
-    createAccount(newAccount: ACCOUNT) {
-        return this.http.post<ACCOUNT>(new URL("/account", this.server).toString(), newAccount)
+    async createAccount(accountBody: ACCOUNT) {
+        return await lastValueFrom(this.http.post<ACCOUNT>(this.url1, accountBody).pipe(retry(3)))
+            .then(a => a)
+            .catch(error => Promise.reject(error))
     }
 
-    updateAccount(updateAccount: ACCOUNT) {
-        return this.http.put<ACCOUNT>(new URL("/account", this.server).toString(), updateAccount)
+    async updateAccount(accountBody: ACCOUNT) {
+        return await lastValueFrom(this.http.put<ACCOUNT>(this.url1, accountBody).pipe(retry(3)))
+            .then(a => a)
+            .catch(error => Promise.reject(error))
     }
 
-    readAccounts() {
-        return this.http.get<ACCOUNT[]>(new URL("/accounts", this.server).toString())
+    async readAccounts() {
+        return await lastValueFrom(this.http.get<ACCOUNT[]>(this.url2).pipe(retry(3)))
+            .then(a => a)
+            .catch(error => Promise.reject(error))
     }
 
-    deleteAccount(id: Set<string>) {
-        return this.http.delete<{ count: number }>(new URL("/account", this.server).toString(), {
-            params: {
-                "id": Array.from(id)
-            }
-        })
-    }
-
-    deleteAccounts(ids: Set<string>) {
-        return this.http.delete<{ count: number }>(new URL("/accounts", this.server).toString(), {
-            params: {
-                "ids": Array.from(ids)
-            }
-        })
+    async deleteAccounts(ids: Set<string>) {
+        return await lastValueFrom(this.http.delete<{ count: number }>
+        (this.url2, {params: {"ids": Array.from(ids)}}).pipe(retry(3)))
+            .then(resp => resp)
+            .catch(error => Promise.reject(error))
     }
 }

@@ -163,15 +163,11 @@ export class TransactionSearchComponent implements OnInit {
             })
     }
 
-    readAccounts() {
-        this.accountService.readAccounts()
-            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
-            .subscribe({
-                next: (resp) => {
-                    this.allAccounts = resp
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
+    async readAccounts() {
+        await this.accountService.readAccounts()
+            .then(as => this.allAccounts = [...as])
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.loading = false)
     }
 
     // 中间功能

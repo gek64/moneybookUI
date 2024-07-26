@@ -97,13 +97,13 @@ export class AccountComponent implements OnInit {
     modifyButton() {
         let ts = this.data.filter(item => this.selectedIds.has(item.id))
         if (ts.length == 1) {
-            this.editor.showModal(ts[0])
+            this.editor.show(ts[0])
         }
     }
 
     // 创建按钮
     createButton() {
-        this.editor.showModal()
+        this.editor.show()
     }
 
     // 处理子组件观察期传回来数据

@@ -8,43 +8,37 @@ import {ACCOUNT} from "../../share/definition/account"
     styleUrls: ["./account-editor.component.css"]
 })
 export class AccountEditorComponent {
+    // 对话框中数据
+    data: ACCOUNT = {id: "", name: "", number: "", type: "", funds: 0}
+
     isVisible = false
     title = ""
-    newAccount = new class implements ACCOUNT {
-        id: string
-        name: string
-        number?: string
-        type: string
-        funds?: number
-    }
+
 
     @Output() editorResult = new EventEmitter()
 
-    constructor() {
-    }
-
-    showModal(newAccount?: ACCOUNT): void {
+    show(newAccount?: ACCOUNT) {
         if (newAccount != undefined) {
             this.title = "Edit"
-            this.newAccount = Object.assign(this.newAccount, newAccount)
+            this.data = Object.assign(this.data, newAccount)
         } else {
             this.title = "Create"
-            this.newAccount.id = undefined
-            this.newAccount.name = undefined
-            this.newAccount.number = undefined
-            this.newAccount.type = undefined
-            this.newAccount.funds = undefined
+            this.data.id = undefined
+            this.data.name = undefined
+            this.data.number = undefined
+            this.data.type = undefined
+            this.data.funds = undefined
         }
         this.isVisible = true
     }
 
-    handleOk(): void {
+    ok() {
         // 将编辑器的结果传递给父组件
-        this.editorResult.emit(this.newAccount)
+        this.editorResult.emit(this.data)
         this.isVisible = false
     }
 
-    handleCancel(): void {
+    cancel() {
         this.isVisible = false
     }
 }

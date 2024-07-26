@@ -1,5 +1,5 @@
-<nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()" [(nzVisible)]="isVisible"
-          [nzOkDisabled]="newAccount.name == ''" [nzTitle]="title" nzWidth>
+<nz-modal (nzOnCancel)="cancel()" (nzOnOk)="ok()" [(nzVisible)]="isVisible"
+          [nzOkDisabled]="data.name == ''" [nzTitle]="title" nzWidth>
     <div *nzModalContent>
         <nz-table [nzData]="[{}]" [nzShowPagination]="false">
             <!--两行不显示的空表头-->
@@ -13,19 +13,19 @@
             <tbody>
             <tr>
                 <td>名称</td>
-                <td><input [(ngModel)]="newAccount.name" nz-input/></td>
+                <td><input [(ngModel)]="data.name" nz-input/></td>
             </tr>
             <tr>
                 <td>号码</td>
-                <td><input [(ngModel)]="newAccount.number" nz-input/></td>
+                <td><input [(ngModel)]="data.number" nz-input/></td>
             </tr>
             <tr>
                 <td>类型</td>
-                <td><input [(ngModel)]="newAccount.type" nz-input/></td>
+                <td><input [(ngModel)]="data.type" nz-input/></td>
             </tr>
             <tr>
                 <td>资金</td>
-                <td><input [(ngModel)]="newAccount.funds" nz-input type="number"/></td>
+                <td><input [(ngModel)]="data.funds" nz-input type="number"/></td>
             </tr>
             </tbody>
         </nz-table>

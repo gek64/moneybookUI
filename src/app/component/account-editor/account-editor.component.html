@@ -1,5 +1,7 @@
-<nz-modal (nzOnCancel)="cancel()" (nzOnOk)="ok()" [(nzVisible)]="isVisible"
-          [nzOkDisabled]="data.name == ''" [nzTitle]="title" nzWidth>
+<!--对话框-->
+<nz-modal [nzTitle]="title" nzWidth [(nzVisible)]="isVisible" [nzOkDisabled]="isDataOK()"
+          (nzOnOk)="okButton()" (nzOnCancel)="cancelButton()">
+    <!--对话框内容-->
     <div *nzModalContent>
         <nz-table [nzData]="[{}]" [nzShowPagination]="false">
             <!--两行不显示的空表头-->
@@ -9,7 +11,7 @@
                 <th></th>
             </tr>
             </thead>
-
+            <!--用于填写的表内容-->
             <tbody>
             <tr>
                 <td>名称</td>

@@ -72,8 +72,8 @@ export class AccountComponent implements OnInit {
 
     // 刷新选择框的状态
     refreshCheckBoxStatus() {
-        this.selectAll = this.dataCurrentPage.every(item => this.selectedIds.has(item.id))
-        this.selectSome = this.dataCurrentPage.some(item => this.selectedIds.has(item.id)) && !this.selectAll
+        this.selectAll = this.selectedIds.size > 0 && this.dataCurrentPage.every(item => this.selectedIds.has(item.id))
+        this.selectSome = this.selectedIds.size > 0 && this.dataCurrentPage.some(item => this.selectedIds.has(item.id)) && !this.selectAll
     }
 
     // 全选按钮
@@ -107,7 +107,8 @@ export class AccountComponent implements OnInit {
     }
 
     // 处理子组件观察期传回来数据
-    async getEditorResult($event: ACCOUNT) {
+    async readEditorData($event: ACCOUNT) {
+        console.log($event)
         if ($event.id !== undefined) {
             await this.updateData($event)
         } else {

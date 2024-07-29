@@ -38,7 +38,7 @@ export class TransactionEditorComponent implements OnInit {
         type: undefined,
         typeId: undefined
     }
-    @Output() editorResult = new EventEmitter()
+    @Output() readEditorData = new EventEmitter()
 
     constructor(private productService: ProductService, private accountService: AccountService, private typeService: TypeService, private message: NzMessageService) {
     }
@@ -128,7 +128,7 @@ export class TransactionEditorComponent implements OnInit {
         this.newTransaction.productIds = this.selectedProduct.map(p => p.id)
 
         // 将编辑器的结果传递给父组件
-        this.editorResult.emit(this.newTransaction)
+        this.readEditorData.emit(this.newTransaction)
         this.isVisible = false
     }
 

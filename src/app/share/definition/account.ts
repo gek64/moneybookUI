@@ -1,7 +1,7 @@
 import {NzTableSortFn, NzTableSortOrder} from "ng-zorro-antd/table"
 
 interface ACCOUNT {
-    id: string
+    id?: string
     name: string
     number?: string
     type: string

@@ -90,7 +90,8 @@ export class AccountComponent implements OnInit {
 
     // 删除按钮
     async deleteButton() {
-        await this.deleteData()
+        await this.deleteData(this.selectedIds)
+        this.selectedIds.clear()
     }
 
     // 修改按钮
@@ -108,7 +109,6 @@ export class AccountComponent implements OnInit {
 
     // 处理子组件观察期传回来数据
     async readEditorData($event: ACCOUNT) {
-        console.log($event)
         if ($event.id !== undefined) {
             await this.updateData($event)
         } else {
@@ -133,9 +133,9 @@ export class AccountComponent implements OnInit {
             .finally(() => this.isLoading = false)
     }
 
-    async deleteData() {
+    async deleteData(selectedIds: Set<string>) {
         this.isLoading = true
-        await this.accountService.deleteAccounts(this.selectedIds)
+        await this.accountService.deleteAccounts(selectedIds)
             .then(async () => await this.readData())
             .catch((e: HttpErrorResponse) => this.message.error(e.message))
             .finally(() => this.isLoading = false)

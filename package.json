@@ -12,23 +12,23 @@
     "build": "node build"
   },
   "dependencies": {
-    "@angular/animations": "^18.1.2",
-    "@angular/common": "^18.1.2",
-    "@angular/compiler": "^18.1.2",
-    "@angular/core": "^18.1.2",
-    "@angular/forms": "^18.1.2",
-    "@angular/platform-browser": "^18.1.2",
-    "@angular/platform-browser-dynamic": "^18.1.2",
-    "@angular/router": "^18.1.2",
+    "@angular/animations": "^18.1.4",
+    "@angular/common": "^18.1.4",
+    "@angular/compiler": "^18.1.4",
+    "@angular/core": "^18.1.4",
+    "@angular/forms": "^18.1.4",
+    "@angular/platform-browser": "^18.1.4",
+    "@angular/platform-browser-dynamic": "^18.1.4",
+    "@angular/router": "^18.1.4",
     "@ant-design/icons-angular": "^18.0.0",
     "ng-zorro-antd": "^18.1.0",
     "rxjs": "^7.8.1",
     "tslib": "^2.6.3",
-    "zone.js": "^0.14.8"
+    "zone.js": "^0.14.10"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^18.1.2",
-    "@angular/cli": "^18.1.2",
-    "@angular/compiler-cli": "^18.1.2"
+    "@angular-devkit/build-angular": "^18.1.4",
+    "@angular/cli": "^18.1.4",
+    "@angular/compiler-cli": "^18.1.4"
   }
 }

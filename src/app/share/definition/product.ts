@@ -8,14 +8,14 @@ interface PRODUCT {
     remark?: string
 }
 
-interface productColumnItem {
+interface product_table_header {
     name: string
     sortOrder: NzTableSortOrder | null
     sortFn: NzTableSortFn<PRODUCT> | null
     sortDirections: NzTableSortOrder[]
 }
 
-let ProductColumns: productColumnItem[] = [
+let ProductTableHeaders: product_table_header[] = [
     {
         name: "名称",
         sortOrder: null,
@@ -44,5 +44,5 @@ let ProductColumns: productColumnItem[] = [
 
 export {
     PRODUCT,
-    ProductColumns,
+    ProductTableHeaders,
 }

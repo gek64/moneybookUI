@@ -6,14 +6,14 @@ interface TYPE {
     name: string
 }
 
-interface typeColumnItem {
+interface type_table_header {
     name: string
     sortOrder: NzTableSortOrder | null
     sortFn: NzTableSortFn<TYPE> | null
     sortDirections: NzTableSortOrder[]
 }
 
-let TypeColumns: typeColumnItem[] = [
+let typeTableHeaders: type_table_header[] = [
     {
         name: "名称",
         sortOrder: null,
@@ -24,5 +24,5 @@ let TypeColumns: typeColumnItem[] = [
 
 export {
     TYPE,
-    TypeColumns
+    typeTableHeaders
 }

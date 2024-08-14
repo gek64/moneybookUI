@@ -141,15 +141,11 @@ export class TransactionSearchComponent implements OnInit {
             .add(() => this.loading = false)
     }
 
-    readProducts() {
-        this.productService.readProducts()
-            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
-            .subscribe({
-                next: (resp) => {
-                    this.allProducts = resp
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
+    async readProducts() {
+        await this.productService.readProducts()
+            .then(as => this.allProducts = [...as])
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.loading = false)
     }
 
     readTypes() {

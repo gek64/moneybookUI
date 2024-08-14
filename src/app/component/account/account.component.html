@@ -47,12 +47,12 @@
         </thead>
         <!--表数据-->
         <tbody>
-        <tr *ngFor="let a of table.data">
-            <td (nzCheckedChange)="checkItemBox($event,a)" [nzChecked]="selectedIds.has(a.id)"></td>
-            <td>{{ a.name }}</td>
-            <td>{{ a.number }}</td>
-            <td>{{ a.type }}</td>
-            <td>{{ a.funds }}</td>
+        <tr *ngFor="let d of table.data">
+            <td (nzCheckedChange)="checkItemBox($event,d)" [nzChecked]="selectedIds.has(d.id)"></td>
+            <td>{{ d.name }}</td>
+            <td>{{ d.number }}</td>
+            <td>{{ d.type }}</td>
+            <td>{{ d.funds }}</td>
         </tr>
         </tbody>
     </nz-table>

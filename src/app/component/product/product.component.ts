@@ -1,8 +1,7 @@
 import {Component, OnInit, ViewChild} from "@angular/core"
 import {NzMessageService} from "ng-zorro-antd/message"
-import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
-import {PRODUCT, ProductColumns} from "../../share/definition/product"
+import {PRODUCT, ProductTableHeaders} from "../../share/definition/product"
 import {ProductService} from "../../service/product.service"
 import {ProductEditorComponent} from "../product-editor/product-editor.component"
 
@@ -13,166 +12,140 @@ import {ProductEditorComponent} from "../product-editor/product-editor.component
 })
 
 export class ProductComponent implements OnInit {
-    // 子组件观察器
+    // 编辑器子组件观察器
     @ViewChild("editor")
     editor: ProductEditorComponent
-    checkedAll = false
-    indeterminate = false
-    loading = false
-    listOfData: readonly PRODUCT[] = []
-    listOfCurrentPageData: readonly PRODUCT[] = []
-    setOfCheckedItems = new Set<string>()
-    tableHeaderColumns = ProductColumns
 
+    // 表头变量
+    tableHeaders = ProductTableHeaders
+
+    // 表头全选框变量
+    // 是否全选
+    selectAll = false
+    // 是否部分选择
+    selectSome = false
+    // 被选中的所有的id
+    selectedIds = new Set<string>()
+
+    // 表内容变量
+    // 表中所有数据
+    data: PRODUCT[] = []
+    // 当前页面中表的数据(随着页码,页面大小变化)
+    dataCurrentPage: PRODUCT[] = []
+    // 是否显示加载状态
+    isLoading = false
+
+    // 构筑函数,用于注册服务
     constructor(private productService: ProductService, private message: NzMessageService) {
     }
 
     // 生命周期
-    ngOnInit() {
-        this.readProducts()
+    async ngOnInit() {
+        await this.readData()
     }
 
-    // 数据库
-    createProduct(p: PRODUCT) {
-        this.loading = true
-
-        this.productService.createProduct(p)
-            .pipe(retry(3), catchError(this.handleError))
-            .subscribe({
-                next: (resp) => {
-                    if (resp.id !== undefined) {
-                        this.readProducts()
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.loading = false)
+    // 表格中当前页的数据发生改变时刷新变量状态
+    onCurrentPageDataChange($event: readonly PRODUCT[]) {
+        this.dataCurrentPage = [].concat($event)
+        this.refreshCheckBoxStatus()
     }
 
-    updateProduct(p: PRODUCT) {
-        this.loading = true
-
-        this.productService.updateProduct(p)
-            .pipe(retry(3), catchError(this.handleError))
-            .subscribe({
-                next: (resp) => {
-                    if (resp.id !== undefined) {
-                        this.readProducts()
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.loading = false)
-    }
-
-    deleteProducts() {
-        this.loading = true
-
-        this.productService.deleteProducts(this.setOfCheckedItems)
-            .pipe(retry(3), catchError(this.handleError))
-            .subscribe({
-                next: (resp) => {
-                    if (resp.count !== 0) {
-                        this.listOfData = this.listOfData.filter(item => !this.setOfCheckedItems.has(item.id))
-                        this.setOfCheckedItems.clear()
-                        this.message.success("deleted successfully")
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.loading = false)
-    }
-
-    readProducts() {
-        this.loading = true
-
-        this.productService.readProducts()
-            .pipe(retry(3), catchError(this.handleError))
-            .subscribe({
-                next: ps => this.listOfData = ps,
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.loading = false)
-    }
-
-    // 中间功能
-    refreshCheckedAllStatus() {
-        this.checkedAll = this.listOfCurrentPageData.every(item => this.setOfCheckedItems.has(item.id))
-        this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
-    }
-
-    onCurrentPageDataChange(listOfCurrentPageData: readonly PRODUCT[]) {
-        this.listOfCurrentPageData = listOfCurrentPageData
-        this.refreshCheckedAllStatus()
-    }
-
-    updateCheckedSet(id: string, checked: boolean) {
-        if (checked) {
-            this.setOfCheckedItems.add(id)
+    // 表头全选框
+    checkAllBox($event: boolean) {
+        if ($event) {
+            this.dataCurrentPage.forEach(t => this.selectedIds.add(t.id))
         } else {
-            this.setOfCheckedItems.delete(id)
+            this.dataCurrentPage.forEach(t => this.selectedIds.delete(t.id))
         }
+        this.refreshCheckBoxStatus()
     }
 
-    getEditorResult(e: PRODUCT) {
-        if (e.id !== undefined) {
-            this.updateProduct(e)
+    // 表中数据选框
+    checkItemBox($event: boolean, item: PRODUCT) {
+        if ($event) {
+            this.selectedIds.add(item.id)
         } else {
-            this.createProduct(e)
+            this.selectedIds.delete(item.id)
+        }
+        this.refreshCheckBoxStatus()
+    }
+
+    // 刷新选择框的状态
+    refreshCheckBoxStatus() {
+        this.selectAll = this.selectedIds.size > 0 && this.dataCurrentPage.every(item => this.selectedIds.has(item.id))
+        this.selectSome = this.selectedIds.size > 0 && this.dataCurrentPage.some(item => this.selectedIds.has(item.id)) && !this.selectAll
+    }
+
+    // 全选按钮
+    selectAllButton() {
+        this.data.forEach(t => this.selectedIds.add(t.id))
+        this.refreshCheckBoxStatus()
+    }
+
+    // 清除按钮
+    clearButton() {
+        this.selectedIds.clear()
+        this.refreshCheckBoxStatus()
+    }
+
+    // 删除按钮
+    async deleteButton() {
+        await this.deleteData(this.selectedIds)
+        this.selectedIds.clear()
+    }
+
+    // 修改按钮
+    modifyButton() {
+        let ts = this.data.filter(item => this.selectedIds.has(item.id))
+        if (ts.length == 1) {
+            this.editor.show(ts[0])
         }
     }
 
-    // 按键
-    onItemChecked(id: string, checked: boolean) {
-        this.updateCheckedSet(id, checked)
-        this.refreshCheckedAllStatus()
+    // 创建按钮
+    createButton() {
+        this.editor.show()
     }
 
-    onAllChecked(checked: boolean) {
-        this.listOfCurrentPageData
-            .forEach(({id}) => this.updateCheckedSet(id, checked))
-        this.refreshCheckedAllStatus()
-    }
-
-    clearSetOfCheckedItems() {
-        this.setOfCheckedItems.clear()
-        this.checkedAll = false
-        this.refreshCheckedAllStatus()
-    }
-
-    selectAllItemsButton() {
-        this.listOfData.forEach(a => this.setOfCheckedItems.add(a.id))
-        this.refreshCheckedAllStatus()
-    }
-
-    editTypeButton() {
-        let ps = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
-        if (ps.length === 1) {
-            this.editor.showModal(ps[0])
-        }
-    }
-
-    createTypeButton() {
-        this.editor.showModal(undefined)
-    }
-
-
-    private handleError(error: HttpErrorResponse) {
-        let err: string
-
-        if (error.status === 0) {
-            // A client-side or network error occurred. Handle it accordingly.
-            err = `Network error occurred, Message: ${error.error}`
+    // 处理子组件观察期传回来数据
+    async readEditorData($event: PRODUCT) {
+        if ($event.id !== undefined) {
+            await this.updateData($event)
         } else {
-            // The backend returned an unsuccessful response code.
-            // The response body may contain clues as to what went wrong.
-            err = `Backend returned code ${error.status}, Message: ${error.error}`
+            await this.createData($event)
         }
+    }
 
-        // 控制台输出错误提示
-        console.error(err)
+    // 网络请求
+    async createData(body: PRODUCT) {
+        this.isLoading = true
+        await this.productService.createProduct(body)
+            .then(a => this.data = this.data.concat(a))
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
+    }
 
-        // Return an observable with a user-facing error message.
-        return throwError(() => new Error(err))
+    async updateData(body: PRODUCT) {
+        this.isLoading = true
+        await this.productService.updateProduct(body)
+            .then(async () => await this.readData())
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
+    }
+
+    async deleteData(selectedIds: Set<string>) {
+        this.isLoading = true
+        await this.productService.deleteProducts(selectedIds)
+            .then(async () => await this.readData())
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
+    }
+
+    async readData() {
+        this.isLoading = true
+        await this.productService.readProducts()
+            .then(as => this.data = [...as])
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 }

@@ -4,7 +4,7 @@ import {catchError, retry, throwError} from "rxjs"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {TypeService} from "../../service/type.service"
 import {TypeEditorComponent} from "../type-editor/type-editor.component"
-import {TYPE, TypeColumns} from "../../share/definition/type"
+import {TYPE, typeTableHeaders} from "../../share/definition/type"
 
 @Component({
     selector: "app-component-type",
@@ -21,7 +21,7 @@ export class TypeComponent implements OnInit {
     listOfData: readonly TYPE[] = []
     listOfCurrentPageData: readonly TYPE[] = []
     setOfCheckedItems = new Set<string>()
-    tableHeaderColumns = TypeColumns
+    tableHeaderColumns = typeTableHeaders
 
     constructor(private typeService: TypeService, private message: NzMessageService) {
     }

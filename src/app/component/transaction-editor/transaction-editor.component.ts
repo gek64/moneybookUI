@@ -44,7 +44,7 @@ export class TransactionEditorComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.getProducts()
+        this.readProducts()
         this.getTypes()
         this.readAccounts()
     }
@@ -53,22 +53,10 @@ export class TransactionEditorComponent implements OnInit {
         return o1 && o2 ? o1.id === o2.id : o1 === o2
     }
 
-    getProducts() {
-        let pageThis = this
-        const req = this.productService.readProducts()
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
-
-        req.subscribe({
-            next: function (resp) {
-                pageThis.products = resp
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        })
+    async readProducts() {
+        await this.productService.readProducts()
+            .then(as => this.products = [...as])
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
     }
 
     getTypes() {

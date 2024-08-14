@@ -1,5 +1,7 @@
-<nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()" [(nzVisible)]="isVisible"
-          [nzOkDisabled]="newProduct.name == ''" [nzTitle]="title" nzWidth>
+<!--对话框-->
+<nz-modal [nzTitle]="title" nzWidth [(nzVisible)]="isVisible" [nzOkDisabled]="isDataOK()"
+          (nzOnOk)="okButton()" (nzOnCancel)="cancelButton()">
+    <!--对话框内容-->
     <div *nzModalContent>
         <nz-table [nzData]="[{}]" [nzShowPagination]="false">
             <!--两行不显示的空表头-->
@@ -9,23 +11,23 @@
                 <th></th>
             </tr>
             </thead>
-
+            <!--用于填写的表内容-->
             <tbody>
             <tr>
                 <td>名称</td>
-                <td><input [(ngModel)]="newProduct.name" nz-input/></td>
+                <td><input [(ngModel)]="data.name" nz-input/></td>
             </tr>
             <tr>
                 <td>编号</td>
-                <td><input [(ngModel)]="newProduct.code" nz-input/></td>
+                <td><input [(ngModel)]="data.code" nz-input/></td>
             </tr>
             <tr>
                 <td>规格</td>
-                <td><input [(ngModel)]="newProduct.specifications" nz-input/></td>
+                <td><input [(ngModel)]="data.specifications" nz-input/></td>
             </tr>
             <tr>
                 <td>备注</td>
-                <td><input [(ngModel)]="newProduct.remark" nz-input/></td>
+                <td><input [(ngModel)]="data.remark" nz-input/></td>
             </tr>
             </tbody>
         </nz-table>

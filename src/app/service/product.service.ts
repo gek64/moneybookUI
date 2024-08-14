@@ -2,39 +2,38 @@ import {Injectable} from "@angular/core"
 import {HttpClient} from "@angular/common/http"
 import {PRODUCT} from "../share/definition/product"
 import {environment} from "../app.component"
+import {lastValueFrom, retry} from "rxjs"
 
 @Injectable()
 export class ProductService {
-    server = environment.server
+    url1 = new URL("/product", environment.server).toString()
+    url2 = new URL("/products", environment.server).toString()
 
     constructor(private http: HttpClient) {
     }
 
-    createProduct(newProduct: PRODUCT) {
-        return this.http.post<PRODUCT>(new URL("/product", this.server).toString(), newProduct)
+    async createProduct(productBody: PRODUCT) {
+        return await lastValueFrom(this.http.post<PRODUCT>(this.url1, productBody).pipe(retry(3)))
+            .then(a => a)
+            .catch(error => Promise.reject(error))
     }
 
-    updateProduct(updateProduct: PRODUCT) {
-        return this.http.put<PRODUCT>(new URL("/product", this.server).toString(), updateProduct)
+    async updateProduct(productBody: PRODUCT) {
+        return await lastValueFrom(this.http.put<PRODUCT>(this.url1, productBody).pipe(retry(3)))
+            .then(a => a)
+            .catch(error => Promise.reject(error))
     }
 
-    readProducts() {
-        return this.http.get<PRODUCT[]>(new URL("/products", this.server).toString())
+    async deleteProducts(ids: Set<string>) {
+        return await lastValueFrom(this.http.delete<{ count: number }>
+        (this.url2, {params: {"ids": Array.from(ids)}}).pipe(retry(3)))
+            .then(resp => resp)
+            .catch(error => Promise.reject(error))
     }
 
-    deleteProduct(id: Set<string>) {
-        return this.http.delete<{ count: number }>(new URL("/product", this.server).toString(), {
-            params: {
-                "id": Array.from(id)
-            }
-        })
-    }
-
-    deleteProducts(ids: Set<string>) {
-        return this.http.delete<{ count: number }>(new URL("/products", this.server).toString(), {
-            params: {
-                "ids": Array.from(ids)
-            }
-        })
+    async readProducts() {
+        return await lastValueFrom(this.http.get<PRODUCT[]>(this.url2).pipe(retry(3)))
+            .then(as => as)
+            .catch(error => Promise.reject(error))
     }
 }

@@ -19,9 +19,11 @@ import {AccountService} from "../../service/account.service"
     styleUrls: ["./transaction-search.component.css"]
 })
 export class TransactionSearchComponent implements OnInit {
-    // 子组件观察器
+    // 编辑器子组件观察器
     @ViewChild("editor")
     editor: TransactionEditorComponent
+
+
     checkedAll = false
     indeterminate = false
     isLoading = false

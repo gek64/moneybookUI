@@ -1,8 +1,8 @@
-<app-component-transaction-editor #editor
-                                  (readEditorData)="getEditorResult($event)"></app-component-transaction-editor>
+<app-component-transaction-editor #editor (readEditorData)="getEditorResult($event)"></app-component-transaction-editor>
 
 <div nz-flex nzGap="small" nzVertical>
-    <div nz-flex nzGap="small" nzJustify="space-between" nzVertical nzWrap="wrap">
+    <!--查询条件输入框-->
+    <div nz-flex nzVertical nzJustify="space-between" nzGap="small" nzWrap="wrap">
         <nz-input-group [nzPrefix]="prefixIcon">
             <ng-template #prefixIcon><span nz-icon nzType="search"></span></ng-template>
             <input [(ngModel)]="selectedKeyword" nz-input placeholder="输入查询交易标题关键词"/>
@@ -34,8 +34,6 @@
             <nz-option *ngFor="let status of allStatus" [nzHide]="!isStatusNotSelected(status)"
                        [nzLabel]="status.key" [nzValue]="status"></nz-option>
         </nz-select>
-    </div>
-    <div nz-flex nzGap="small" nzJustify="flex-end">
         <button (click)="submitButton()" nz-button nzType="primary">提交</button>
     </div>
     <div *ngIf="listOfData.length != 0" nz-flex nzGap="small" nzVertical>

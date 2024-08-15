@@ -8,8 +8,8 @@ import {environment} from "../app.component"
 export class TransactionService {
     url1 = new URL("/transaction", environment.server).toString()
     url2 = new URL("/transactions", environment.server).toString()
-    url3 = new URL("/status", this.url2).toString()
-    url4 = new URL("/conditions", this.url2).toString()
+    url3 = new URL("/transactions/status", environment.server).toString()
+    url4 = new URL("/transactions/conditions", environment.server).toString()
 
     constructor(private http: HttpClient) {
     }

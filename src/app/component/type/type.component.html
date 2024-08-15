@@ -1,89 +1,55 @@
-<app-component-type-editor #editor (editorResult)="getEditorResult($event)"></app-component-type-editor>
+<app-component-type-editor #editor (readEditorData)="readEditorData($event)"></app-component-type-editor>
 
 <div nz-flex nzGap="small" nzVertical>
-    <div nz-flex nzJustify="space-between">
+    <!--按钮区域-->
+    <div nz-flex nzJustify="space-between" nzGap="small">
         <div nz-flex nzGap="small">
-            <button
-                    (click)="selectAllItemsButton()"
-                    [disabled]="setOfCheckedItems.size === listOfData.length"
-                    [nzLoading]="loading"
-                    nz-button
-            >
+            <button nz-button [disabled]="selectedIds.size === data.length" [nzLoading]="isLoading"
+                    (click)="selectAllButton()">
                 全选
             </button>
-
-            <nz-badge [nzCount]="setOfCheckedItems.size">
-                <button
-                        (click)="clearSetOfCheckedItems()"
-                        [disabled]="setOfCheckedItems.size === 0"
-                        [nzLoading]="loading"
-                        nz-button>
+            <nz-badge [nzCount]="selectedIds.size" [nzOverflowCount]="999">
+                <button nz-button [disabled]="selectedIds.size === 0" [nzLoading]="isLoading"
+                        (click)="clearButton()">
                     清除
                 </button>
             </nz-badge>
         </div>
-
         <div nz-flex nzGap="small">
-            <button
-                    (click)="deleteTypes()"
-                    [disabled]="setOfCheckedItems.size === 0"
-                    [nzDanger]="true"
-                    [nzLoading]="loading"
-                    nz-button
-                    nzType="primary"
-            >
+            <button nz-button nzType="primary" nzDanger [disabled]="selectedIds.size === 0" [nzLoading]="isLoading"
+                    (click)="deleteButton()">
                 删除
             </button>
-            <button
-                    (click)="editTypeButton()"
-                    [disabled]="setOfCheckedItems.size !== 1"
-                    [nzLoading]="loading"
-                    nz-button
-                    nzType="primary"
-            >
+            <button nz-button nzType="primary" [disabled]="selectedIds.size !== 1" [nzLoading]="isLoading"
+                    (click)="modifyButton()">
                 修改
             </button>
-            <button
-                    (click)="createTypeButton()"
-                    [nzLoading]="loading"
-                    nz-button
-                    nzType="primary"
-            >
+            <button nz-button nzType="primary" [nzLoading]="isLoading"
+                    (click)="createButton()">
                 新建
             </button>
         </div>
     </div>
-    <nz-table
-        #rowSelectionTable
-        (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
-        [nzData]="listOfData"
-        [nzLoading]="loading"
-        [nzShowPagination]="true"
-        [nzShowSizeChanger]="true">
-
+    <!--数据展示表格区域-->
+    <nz-table #table nzShowSizeChanger [nzData]="data" [nzLoading]="isLoading"
+              (nzCurrentPageDataChange)="onCurrentPageDataChange($event)">
+        <!--表头-->
         <thead>
         <tr>
-            <th (nzCheckedChange)="onAllChecked($event)"
-                [(nzChecked)]="checkedAll"
-                [nzIndeterminate]="indeterminate"
-                [nzWidth]="'80px'">
-            </th>
-            <th *ngFor="let column of tableHeaderColumns"
-                [nzSortDirections]="column.sortDirections"
-                [nzSortFn]="column.sortFn"
-                [nzSortOrder]="column.sortOrder">
-                {{ column.name }}
+            <!--全选框-->
+            <th (nzCheckedChange)="checkAllBox($event)" [nzChecked]="selectAll" [nzIndeterminate]="selectSome"></th>
+            <!--表头每一栏-->
+            <th *ngFor="let h of tableHeaders" [nzSortDirections]="h.sortDirections" [nzSortFn]="h.sortFn"
+                [nzSortOrder]="h.sortOrder" [nzSortPriority]="false">
+                {{ h.name }}
             </th>
         </tr>
         </thead>
-
+        <!--表数据-->
         <tbody>
-        <tr *ngFor="let type of rowSelectionTable.data">
-            <td
-                    (nzCheckedChange)="onItemChecked(type.id,$event)"
-                    [nzChecked]="setOfCheckedItems.has(type.id)">
-            </td>
-            <td>{{ type.name }}</td>
+        <tr *ngFor="let d of table.data">
+            <td (nzCheckedChange)="checkItemBox($event,d)" [nzChecked]="selectedIds.has(d.id)"></td>
+            <td>{{ d.name }}</td>
         </tr>
         </tbody>
     </nz-table>

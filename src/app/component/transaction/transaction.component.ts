@@ -1,15 +1,9 @@
 import {Component, OnInit, ViewChild} from "@angular/core"
 import {TransactionService} from "../../service/transaction.service"
 import {NzMessageService} from "ng-zorro-antd/message"
-import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
 import {TransactionEditorComponent} from "../transaction-editor/transaction-editor.component"
-import {
-    TRANSACTION,
-    TRANSACTION_INPUT,
-    TRANSACTION_OUTPUT,
-    TransactionTableHeaders
-} from "../../share/definition/transaction"
+import {TRANSACTION_INPUT, TRANSACTION_OUTPUT, TransactionTableHeaders} from "../../share/definition/transaction"
 
 
 @Component({
@@ -47,8 +41,8 @@ export class TransactionComponent implements OnInit {
     }
 
     // 生命周期
-    ngOnInit() {
-        this.readTransactions()
+    async ngOnInit() {
+        await this.readData()
     }
 
     // 表格中当前页的数据发生改变时刷新变量状态
@@ -96,98 +90,66 @@ export class TransactionComponent implements OnInit {
     }
 
     // 删除按钮
-    deleteButton() {
-        this.deleteTransactions()
+    async deleteButton() {
+        await this.deleteData(this.selectedIds)
+        this.selectedIds.clear()
     }
 
     // 修改按钮
     modifyButton() {
         let ts = this.data.filter(item => this.selectedIds.has(item.id))
         if (ts.length == 1) {
-            this.editor.showModal(ts[0])
+            this.editor.show(ts[0])
         }
     }
 
     // 创建按钮
     createButton() {
-        this.editor.showModal()
+        this.editor.show()
     }
 
     // 处理子组件观察期传回来数据
-    readEditorData($event: TRANSACTION_INPUT) {
+    async readEditorData($event: TRANSACTION_INPUT) {
         if ($event.id !== undefined) {
-            this.updateTransaction($event)
+            await this.updateData($event)
         } else {
-            this.createTransaction($event)
+            await this.createData($event)
         }
     }
 
-    // 表对应的数据库操作
-    createTransaction(t: TRANSACTION_INPUT) {
+    // 网络请求
+    async createData(body: TRANSACTION_INPUT) {
         this.isLoading = true
-
-        this.transactionService.createTransaction(t)
-            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
-            .subscribe({
-                next: (resp: TRANSACTION) => {
-                    if (resp.id !== undefined) {
-                        this.readTransactions()
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.isLoading = false)
+        await this.transactionService.createTransaction(body)
+            .then(async () => await this.readData())
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 
-    updateTransaction(t: TRANSACTION_INPUT) {
+    async updateData(body: TRANSACTION_INPUT) {
         this.isLoading = true
-
-        this.transactionService.updateTransaction(t)
-            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
-            .subscribe({
-                next: (resp: TRANSACTION) => {
-                    if (resp.id !== undefined) {
-                        this.readTransactions()
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.isLoading = false)
+        await this.transactionService.updateTransaction(body)
+            .then(async () => await this.readData())
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 
-    deleteTransactions() {
+    async deleteData(selectedIds: Set<string>) {
         this.isLoading = true
-
-        this.transactionService.deleteTransactions([...this.selectedIds])
-            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
-            .subscribe({
-                next: resp => {
-                    if (resp.count > 0) {
-                        this.data = this.data.filter(item => !this.selectedIds.has(item.id))
-                        this.selectedIds.clear()
-                        this.message.success("deleted successfully")
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.isLoading = false)
+        await this.transactionService.deleteTransactions(selectedIds)
+            .then(async () => await this.readData())
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 
-    readTransactions() {
+    async readData() {
         this.isLoading = true
-
-        this.transactionService.readTransactions()
-            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
-            .subscribe({
-                next: (ts) => {
-                    // 获取到的日期为字符串,需要处理每一条交易数据中的日期
-                    ts.forEach((t, i) => {
-                        ts[i].datetime = new Date(Date.parse(t.datetime as unknown as string))
-                    })
-                    this.data = ts
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
-            .add(() => this.isLoading = false)
+        await this.transactionService.readTransactions()
+            .then(ds => this.data = [...ds].map(d => {
+                d.datetime = new Date(Date.parse(d.datetime as unknown as string))
+                return d
+            }))
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 }

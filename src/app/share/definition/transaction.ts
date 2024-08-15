@@ -6,9 +6,7 @@ import {NzTableFilterFn, NzTableFilterList, NzTableSortFn, NzTableSortOrder} fro
 interface TRANSACTION {
     id?: string
     title: string
-    type: TYPE
     typeId: string
-    account: ACCOUNT
     accountId: string
     amount: number
     datetime?: Date
@@ -16,12 +14,13 @@ interface TRANSACTION {
 }
 
 interface TRANSACTION_INPUT extends TRANSACTION {
-    id?: string
     productIds?: string[]
 }
 
 interface TRANSACTION_OUTPUT extends TRANSACTION {
     id: string
+    type: TYPE
+    account: ACCOUNT
     ProductOnTransaction?: { product: PRODUCT }[]
 }
 

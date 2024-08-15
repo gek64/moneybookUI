@@ -7,42 +7,41 @@ import {TYPE} from "../../share/definition/type"
     styleUrls: ["./type-editor.component.css"]
 })
 export class TypeEditorComponent {
-    isVisible = false
+    // 对话框变量
+    // 对话框标题
     title = ""
-    newType = new class implements TYPE {
-        id: string | undefined
-        name: string
-    }
+    // 对话框数据
+    data: TYPE = {id: undefined, name: undefined}
+    // 是否显示对话框
+    isVisible = false
 
-    @Output() editorResult = new EventEmitter()
+    // 外部组件调用来读取数据
+    @Output() readEditorData = new EventEmitter<TYPE>()
 
-    constructor() {
-    }
-
-    showModal(newType?: TYPE): void {
-        if (newType != undefined) {
-            this.title = "Edit"
-
-            // 使用 this.newType = newType是引用赋值
-            // 值赋值
-            // this.newType.id = newType.id
-            // this.newType.name = newType.name
-            Object.assign(this.newType, newType)
+    // 显示对话框, 外部观察器调用来弹出对话框
+    show(newData?: TYPE) {
+        if (newData !== undefined) {
+            this.title = "修改"
+            this.data = newData
         } else {
-            this.title = "Create"
-            this.newType.id = undefined
-            this.newType.name = ""
+            this.title = "新建"
         }
         this.isVisible = true
     }
 
-    handleOk(): void {
-        // 将编辑器的结果传递给父组件
-        this.editorResult.emit(this.newType)
+    // 检验数据是否符合, 不符合确认按钮被禁用
+    isDataOK() {
+        return this.data.name === undefined || this.data.name === ""
+    }
+
+    // 确认按钮, 将编辑器的结果传递给外部组件
+    okButton() {
+        this.readEditorData.emit(this.data)
         this.isVisible = false
     }
 
-    handleCancel(): void {
+    // 取消按钮
+    cancelButton() {
         this.isVisible = false
     }
 }

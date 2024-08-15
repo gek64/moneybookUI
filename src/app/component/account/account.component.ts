@@ -120,7 +120,7 @@ export class AccountComponent implements OnInit {
     async createData(body: ACCOUNT) {
         this.isLoading = true
         await this.accountService.createAccount(body)
-            .then(a => this.data = this.data.concat(a))
+            .then(d => this.data = this.data.concat(d))
             .catch((e: HttpErrorResponse) => this.message.error(e.message))
             .finally(() => this.isLoading = false)
     }
@@ -144,7 +144,7 @@ export class AccountComponent implements OnInit {
     async readData() {
         this.isLoading = true
         await this.accountService.readAccounts()
-            .then(as => this.data = [...as])
+            .then(ds => this.data = [...ds])
             .catch((e: HttpErrorResponse) => this.message.error(e.message))
             .finally(() => this.isLoading = false)
     }

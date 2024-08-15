@@ -1,46 +1,54 @@
 import {Injectable} from "@angular/core"
 import {HttpClient} from "@angular/common/http"
+import {lastValueFrom, retry} from "rxjs"
 import {TRANSACTION, TRANSACTION_INPUT, TRANSACTION_OUTPUT} from "../share/definition/transaction"
 import {environment} from "../app.component"
 
 @Injectable()
 export class TransactionService {
-    server = environment.server
+    url1 = new URL("/transaction", environment.server).toString()
+    url2 = new URL("/transactions", environment.server).toString()
+    url3 = new URL("/status", this.url2).toString()
+    url4 = new URL("/conditions", this.url2).toString()
 
     constructor(private http: HttpClient) {
     }
 
-    createTransaction(t: TRANSACTION_INPUT) {
-        return this.http.post<TRANSACTION>(new URL("/transaction", this.server).toString(), t)
+    async createTransaction(transactionBody: TRANSACTION_INPUT) {
+        return await lastValueFrom(this.http.post<TRANSACTION>(this.url1, transactionBody).pipe(retry(3)))
+            .then(a => a)
+            .catch(error => Promise.reject(error))
     }
 
-    updateTransaction(t: TRANSACTION_INPUT) {
-        return this.http.put<TRANSACTION>(new URL("/transaction", this.server).toString(), t)
+    async updateTransaction(transactionBody: TRANSACTION_INPUT) {
+        return await lastValueFrom(this.http.put<TRANSACTION>(this.url1, transactionBody).pipe(retry(3)))
+            .then(a => a)
+            .catch(error => Promise.reject(error))
     }
 
-    patchTransactionsStatus(ids: string[], status: string) {
-        return this.http.patch<{
-            count: number
-        }>(new URL("/transactions/status", this.server).toString(), {
-            ids: ids,
-            status: status
-        })
+    async deleteTransactions(ids: Set<string>) {
+        return await lastValueFrom(this.http.delete<{ count: number }>
+        (this.url2, {params: {"ids": Array.from(ids)}}).pipe(retry(3)))
+            .then(resp => resp)
+            .catch(error => Promise.reject(error))
     }
 
-    readTransaction(id: string) {
-        return this.http.get<TRANSACTION_OUTPUT>(new URL("/transaction", this.server).toString(), {
-            params: {
-                "id": id
-            }
-        })
+    async readTransactions() {
+        return await lastValueFrom(this.http.get<TRANSACTION_OUTPUT[]>(this.url2).pipe(retry(3)))
+            .then(as => as)
+            .catch(error => Promise.reject(error))
     }
 
-    readTransactions() {
-        return this.http.get<TRANSACTION_OUTPUT[]>(new URL("/transactions", this.server).toString())
+    async patchTransactionsStatus(ids: string[], status: string) {
+        return await lastValueFrom(this.http.patch<{ count: number }>
+        (this.url3, {ids: ids, status: status}).pipe(retry(3)))
+            .then(as => as)
+            .catch(error => Promise.reject(error))
     }
 
-    readTransactionsWithConditions(ids?: string[], title?: string, productIds?: string[], typeIds?: string[], accountIds?: string[], startTime?: string, endTime?: string, status?: string[]) {
-        return this.http.get<TRANSACTION_OUTPUT[]>(new URL("/transactions/conditions", this.server).toString(), {
+    async readTransactionsWithConditions(ids?: string[], title?: string, productIds?: string[], typeIds?: string[], accountIds?: string[], startTime?: string, endTime?: string, status?: string[]) {
+        return await lastValueFrom(this.http.get<TRANSACTION_OUTPUT[]>
+        (this.url4, {
             params: JSON.parse(JSON.stringify({
                 "ids": ids,
                 "title": title,
@@ -52,21 +60,8 @@ export class TransactionService {
                 "status": status
             }).toString())
         })
-    }
-
-    deleteTransaction(id: string) {
-        return this.http.delete<{ count: number }>(new URL("/transaction", this.server).toString(), {
-            params: {
-                "id": Array.from(id)
-            }
-        })
-    }
-
-    deleteTransactions(ids: string[]) {
-        return this.http.delete<{ count: number }>(new URL("/transactions", this.server).toString(), {
-            params: {
-                "ids": Array.from(ids)
-            }
-        })
+            .pipe(retry(3)))
+            .then(as => as)
+            .catch(error => Promise.reject(error))
     }
 }

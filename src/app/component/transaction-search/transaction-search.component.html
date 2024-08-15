@@ -44,7 +44,7 @@
                 <button
                         (click)="selectAllItemsButton()"
                         [disabled]="setOfCheckedItems.size === listOfData.length"
-                        [nzLoading]="loading"
+                        [nzLoading]="isLoading"
                         nz-button
                 >
                     全选
@@ -54,7 +54,7 @@
                     <button
                             (click)="clearSetOfCheckedItemsButton()"
                             [disabled]="setOfCheckedItems.size === 0"
-                            [nzLoading]="loading"
+                            [nzLoading]="isLoading"
                             nz-button
                     >
                         清除
@@ -67,7 +67,7 @@
                         (click)="deleteTransactions()"
                         [disabled]="setOfCheckedItems.size === 0"
                         [nzDanger]="true"
-                        [nzLoading]="loading"
+                        [nzLoading]="isLoading"
                         nz-button
                         nzType="primary"
                 >
@@ -76,7 +76,7 @@
                 <button
                         (click)="editTypeButton()"
                         [disabled]="setOfCheckedItems.size !== 1"
-                        [nzLoading]="loading"
+                        [nzLoading]="isLoading"
                         nz-button
                         nzType="primary"
                 >
@@ -85,7 +85,7 @@
                 <button
                         (click)="updateStatus('FINISHED')"
                         [disabled]="setOfCheckedItems.size === 0"
-                        [nzLoading]="loading"
+                        [nzLoading]="isLoading"
                         nz-button
                         nzType="primary"
                 >
@@ -94,7 +94,7 @@
                 <button
                         (click)="updateStatus('UNFINISHED')"
                         [disabled]="setOfCheckedItems.size === 0"
-                        [nzLoading]="loading"
+                        [nzLoading]="isLoading"
                         nz-button
                         nzType="primary"
                 >
@@ -106,7 +106,7 @@
             #rowSelectionTable
             (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
             [nzData]="listOfData"
-            [nzLoading]="loading"
+            [nzLoading]="isLoading"
             [nzShowPagination]="true"
             [nzShowSizeChanger]="true">
 

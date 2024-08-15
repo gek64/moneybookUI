@@ -1,15 +1,14 @@
 import {Component, EventEmitter, OnInit, Output} from "@angular/core"
-import {TypeService} from "../../service/type.service"
-import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
 import {NzMessageService} from "ng-zorro-antd/message"
+import {TypeService} from "../../service/type.service"
 import {AccountService} from "../../service/account.service"
-import {TRANSACTION_INPUT, TRANSACTION_OUTPUT} from "../../share/definition/transaction"
-import {PRODUCT} from "../../share/definition/product"
-import {ACCOUNT} from "../../share/definition/account"
-import {TYPE} from "../../share/definition/type"
-import {TransactionStatus} from "../../share/definition/transactionStatus"
 import {ProductService} from "../../service/product.service"
+import {TYPE} from "../../share/definition/type"
+import {ACCOUNT} from "../../share/definition/account"
+import {PRODUCT} from "../../share/definition/product"
+import {TRANSACTION_INPUT, TRANSACTION_OUTPUT} from "../../share/definition/transaction"
+import {TransactionStatus} from "../../share/definition/transactionStatus"
 
 @Component({
     selector: "app-component-transaction-editor",
@@ -17,126 +16,93 @@ import {ProductService} from "../../service/product.service"
     styleUrls: ["./transaction-editor.component.css"]
 })
 export class TransactionEditorComponent implements OnInit {
-    products: PRODUCT[] = []
-    accounts: ACCOUNT[] = []
-    types: TYPE[] = []
-    status = TransactionStatus
-    selectedProduct: PRODUCT[]
-    selectedAccount: ACCOUNT
-    selectedType: TYPE
-    isVisible = false
+    // 对话框变量
+    // 对话框标题
     title = ""
-    newTransaction: TRANSACTION_INPUT = {
-        account: undefined,
+    // 对话框数据
+    data: TRANSACTION_INPUT = {
+        id: undefined,
+        title: undefined,
+        typeId: undefined,
         accountId: undefined,
         amount: undefined,
         datetime: new Date(Date.now()),
-        id: undefined,
-        productIds: [],
         status: undefined,
-        title: undefined,
-        type: undefined,
-        typeId: undefined
+        productIds: undefined
     }
-    @Output() readEditorData = new EventEmitter()
+    // 是否显示对话框
+    isVisible = false
 
+    // 下拉选择框数据
+    // 从服务端获取到的选择框中可选项数据
+    types: TYPE[] = []
+    accounts: ACCOUNT[] = []
+    products: PRODUCT[] = []
+    status = TransactionStatus
+    // 选择框绑定的数据
+    bindProduct: PRODUCT[] = []
+    bindAccount: ACCOUNT
+    bindType: TYPE
+
+    // 外部组件调用来读取数据
+    @Output() readEditorData = new EventEmitter<TRANSACTION_INPUT>()
+
+    // 构筑函数,用于注册服务
     constructor(private productService: ProductService, private accountService: AccountService, private typeService: TypeService, private message: NzMessageService) {
     }
 
-    ngOnInit(): void {
-        this.readProducts()
-        this.getTypes()
-        this.readAccounts()
+    // 选择控件值对比函数
+    compareWith(o1: any, o2: any) {
+        return o1?.id === o2?.id ? true : o1 === o2
     }
 
-    nzSelectCompareFn(o1: any, o2: any) {
-        return o1 && o2 ? o1.id === o2.id : o1 === o2
-    }
-
-    async readProducts() {
+    // 生命周期
+    async ngOnInit() {
         await this.productService.readProducts()
-            .then(as => this.products = [...as])
+            .then(ds => this.products = [...ds])
             .catch((e: HttpErrorResponse) => this.message.error(e.message))
-    }
 
-    getTypes() {
-        let pageThis = this
-        const req = this.typeService.readTypes()
-            .pipe(
-                retry(3),
-                catchError(this.handleError)
-            )
+        await this.typeService.readTypes()
+            .then(ds => this.types = [...ds])
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
 
-        req.subscribe({
-            next: function (resp) {
-                pageThis.types = resp
-            },
-            error: function (err: HttpErrorResponse) {
-                pageThis.message.error(err.message)
-            }
-        })
-    }
-
-    async readAccounts() {
         await this.accountService.readAccounts()
-            .then(as => this.accounts = [...as])
+            .then(ds => this.accounts = [...ds])
             .catch((e: HttpErrorResponse) => this.message.error(e.message))
     }
 
-    showModal(t?: TRANSACTION_OUTPUT): void {
-        if (t != undefined) {
-            this.title = "Edit"
-            this.newTransaction = Object.assign(this.newTransaction, t)
-            this.selectedProduct = t.ProductOnTransaction.map(p => p.product)
-            this.selectedType = t.type
-            this.selectedAccount = t.account
+    // 显示对话框, 外部观察器调用来弹出对话框
+    show(newData?: TRANSACTION_OUTPUT) {
+        if (newData !== undefined) {
+            this.title = "修改"
+            this.data = newData
+
+            this.bindType = newData.type
+            this.bindAccount = newData.account
+            this.bindProduct = newData.ProductOnTransaction.map(p => p.product)
         } else {
-            this.title = "Create"
-            this.newTransaction.id = undefined
-            this.newTransaction.title = undefined
-            this.newTransaction.typeId = undefined
-            this.newTransaction.type = undefined
-            this.newTransaction.accountId = undefined
-            this.newTransaction.account = undefined
-            this.newTransaction.amount = undefined
-            this.newTransaction.datetime = new Date(Date.now())
-            this.newTransaction.status = undefined
-            this.selectedProduct = []
-            this.selectedType = null
-            this.selectedAccount = null
+            this.title = "新建"
         }
         this.isVisible = true
     }
 
-    handleOk(): void {
-        this.newTransaction.type = this.selectedType
-        this.newTransaction.typeId = this.selectedType.id
-        this.newTransaction.account = this.selectedAccount
-        this.newTransaction.accountId = this.selectedAccount.id
-        this.newTransaction.productIds = this.selectedProduct.map(p => p.id)
+    // 检验数据是否符合, 不符合确认按钮被禁用
+    isDataOK() {
+        return this.data.title === undefined || this.data.title === "" || this.data.typeId === undefined || this.data.typeId === "" || this.data.accountId === undefined || this.data.accountId === "" || this.data.amount === undefined
+    }
 
-        // 将编辑器的结果传递给父组件
-        this.readEditorData.emit(this.newTransaction)
+    // 确认按钮, 将编辑器的结果传递给外部组件
+    okButton() {
+        this.data.typeId = this.bindType.id
+        this.data.accountId = this.bindAccount.id
+        this.data.productIds = this.bindProduct.map(p => p.id)
+
+        this.readEditorData.emit(this.data)
         this.isVisible = false
     }
 
-    handleCancel(): void {
+    // 取消按钮
+    cancelButton() {
         this.isVisible = false
-    }
-
-    private handleError(error: HttpErrorResponse) {
-        let err: string
-        if (error.status === 0) {
-            // A client-side or network error occurred. Handle it accordingly.
-            err = `Network error occurred, Message: ${error.error}`
-        } else {
-            // The backend returned an unsuccessful response code.
-            // The response body may contain clues as to what went wrong.
-            err = `Backend returned code ${error.status}, Message: ${error.error}`
-        }
-        // 控制台输出错误提示
-        console.error(err)
-        // Return an observable with a user-facing error message.
-        return throwError(() => new Error(err))
     }
 }

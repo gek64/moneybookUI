@@ -1,15 +1,9 @@
 import {Component, OnInit, ViewChild} from "@angular/core"
 import {NzMessageService} from "ng-zorro-antd/message"
-import {catchError, retry, throwError} from "rxjs"
 import {HttpErrorResponse} from "@angular/common/http"
 import {TransactionStatus} from "../../share/definition/transactionStatus"
 import {EndOfDay, EndOfMonth, EndOfYear, StartOfDay, StartOfMonth, StartOfYear} from "../../share/date/dataRange"
-import {
-    TRANSACTION,
-    TRANSACTION_INPUT,
-    TRANSACTION_OUTPUT,
-    TransactionTableHeaders
-} from "../../share/definition/transaction"
+import {TRANSACTION_INPUT, TRANSACTION_OUTPUT, TransactionTableHeaders} from "../../share/definition/transaction"
 import {TransactionEditorComponent} from "../transaction-editor/transaction-editor.component"
 import {PRODUCT} from "../../share/definition/product"
 import {TYPE} from "../../share/definition/type"
@@ -30,7 +24,7 @@ export class TransactionSearchComponent implements OnInit {
     editor: TransactionEditorComponent
     checkedAll = false
     indeterminate = false
-    loading = false
+    isLoading = false
     listOfData: readonly TRANSACTION_OUTPUT[] = []
     listOfCurrentPageData: readonly TRANSACTION_OUTPUT[] = []
     setOfCheckedItems = new Set<string>()
@@ -69,101 +63,84 @@ export class TransactionSearchComponent implements OnInit {
     // 数据库操作
     updateStatus(status: string) {
         let pageThis = this
-        this.loading = true
+        this.isLoading = true
 
         this.transactionService.patchTransactionsStatus(Array.from(this.setOfCheckedItems), status)
-            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
-            .subscribe({
-                next: (resp) => {
-                    if (resp.count != undefined && resp.count != 0) {
-                        pageThis.listOfData.forEach(function (transaction, index, array) {
-                            pageThis.setOfCheckedItems.forEach(function (selectedId) {
-                                if (transaction.id == selectedId) {
-                                    array[index].status = status
-                                }
-                            })
+            .then(data => {
+                if (data.count != undefined && data.count != 0) {
+                    pageThis.listOfData.forEach(function (transaction, index, array) {
+                        pageThis.setOfCheckedItems.forEach(function (selectedId) {
+                            if (transaction.id == selectedId) {
+                                array[index].status = status
+                            }
                         })
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
+                    })
+                }
             })
-            .add(() => this.loading = false)
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 
     updateTransaction(t: TRANSACTION_INPUT) {
-        this.loading = true
+        this.isLoading = true
 
         this.transactionService.updateTransaction(t)
-            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
-            .subscribe({
-                next: (resp: TRANSACTION) => {
-                    if (resp.id !== undefined) {
-                        this.readTransactions()
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            .then(data => {
+                if (data.id !== undefined) {
+                    this.readTransactions()
+                }
             })
-            .add(() => this.loading = false)
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 
     deleteTransactions() {
-        this.loading = true
+        this.isLoading = true
 
-        this.transactionService.deleteTransactions([...this.setOfCheckedItems])
-            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
-            .subscribe({
-                next: resp => {
-                    if (resp.count > 0) {
-                        this.listOfData = this.listOfData.filter(item => !this.setOfCheckedItems.has(item.id))
-                        this.setOfCheckedItems.clear()
-                    }
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
+        this.transactionService.deleteTransactions(new Set([...this.setOfCheckedItems]))
+            .then(data => {
+                if (data.count > 0) {
+                    this.listOfData = this.listOfData.filter(item => !this.setOfCheckedItems.has(item.id))
+                    this.setOfCheckedItems.clear()
+                }
             })
-            .add(() => this.loading = false)
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 
     readTransactions() {
-        let pageThis = this
-        this.loading = true
+        this.isLoading = true
 
         this.transactionService.readTransactions()
-            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
-            .subscribe({
-                next: function (resp) {
-                    resp.forEach(function (transaction, index) {
-                        resp[index].datetime = new Date(Date.parse(transaction.datetime as unknown as string))
-                    })
-                    pageThis.allTransactions = resp
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
+            .then(data => {
+                data.forEach(function (transaction, index) {
+                    data[index].datetime = new Date(Date.parse(transaction.datetime as unknown as string))
+                })
+                this.allTransactions = data
             })
-            .add(() => this.loading = false)
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 
     async readProducts() {
         await this.productService.readProducts()
-            .then(as => this.allProducts = [...as])
+            .then(ds => this.allProducts = [...ds])
             .catch((e: HttpErrorResponse) => this.message.error(e.message))
-            .finally(() => this.loading = false)
+            .finally(() => this.isLoading = false)
     }
 
-    readTypes() {
-        this.typeService.readTypes()
-            .pipe(retry(3), catchError($error => throwError(() => new Error($error.error()))))
-            .subscribe({
-                next: (resp) => {
-                    this.allTypes = resp
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
-            })
+    async readTypes() {
+        await this.typeService.readTypes()
+            .then(ds => this.allTypes = [...ds])
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 
     async readAccounts() {
         await this.accountService.readAccounts()
-            .then(as => this.allAccounts = [...as])
+            .then(ds => this.allAccounts = [...ds])
             .catch((e: HttpErrorResponse) => this.message.error(e.message))
-            .finally(() => this.loading = false)
+            .finally(() => this.isLoading = false)
     }
 
     // 中间功能
@@ -196,26 +173,23 @@ export class TransactionSearchComponent implements OnInit {
         // 服务端筛选
         this.selectedAmount = 0
         this.transactionService.readTransactionsWithConditions(undefined, this.selectedKeyword, this.selectedProducts?.map(p => p.id), this.selectedTypes?.map(t => t.id), this.selectedAccounts?.map(a => a.id), this.selectedDatetime[0]?.toString(), this?.selectedDatetime[1]?.toString(), this.selectedStatus?.map(s => s.value))
-            .pipe(retry(1), catchError($error => throwError(() => new Error($error.error()))))
-            .subscribe({
-                next: (resp) => {
-                    this.listOfData = resp
+            .then(data => {
+                this.listOfData = data
 
-                    // 统计金额
-                    this.listOfData.forEach((transaction, index) => {
-                        this.listOfData[index].datetime = new Date(this.listOfData[index].datetime)
-                        this.selectedAmount += transaction.amount
-                    })
-                },
-                error: (err: HttpErrorResponse) => this.message.error(err.message)
+                // 统计金额
+                this.listOfData.forEach((transaction, index) => {
+                    this.listOfData[index].datetime = new Date(this.listOfData[index].datetime)
+                    this.selectedAmount += transaction.amount
+                })
             })
-            .add(() => this.loading = false)
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 
     editTypeButton() {
         let ts = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
         if (ts.length === 1) {
-            this.editor.showModal(ts[0])
+            this.editor.show(ts[0])
         }
     }
 

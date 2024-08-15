@@ -1,40 +1,39 @@
 import {Injectable} from "@angular/core"
 import {HttpClient} from "@angular/common/http"
+import {lastValueFrom, retry} from "rxjs"
 import {TYPE} from "../share/definition/type"
 import {environment} from "../app.component"
 
 @Injectable()
 export class TypeService {
-    server = environment.server
+    url1 = new URL("/type", environment.server).toString()
+    url2 = new URL("/types", environment.server).toString()
 
     constructor(private http: HttpClient) {
     }
 
-    createType(newType: TYPE) {
-        return this.http.post<TYPE>(new URL("/type", this.server).toString(), newType)
+    async createType(typeBody: TYPE) {
+        return await lastValueFrom(this.http.post<TYPE>(this.url1, typeBody).pipe(retry(3)))
+            .then(a => a)
+            .catch(error => Promise.reject(error))
     }
 
-    updateType(updateType: TYPE) {
-        return this.http.put<TYPE>(new URL("/type", this.server).toString(), updateType)
+    async updateType(typeBody: TYPE) {
+        return await lastValueFrom(this.http.put<TYPE>(this.url1, typeBody).pipe(retry(3)))
+            .then(a => a)
+            .catch(error => Promise.reject(error))
     }
 
-    readTypes() {
-        return this.http.get<TYPE[]>(new URL("/types", this.server).toString())
+    async deleteTypes(ids: Set<string>) {
+        return await lastValueFrom(this.http.delete<{ count: number }>
+        (this.url2, {params: {"ids": Array.from(ids)}}).pipe(retry(3)))
+            .then(resp => resp)
+            .catch(error => Promise.reject(error))
     }
 
-    deleteType(id: Set<string>) {
-        return this.http.delete<{ count: number }>(new URL("/type", this.server).toString(), {
-            params: {
-                "id": Array.from(id)
-            }
-        })
-    }
-
-    deleteTypes(ids: Set<string>) {
-        return this.http.delete<{ count: number }>(new URL("/types", this.server).toString(), {
-            params: {
-                "ids": Array.from(ids)
-            }
-        })
+    async readTypes() {
+        return await lastValueFrom(this.http.get<TYPE[]>(this.url2).pipe(retry(3)))
+            .then(as => as)
+            .catch(error => Promise.reject(error))
     }
 }

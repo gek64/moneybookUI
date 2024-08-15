@@ -1,7 +1,8 @@
-<nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
-          [(nzVisible)]="isVisible" [nzOkDisabled]="newType.name == ''"
-          [nzTitle]="title" nzWidth>
-    <ng-container *nzModalContent>
+<!--对话框-->
+<nz-modal [nzTitle]="title" nzWidth [(nzVisible)]="isVisible" [nzOkDisabled]="isDataOK()"
+          (nzOnOk)="okButton()" (nzOnCancel)="cancelButton()">
+    <!--对话框内容-->
+    <div *nzModalContent>
         <nz-table [nzData]="[{}]" [nzShowPagination]="false">
             <!--两行不显示的空表头-->
             <thead>
@@ -10,13 +11,13 @@
                 <th></th>
             </tr>
             </thead>
-
+            <!--用于填写的表内容-->
             <tbody>
             <tr>
                 <td>名称</td>
-                <td><input [(ngModel)]="newType.name" nz-input/></td>
+                <td><input [(ngModel)]="data.name" nz-input/></td>
             </tr>
             </tbody>
         </nz-table>
-    </ng-container>
+    </div>
 </nz-modal>

@@ -1,8 +1,8 @@
 import {Injectable} from "@angular/core"
 import {HttpClient} from "@angular/common/http"
+import {lastValueFrom, retry} from "rxjs"
 import {PRODUCT} from "../share/definition/product"
 import {environment} from "../app.component"
-import {lastValueFrom, retry} from "rxjs"
 
 @Injectable()
 export class ProductService {

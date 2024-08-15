@@ -1,7 +1,8 @@
-<nz-modal (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
-          [(nzVisible)]="isVisible" [nzOkDisabled]="newTransaction.title == ''"
-          [nzTitle]="title" nzWidth>
-    <ng-container *nzModalContent>
+<!--对话框-->
+<nz-modal [nzTitle]="title" nzWidth [(nzVisible)]="isVisible" [nzOkDisabled]="isDataOK()"
+          (nzOnOk)="okButton()" (nzOnCancel)="cancelButton()">
+    <!--对话框内容-->
+    <div *nzModalContent>
         <nz-table [nzData]="[{}]" [nzShowPagination]="false">
             <!--两行不显示的空表头-->
             <thead>
@@ -10,64 +11,59 @@
                 <th></th>
             </tr>
             </thead>
-
+            <!--用于填写的表内容-->
             <tbody>
             <tr>
                 <td>标题</td>
-                <td><input [(ngModel)]="newTransaction.title" nz-input/></td>
+                <td><input [(ngModel)]="data.title" nz-input/></td>
             </tr>
             <tr>
                 <td>商品</td>
                 <td>
-                    <nz-select [(ngModel)]="selectedProduct" [compareWith]="nzSelectCompareFn"
-                               [nzDropdownMatchSelectWidth]="false"
-                               nzAllowClear nzMode="multiple" nzPlaceHolder="选择商品">
-                        <nz-option *ngFor="let product of products" [nzLabel]="product?.name"
-                                   [nzValue]="product"></nz-option>
+                    <nz-select [(ngModel)]="bindProduct" nzAllowClear nzMode="multiple" nzPlaceHolder="选择商品"
+                               [nzDropdownMatchSelectWidth]="false" [compareWith]="compareWith">
+                        <nz-option *ngFor="let d of products" [nzLabel]="d?.name" [nzValue]="d"></nz-option>
                     </nz-select>
                 </td>
             </tr>
             <tr>
                 <td>类型</td>
                 <td>
-                    <nz-select [(ngModel)]="selectedType" [compareWith]="nzSelectCompareFn"
-                               [nzDropdownMatchSelectWidth]="false"
-                               nzAllowClear nzPlaceHolder="选择类型">
-                        <nz-option *ngFor="let type of types" [nzLabel]="type.name" [nzValue]="type"></nz-option>
+                    <nz-select [(ngModel)]="bindType" nzAllowClear nzPlaceHolder="选择类型"
+                               [nzDropdownMatchSelectWidth]="false" [compareWith]="compareWith">
+                        <nz-option *ngFor="let d of types" [nzLabel]="d.name" [nzValue]="d"></nz-option>
                     </nz-select>
                 </td>
             </tr>
             <tr>
                 <td>账户</td>
                 <td>
-                    <nz-select [(ngModel)]="selectedAccount" [compareWith]="nzSelectCompareFn"
-                               [nzDropdownMatchSelectWidth]="false"
-                               nzAllowClear nzPlaceHolder="选择账户">
-                        <nz-option *ngFor="let account of accounts" [nzLabel]="account.name"
-                                   [nzValue]="account"></nz-option>
+                    <nz-select [(ngModel)]="bindAccount" nzAllowClear nzPlaceHolder="选择账户"
+                               [nzDropdownMatchSelectWidth]="false" [compareWith]="compareWith">
+                        <nz-option *ngFor="let d of accounts" [nzLabel]="d.name" [nzValue]="d"></nz-option>
                     </nz-select>
                 </td>
             </tr>
             <tr>
                 <td>金额</td>
-                <td><input [(ngModel)]="newTransaction.amount" nz-input type="number"/></td>
+                <td><input [(ngModel)]="data.amount" nz-input type="number"/></td>
             </tr>
             <tr>
                 <td>日期</td>
                 <td>
-                    <nz-date-picker [(ngModel)]="newTransaction.datetime" [nzShowTime]="true"></nz-date-picker>
+                    <nz-date-picker [(ngModel)]="data.datetime" [nzShowTime]="true"></nz-date-picker>
                 </td>
             </tr>
             <tr>
                 <td>状态</td>
                 <td>
-                    <nz-select [(ngModel)]="newTransaction.status" [nzDropdownMatchSelectWidth]="false"
-                               nzAllowClear nzPlaceHolder="选择状态">
-                        <nz-option *ngFor="let s of status" [nzLabel]="s.key" [nzValue]="s.value"></nz-option>
+                    <nz-select [(ngModel)]="data.status" nzAllowClear nzPlaceHolder="选择状态"
+                               [nzDropdownMatchSelectWidth]="false">
+                        <nz-option *ngFor="let d of status" [nzLabel]="d.key" [nzValue]="d.value"></nz-option>
                     </nz-select>
                 </td>
             </tr>
             </tbody>
         </nz-table>
-    </ng-container>
+    </div>
 </nz-modal>

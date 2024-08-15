@@ -40,21 +40,21 @@
             <th (nzCheckedChange)="checkAllBox($event)" [nzChecked]="selectAll" [nzIndeterminate]="selectSome"></th>
             <!--表头每一栏-->
             <th *ngFor="let h of tableHeaders" [nzSortDirections]="h.sortDirections" [nzSortFn]="h.sortFn"
-                [nzSortOrder]="h.sortOrder" [nzSortPriority]="h.priority">
+                [nzSortOrder]="h.sortOrder" [nzSortPriority]="false">
                 {{ h.name }}
             </th>
         </tr>
         </thead>
         <!--表数据-->
         <tbody>
-        <tr *ngFor="let t of table.data">
-            <td (nzCheckedChange)="checkItemBox($event,t)" [nzChecked]="selectedIds.has(t.id)"></td>
-            <td>{{ t.title }}</td>
-            <td>{{ t.type.name }}</td>
-            <td>{{ t.account.name }}</td>
-            <td>{{ t.amount }}</td>
-            <td>{{ t.datetime| date:"short":"+0800":"zh" }}</td>
-            <td>{{ t.status | status }}</td>
+        <tr *ngFor="let d of table.data">
+            <td (nzCheckedChange)="checkItemBox($event,d)" [nzChecked]="selectedIds.has(d.id)"></td>
+            <td>{{ d.title }}</td>
+            <td>{{ d.type.name }}</td>
+            <td>{{ d.account.name }}</td>
+            <td>{{ d.amount }}</td>
+            <td>{{ d.datetime| date:"short":"+0800":"zh" }}</td>
+            <td>{{ d.status | status }}</td>
         </tr>
         </tbody>
     </nz-table>

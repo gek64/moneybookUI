@@ -54,7 +54,7 @@ jobs:
           # 编译
           npm run build
           # 压缩
-          zip -9 moneybookUI.zip dist/*
+          zip -r -9 moneybookUI.zip dist/*
           # 获取版本信息
           echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
           # 获取sha256 checksum

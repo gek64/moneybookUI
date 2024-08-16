@@ -55,6 +55,8 @@ jobs:
           npm run build
           # 压缩
           zip -9 moneybookUI.zip dist/*
+          # 获取版本信息
+          echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
           # 获取sha256 checksum
           sha256sum moneybookUI.zip > SHA256SUMS.txt
 
@@ -62,7 +64,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "moneybookUI.zip,SHA256SUMS.txt"
-          tag: "latest"
+          tag: ${{ env.VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
           removeArtifacts: true

@@ -40,7 +40,7 @@ export class TransactionEditorComponent implements OnInit {
     products: PRODUCT[] = []
     status = TransactionStatus
     // 选择框绑定的数据
-    bindProduct: PRODUCT[] = []
+    bindProducts: PRODUCT[] = []
     bindAccount: ACCOUNT
     bindType: TYPE
 
@@ -79,7 +79,7 @@ export class TransactionEditorComponent implements OnInit {
 
             this.bindType = newData.type
             this.bindAccount = newData.account
-            this.bindProduct = newData.ProductOnTransaction.map(p => p.product)
+            this.bindProducts = newData.ProductOnTransaction.map(p => p.product)
         } else {
             this.title = "新建"
         }
@@ -88,14 +88,14 @@ export class TransactionEditorComponent implements OnInit {
 
     // 检验数据是否符合, 不符合确认按钮被禁用
     isDataOK() {
-        return this.data.title === undefined || this.data.title === "" || this.data.typeId === undefined || this.data.typeId === "" || this.data.accountId === undefined || this.data.accountId === "" || this.data.amount === undefined
+        return this.data.title === undefined || this.data.title === "" || this.bindType?.id === undefined || this.bindType?.id === "" || this.bindAccount?.id === undefined || this.bindAccount?.id === "" || this.data.amount === undefined
     }
 
     // 确认按钮, 将编辑器的结果传递给外部组件
     okButton() {
         this.data.typeId = this.bindType.id
         this.data.accountId = this.bindAccount.id
-        this.data.productIds = this.bindProduct.map(p => p.id)
+        this.data.productIds = this.bindProducts.map(p => p.id)
 
         this.readEditorData.emit(this.data)
         this.isVisible = false

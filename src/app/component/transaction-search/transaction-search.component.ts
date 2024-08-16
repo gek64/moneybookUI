@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from "@angular/core"
 import {NzMessageService} from "ng-zorro-antd/message"
 import {HttpErrorResponse} from "@angular/common/http"
-import {TransactionStatus} from "../../share/definition/transactionStatus"
+import {TRANSACTION_STATUS, TransactionStatus} from "../../share/definition/transactionStatus"
 import {EndOfDay, EndOfMonth, EndOfYear, StartOfDay, StartOfMonth, StartOfYear} from "../../share/date/dataRange"
 import {TRANSACTION_INPUT, TRANSACTION_OUTPUT, TransactionTableHeaders} from "../../share/definition/transaction"
 import {TransactionEditorComponent} from "../transaction-editor/transaction-editor.component"
@@ -23,57 +23,200 @@ export class TransactionSearchComponent implements OnInit {
     @ViewChild("editor")
     editor: TransactionEditorComponent
 
+    // 表头变量
+    tableHeaders = TransactionTableHeaders
 
-    checkedAll = false
-    indeterminate = false
+    // 表头全选框变量
+    // 是否全选
+    selectAll = false
+    // 是否部分选择
+    selectSome = false
+    // 被选中的所有的id
+    selectedIds = new Set<string>()
+
+    // 表内容变量
+    // 表中所有数据
+    data: TRANSACTION_OUTPUT[] = []
+    // 当前页面中表的数据(随着页码,页面大小变化)
+    dataCurrentPage: TRANSACTION_OUTPUT[] = []
+    // 是否显示加载状态
     isLoading = false
-    listOfData: readonly TRANSACTION_OUTPUT[] = []
-    listOfCurrentPageData: readonly TRANSACTION_OUTPUT[] = []
-    setOfCheckedItems = new Set<string>()
-    tableHeaderColumns = TransactionTableHeaders
-    allTransactions: readonly TRANSACTION_OUTPUT[] = []
-    allProducts: readonly PRODUCT[] = []
-    allTypes: readonly  TYPE[] = []
-    allAccounts: readonly  ACCOUNT[] = []
-    allStatus: { key: string, value: string }[] = TransactionStatus
-    selectedKeyword: string = ""
-    selectedProducts: PRODUCT[] = []
-    selectedTypes: TYPE[] = []
-    selectedAccounts: ACCOUNT[] = []
-    selectedStatus: { key: string, value: string }[] = []
-    selectedDatetime: Date[] = []
-    selectedAmount: number = 0
 
-    DefinedDateRanges = {
+    // 下拉选择框数据
+    // 从服务端获取到的选择框中可选项数据
+    accounts: ACCOUNT[] = []
+    types: TYPE[] = []
+    products: PRODUCT[] = []
+    status = TransactionStatus
+    // 选择框绑定的数据
+    bindKeyword = ""
+    bindProducts: PRODUCT[] = []
+    bindTypes: TYPE[] = []
+    bindAccounts: ACCOUNT[] = []
+    bindStatus: TRANSACTION_STATUS[] = []
+    bindDatetime: Date[] = []
+    bindAmount = 0
+    bindDateRanges = {
         "Today": [StartOfDay(new Date()), EndOfDay(new Date())],
         "This Month": [StartOfMonth(new Date()), EndOfMonth(new Date())],
         "This Year": [StartOfYear(new Date()), EndOfYear(new Date())]
     }
 
+    // 构筑函数,用于注册服务
     constructor(private transactionService: TransactionService, private productService: ProductService, private accountService: AccountService, private typeService: TypeService, private message: NzMessageService) {
     }
 
+
     // 生命周期
-    ngOnInit() {
-        // 使用客户端筛选时才需要
-        // this.readTransactions()
-        this.readProducts()
-        this.readTypes()
-        this.readAccounts()
+    async ngOnInit() {
+        await this.productService.readProducts()
+            .then(ds => this.products = [...ds])
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
+
+        await this.typeService.readTypes()
+            .then(ds => this.types = [...ds])
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
+
+        await this.accountService.readAccounts()
+            .then(ds => this.accounts = [...ds])
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
     }
 
-    // 数据库操作
-    updateStatus(status: string) {
-        let pageThis = this
-        this.isLoading = true
+    // 表格中当前页的数据发生改变时刷新变量状态
+    onCurrentPageDataChange($event: readonly TRANSACTION_OUTPUT[]) {
+        this.dataCurrentPage = [].concat($event)
+        this.refreshCheckBoxStatus()
+    }
 
-        this.transactionService.patchTransactionsStatus(Array.from(this.setOfCheckedItems), status)
+    // 表头全选框
+    checkAllBox($event: boolean) {
+        if ($event) {
+            this.dataCurrentPage.forEach(t => this.selectedIds.add(t.id))
+        } else {
+            this.dataCurrentPage.forEach(t => this.selectedIds.delete(t.id))
+        }
+        this.refreshCheckBoxStatus()
+    }
+
+    // 表中数据选框
+    checkItemBox($event: boolean, item: TRANSACTION_OUTPUT) {
+        if ($event) {
+            this.selectedIds.add(item.id)
+        } else {
+            this.selectedIds.delete(item.id)
+        }
+        this.refreshCheckBoxStatus()
+    }
+
+    // 刷新选择框的状态
+    refreshCheckBoxStatus() {
+        this.selectAll = this.selectedIds.size > 0 && this.dataCurrentPage.every(item => this.selectedIds.has(item.id))
+        this.selectSome = this.selectedIds.size > 0 && this.dataCurrentPage.some(item => this.selectedIds.has(item.id)) && !this.selectAll
+    }
+
+    // 全选按钮
+    selectAllButton() {
+        this.data.forEach(t => this.selectedIds.add(t.id))
+        this.refreshCheckBoxStatus()
+    }
+
+    // 清除按钮
+    clearButton() {
+        this.selectedIds.clear()
+        this.refreshCheckBoxStatus()
+    }
+
+    // 删除按钮
+    async deleteButton() {
+        await this.deleteData(this.selectedIds)
+        this.selectedIds.clear()
+    }
+
+    // 修改按钮
+    modifyButton() {
+        let ts = this.data.filter(item => this.selectedIds.has(item.id))
+        if (ts.length == 1) {
+            this.editor.show(ts[0])
+        }
+    }
+
+    // 创建按钮
+    createButton() {
+        this.editor.show()
+    }
+
+    async submitButton() {
+        this.bindAmount = 0
+        await this.transactionService.readTransactionsWithConditions(undefined, this.bindKeyword, this.bindProducts?.map(p => p.id), this.bindTypes?.map(t => t.id), this.bindAccounts?.map(a => a.id), this.bindDatetime[0]?.toString(), this?.bindDatetime[1]?.toString(), this.bindStatus?.map(s => s.value))
+            .then(data => {
+                this.data = data
+                // 统计金额
+                this.data.forEach((d, i) => {
+                    this.data[i].datetime = new Date(this.data[i].datetime)
+                    this.bindAmount += d.amount
+                })
+            })
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
+    }
+
+    // 处理子组件观察期传回来数据
+    async readEditorData($event: TRANSACTION_INPUT) {
+        if ($event.id !== undefined) {
+            await this.updateData($event)
+        } else {
+            await this.createData($event)
+        }
+    }
+
+    // 网络请求
+    async createData(body: TRANSACTION_INPUT) {
+        this.isLoading = true
+        await this.transactionService.createTransaction(body)
+            .then(async () => await this.readData())
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
+    }
+
+    async updateData(body: TRANSACTION_INPUT) {
+        this.isLoading = true
+        await this.transactionService.updateTransaction(body)
+            .then(async () => await this.readData())
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
+    }
+
+    async deleteData(selectedIds: Set<string>) {
+        this.isLoading = true
+        await this.transactionService.deleteTransactions(selectedIds)
+            .then(async () => await this.readData())
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
+    }
+
+    async readData() {
+        this.isLoading = true
+        await this.transactionService.readTransactions()
+            .then(ds => this.data = [...ds].map(d => {
+                d.datetime = new Date(Date.parse(d.datetime as unknown as string))
+                return d
+            }))
+            .catch((e: HttpErrorResponse) => this.message.error(e.message))
+            .finally(() => this.isLoading = false)
+    }
+
+    async updateDataStatus(status: string) {
+        this.isLoading = true
+        await this.transactionService.patchTransactionsStatus(Array.from(this.selectedIds), status)
             .then(data => {
                 if (data.count != undefined && data.count != 0) {
-                    pageThis.listOfData.forEach(function (transaction, index, array) {
-                        pageThis.setOfCheckedItems.forEach(function (selectedId) {
-                            if (transaction.id == selectedId) {
-                                array[index].status = status
+                    this.data.forEach((d, i, a) => {
+                        this.selectedIds.forEach((selectedId) => {
+                            if (d.id == selectedId) {
+                                a[i].status = status
                             }
                         })
                     })
@@ -83,152 +226,8 @@ export class TransactionSearchComponent implements OnInit {
             .finally(() => this.isLoading = false)
     }
 
-    updateTransaction(t: TRANSACTION_INPUT) {
-        this.isLoading = true
-
-        this.transactionService.updateTransaction(t)
-            .then(data => {
-                if (data.id !== undefined) {
-                    this.readTransactions()
-                }
-            })
-            .catch((e: HttpErrorResponse) => this.message.error(e.message))
-            .finally(() => this.isLoading = false)
-    }
-
-    deleteTransactions() {
-        this.isLoading = true
-
-        this.transactionService.deleteTransactions(new Set([...this.setOfCheckedItems]))
-            .then(data => {
-                if (data.count > 0) {
-                    this.listOfData = this.listOfData.filter(item => !this.setOfCheckedItems.has(item.id))
-                    this.setOfCheckedItems.clear()
-                }
-            })
-            .catch((e: HttpErrorResponse) => this.message.error(e.message))
-            .finally(() => this.isLoading = false)
-    }
-
-    readTransactions() {
-        this.isLoading = true
-
-        this.transactionService.readTransactions()
-            .then(data => {
-                data.forEach(function (transaction, index) {
-                    data[index].datetime = new Date(Date.parse(transaction.datetime as unknown as string))
-                })
-                this.allTransactions = data
-            })
-            .catch((e: HttpErrorResponse) => this.message.error(e.message))
-            .finally(() => this.isLoading = false)
-    }
-
-    async readProducts() {
-        await this.productService.readProducts()
-            .then(ds => this.allProducts = [...ds])
-            .catch((e: HttpErrorResponse) => this.message.error(e.message))
-            .finally(() => this.isLoading = false)
-    }
-
-    async readTypes() {
-        await this.typeService.readTypes()
-            .then(ds => this.allTypes = [...ds])
-            .catch((e: HttpErrorResponse) => this.message.error(e.message))
-            .finally(() => this.isLoading = false)
-    }
-
-    async readAccounts() {
-        await this.accountService.readAccounts()
-            .then(ds => this.allAccounts = [...ds])
-            .catch((e: HttpErrorResponse) => this.message.error(e.message))
-            .finally(() => this.isLoading = false)
-    }
-
-    // 中间功能
-    getEditorResult(e: TRANSACTION_INPUT) {
-        if (e.id !== undefined) {
-            this.updateTransaction(e)
-        }
-    }
-
-    refreshCheckedAllStatus() {
-        this.checkedAll = this.listOfCurrentPageData.every(item => this.setOfCheckedItems.has(item.id))
-        this.indeterminate = this.listOfCurrentPageData.some(item => this.setOfCheckedItems.has(item.id)) && !this.checkedAll
-    }
-
-    onCurrentPageDataChange(listOfCurrentPageData: readonly TRANSACTION_OUTPUT[]) {
-        this.listOfCurrentPageData = listOfCurrentPageData
-        this.refreshCheckedAllStatus()
-    }
-
-    updateCheckedSet(id: string, checked: boolean) {
-        if (checked) {
-            this.setOfCheckedItems.add(id)
-        } else {
-            this.setOfCheckedItems.delete(id)
-        }
-    }
-
-    // 按键
-    submitButton() {
-        // 服务端筛选
-        this.selectedAmount = 0
-        this.transactionService.readTransactionsWithConditions(undefined, this.selectedKeyword, this.selectedProducts?.map(p => p.id), this.selectedTypes?.map(t => t.id), this.selectedAccounts?.map(a => a.id), this.selectedDatetime[0]?.toString(), this?.selectedDatetime[1]?.toString(), this.selectedStatus?.map(s => s.value))
-            .then(data => {
-                this.listOfData = data
-
-                // 统计金额
-                this.listOfData.forEach((transaction, index) => {
-                    this.listOfData[index].datetime = new Date(this.listOfData[index].datetime)
-                    this.selectedAmount += transaction.amount
-                })
-            })
-            .catch((e: HttpErrorResponse) => this.message.error(e.message))
-            .finally(() => this.isLoading = false)
-    }
-
-    editTypeButton() {
-        let ts = this.listOfData.filter(item => this.setOfCheckedItems.has(item.id))
-        if (ts.length === 1) {
-            this.editor.show(ts[0])
-        }
-    }
-
-    onItemChecked(id: string, checked: boolean) {
-        this.updateCheckedSet(id, checked)
-        this.refreshCheckedAllStatus()
-    }
-
-    onAllChecked(checked: boolean) {
-        this.listOfCurrentPageData
-            .forEach(({id}) => this.updateCheckedSet(id, checked))
-        this.refreshCheckedAllStatus()
-    }
-
-    clearSetOfCheckedItemsButton() {
-        this.setOfCheckedItems.clear()
-        this.refreshCheckedAllStatus()
-    }
-
-    selectAllItemsButton() {
-        this.listOfData.forEach(t => this.setOfCheckedItems.add(t.id))
-        this.refreshCheckedAllStatus()
-    }
-
-    isProductNotSelected(value: PRODUCT): boolean {
-        return this.selectedProducts.indexOf(value) === -1
-    }
-
-    isTypeNotSelected(value: TYPE): boolean {
-        return this.selectedTypes.indexOf(value) === -1
-    }
-
-    isAccountNotSelected(value: ACCOUNT): boolean {
-        return this.selectedAccounts.indexOf(value) === -1
-    }
-
-    isStatusNotSelected(value: { key: string, value: string }): boolean {
-        return this.selectedStatus.indexOf(value) === -1
+    // 下拉框检查值是否已经被绑定
+    isBound<T>(array: T[], v: T): boolean {
+        return array.indexOf(v) === -1
     }
 }

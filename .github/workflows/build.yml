@@ -64,7 +64,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "moneybookUI.zip,SHA256SUMS.txt"
-          tag: ${{ env.VERSION }}
+          # tag: ${{ env.VERSION }}
+          tag: "latest"
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
           removeArtifacts: true

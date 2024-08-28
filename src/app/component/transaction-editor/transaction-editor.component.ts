@@ -82,6 +82,19 @@ export class TransactionEditorComponent implements OnInit {
             this.bindProducts = newData.ProductOnTransaction.map(p => p.product)
         } else {
             this.title = "新建"
+            this.data = {
+                id: undefined,
+                title: undefined,
+                typeId: undefined,
+                accountId: undefined,
+                amount: undefined,
+                datetime: new Date(Date.now()),
+                status: undefined,
+                productIds: undefined
+            }
+            this.bindType = undefined
+            this.bindAccount = undefined
+            this.bindProducts = []
         }
         this.isVisible = true
     }

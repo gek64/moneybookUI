@@ -25,6 +25,7 @@ export class ProductEditorComponent {
             this.data = newData
         } else {
             this.title = "新建"
+            this.data = {id: undefined, name: undefined, specifications: undefined, remark: undefined}
         }
         this.isVisible = true
     }

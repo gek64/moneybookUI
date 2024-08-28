@@ -25,6 +25,7 @@ export class TypeEditorComponent {
             this.data = newData
         } else {
             this.title = "新建"
+            this.data = {id: undefined, name: undefined}
         }
         this.isVisible = true
     }

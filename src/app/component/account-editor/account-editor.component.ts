@@ -25,6 +25,7 @@ export class AccountEditorComponent {
             this.data = newData
         } else {
             this.title = "新建"
+            this.data = {id: undefined, name: undefined, number: undefined, type: undefined, funds: undefined}
         }
         this.isVisible = true
     }

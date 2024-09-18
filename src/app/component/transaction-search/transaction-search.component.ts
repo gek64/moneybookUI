@@ -55,7 +55,7 @@ export class TransactionSearchComponent implements OnInit {
     bindAccounts: ACCOUNT[] = []
     bindStatus: TRANSACTION_STATUS[] = []
     bindDatetime: Date[] = []
-    bindAmount = 0
+    bindAmount: number = 0
     bindDateRanges = {
         "Today": [StartOfDay(new Date()), EndOfDay(new Date())],
         "This Month": [StartOfMonth(new Date()), EndOfMonth(new Date())],
@@ -149,6 +149,7 @@ export class TransactionSearchComponent implements OnInit {
     }
 
     async submitButton() {
+        this.data = []
         this.bindAmount = 0
         await this.transactionService.readTransactionsWithConditions(undefined, this.bindKeyword, this.bindProducts?.map(p => p.id), this.bindTypes?.map(t => t.id), this.bindAccounts?.map(a => a.id), this.bindDatetime[0]?.toString(), this?.bindDatetime[1]?.toString(), this.bindStatus?.map(s => s.value))
             .then(data => {

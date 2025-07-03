@@ -1,26 +1,26 @@
 name: Build and Release and Clean
 
 on:
-  # push:
-  #   branches:
-  #     - main
-  #     - angular
-  #   paths-ignore:
-  #     - 'docs/**'
-  #     - '.github/**'
-  #     - '.git**'
-  #     - '**.md'
-  #     - 'LICENSE'
-  # pull_request:
-  #   branches:
-  #     - main
-  #     - angular
-  #   paths-ignore:
-  #     - 'docs/**'
-  #     - '.github/**'
-  #     - '.git**'
-  #     - '**.md'
-  #     - 'LICENSE'
+  push:
+    branches:
+      - main
+      - angular
+    paths-ignore:
+      - 'docs/**'
+      - '.github/**'
+      - '.git**'
+      - '**.md'
+      - 'LICENSE'
+  pull_request:
+    branches:
+      - main
+      - angular
+    paths-ignore:
+      - 'docs/**'
+      - '.github/**'
+      - '.git**'
+      - '**.md'
+      - 'LICENSE'
   workflow_dispatch:
     inputs:
       tag:

@@ -1,0 +1,50 @@
+name: Build + Release
+
+on:
+  push:
+    branches:
+      - main
+      - angular
+    paths-ignore:
+      - '.github/**'
+      - '.git**'
+      - 'service/**'
+      - '**.md'
+      - 'LICENSE'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'release version'
+        required: false
+        default: 'latest'
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@main
+
+      - name: setup nodejs
+        uses: actions/setup-node@main
+        with:
+          node-version: 'latest'
+
+      - name: processing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # building and compressing
+          npm run build
+          tar -zcvf "./moneybookUI.tar.gz" -C "dist" .
+
+          # delete all releases and their tags
+          gh release list | awk -F '\t' '{print $3}' | while read -r line; do gh release delete --yes --cleanup-tag "$line"; done
+
+          # create release
+          if [ "${{ inputs.version }}" != "" ]; then
+            tag="${{ inputs.version }}"
+          else
+            tag="$(node -p "require('./package.json').version")"
+          fi
+          gh release create "$tag" --generate-notes "./moneybookUI.tar.gz"

@@ -741,7 +741,8 @@ FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,windows,visualstudio,jetbrains+all,visualstudiocode,angular
 
-# tanstack-router
+# tanstack
+.tanstack
 src/routeTree.gen.ts
 
 # lock

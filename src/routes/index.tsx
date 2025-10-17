@@ -5,5 +5,5 @@ export const Route = createFileRoute("/")({
 })
 
 function RouteComponent() {
-    return <div>Hello This is index.tsx</div>
+    return <div>This is index.tsx</div>
 }

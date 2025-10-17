@@ -1,14 +1,22 @@
-import "./App.css"
-import {createRouter} from "@tanstack/react-router"
+import {createHashHistory, createRouter, RouterProvider} from "@tanstack/react-router"
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
 import {routeTree} from "./routeTree.gen.ts"
+import "./App.css"
 
-const router = createRouter({routeTree})
+const router = createRouter({routeTree, history: createHashHistory()})
+const queryClient = new QueryClient()
+
+declare module "@tanstack/react-router" {
+    interface Register {
+        router: typeof router
+    }
+}
 
 function App() {
     return (
-        <>
-            hello world!
-        </>
+        <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router}/>
+        </QueryClientProvider>
     )
 }
 

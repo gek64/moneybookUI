@@ -10,12 +10,12 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.5",
-    "@tanstack/react-router": "^1.133.8",
+    "@tanstack/react-router": "^1.133.13",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@tanstack/router-plugin": "^1.133.8",
+    "@tanstack/router-plugin": "^1.133.13",
     "@types/node": "^24.8.1",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",

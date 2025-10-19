@@ -13,7 +13,7 @@ function RootComponent() {
                     <Link to="/" activeProps={{style: {fontWeight: "bold"}}}>/</Link>
                 </li>
                 <li>
-                    <Link to="/about" activeProps={{style: {fontWeight: "bold"}}}>/about</Link>
+                    <Link to="/account" activeProps={{style: {fontWeight: "bold"}}}>/account</Link>
                 </li>
                 <li>
                     <Link to="/user" search={{id: 0}} activeProps={{style: {fontWeight: "bold"}}}>/user?id=0</Link>

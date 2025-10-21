@@ -4,7 +4,8 @@
   "scripts": {
     "init": "npx -y pnpm install",
     "update": "npx -y pnpm update",
-    "dev": "vite --host localhost",
+    "start": "vite --host localhost --mode production",
+    "dev": "vite --host localhost --mode development",
     "dist": "tsc --build && vite build",
     "clean": "tsc --build --clean"
   },

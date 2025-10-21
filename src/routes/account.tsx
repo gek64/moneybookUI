@@ -1,29 +1,29 @@
 import {createFileRoute} from "@tanstack/react-router"
 import {useQuery} from "@tanstack/react-query"
-import {API_GetAccounts} from "../apis/account.ts"
+import {API_readAccounts} from "../apis/account.ts"
 
 export const Route = createFileRoute("/account")({
     component: RouteComponent,
 })
 
-function RouteComponent() {
-    let getAccounts = useQuery({
-        queryKey: ["getAccounts"],
-        queryFn: API_GetAccounts
+async function RouteComponent() {
+    let readAccountsQuery = useQuery({
+        queryKey: ["readAccounts"],
+        queryFn: API_readAccounts
     })
 
-    if (getAccounts.isFetching) {
+    if (readAccountsQuery.isFetching) {
         return <div>Fetching...</div>
     }
-    if (getAccounts.error) {
-        return <div>Error: {getAccounts.error.message}</div>
+    if (readAccountsQuery.error) {
+        return <div>Error: {readAccountsQuery.error.message}</div>
     }
 
     return (
         <div>
             <p>This is about.tsx</p>
             <ul>
-                {getAccounts.data?.map(item => (
+                {readAccountsQuery.data?.map(item => (
                     <li key={item.id}>
                         <p>id: {item.id}</p>
                         <p>name: {item.name}</p>

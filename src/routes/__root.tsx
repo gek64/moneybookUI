@@ -1,4 +1,7 @@
 import {createRootRoute, Link, Outlet} from "@tanstack/react-router"
+import {Layout, Menu} from "antd"
+import {Content} from "antd/es/layout/layout"
+import {HomeOutlined, SearchOutlined, TableOutlined} from "@ant-design/icons"
 
 export const Route = createRootRoute({
     component: RootComponent,
@@ -7,22 +10,37 @@ export const Route = createRootRoute({
 function RootComponent() {
     return (
         <>
-            <h1>App works!</h1>
-            <ul>
-                <li>
-                    <Link to="/" activeProps={{style: {fontWeight: "bold"}}}>/</Link>
-                </li>
-                <li>
-                    <Link to="/account" activeProps={{style: {fontWeight: "bold"}}}>/account</Link>
-                </li>
-                <li>
-                    <Link to="/user" search={{id: 0}} activeProps={{style: {fontWeight: "bold"}}}>/user?id=0</Link>
-                </li>
-                <li>
-                    <Link to="/user/$id" params={{id: "a"}} activeProps={{style: {fontWeight: "bold"}}}>/user/a</Link>
-                </li>
-            </ul>
-            <Outlet/>
+            <Layout style={{minHeight: "98vh"}}>
+                <Layout.Sider breakpoint="lg" collapsedWidth={0} collapsible={true} theme="light">
+                    <Menu mode="inline">
+                        <Menu.Item icon=<HomeOutlined/>>
+                            <Link to="/">主页</Link>
+                        </Menu.Item>
+                        <Menu.SubMenu icon=<TableOutlined/> title="表单">
+                            <Menu.Item>
+                                <Link to="/transaction">交易</Link>
+                            </Menu.Item>
+                            <Menu.Item>
+                                <Link to="/product">商品</Link>
+                            </Menu.Item>
+                            <Menu.Item>
+                                <Link to="/account">账户</Link>
+                            </Menu.Item>
+                            <Menu.Item>
+                                <Link to="/type">类型</Link>
+                            </Menu.Item>
+                        </Menu.SubMenu>
+                        <Menu.SubMenu icon=<SearchOutlined/> title="查询">
+                            <Menu.Item>
+                                <Link to="/transaction-search">交易查询</Link>
+                            </Menu.Item>
+                        </Menu.SubMenu>
+                    </Menu>
+                </Layout.Sider>
+                <Content>
+                    <Outlet/>
+                </Content>
+            </Layout>
         </>
     )
 }

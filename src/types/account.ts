@@ -1,5 +1,5 @@
 interface ACCOUNT {
-    id?: string
+    id: string
     name: string
     number?: string
     type: string

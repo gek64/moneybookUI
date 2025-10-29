@@ -1,6 +1,5 @@
-import {createRootRoute, Link, Outlet} from "@tanstack/react-router"
-import {Layout, Menu} from "antd"
-import {Content} from "antd/es/layout/layout"
+import {createRootRoute, Link, Outlet, useLocation} from "@tanstack/react-router"
+import {Affix, Layout, Menu} from "antd"
 import {HomeOutlined, SearchOutlined, TableOutlined} from "@ant-design/icons"
 
 export const Route = createRootRoute({
@@ -8,38 +7,45 @@ export const Route = createRootRoute({
 })
 
 function RootComponent() {
+    const location = useLocation()
+    const menuItems = [
+        {
+            key: "/",
+            icon: <HomeOutlined/>,
+            label: <Link to="/">主页</Link>,
+        },
+        {
+            key: "sub1",
+            icon: <TableOutlined/>,
+            label: "表单",
+            children: [
+                {key: "/transaction", label: <Link to="/transaction">交易</Link>},
+                {key: "/product", label: <Link to="/product">商品</Link>},
+                {key: "/account", label: <Link to="/account">账户</Link>},
+                {key: "/type", label: <Link to="/type">类型</Link>}
+            ]
+        },
+        {
+            key: "sub2",
+            icon: <SearchOutlined/>,
+            label: "查询",
+            children: [
+                {key: "/transaction-search", label: <Link to="/transaction-search">交易查询</Link>}
+            ]
+        }
+    ]
+
     return (
         <>
             <Layout style={{minHeight: "98vh"}}>
-                <Layout.Sider breakpoint="lg" collapsedWidth={0} collapsible={true} theme="light">
-                    <Menu mode="inline">
-                        <Menu.Item icon=<HomeOutlined/>>
-                            <Link to="/">主页</Link>
-                        </Menu.Item>
-                        <Menu.SubMenu icon=<TableOutlined/> title="表单">
-                            <Menu.Item>
-                                <Link to="/transaction">交易</Link>
-                            </Menu.Item>
-                            <Menu.Item>
-                                <Link to="/product">商品</Link>
-                            </Menu.Item>
-                            <Menu.Item>
-                                <Link to="/account">账户</Link>
-                            </Menu.Item>
-                            <Menu.Item>
-                                <Link to="/type">类型</Link>
-                            </Menu.Item>
-                        </Menu.SubMenu>
-                        <Menu.SubMenu icon=<SearchOutlined/> title="查询">
-                            <Menu.Item>
-                                <Link to="/transaction-search">交易查询</Link>
-                            </Menu.Item>
-                        </Menu.SubMenu>
-                    </Menu>
+                <Layout.Sider collapsible={true} theme="light">
+                    <Affix>
+                        <Menu defaultOpenKeys={["sub1", "sub2"]} mode="inline" items={menuItems} selectedKeys={[location.pathname]}></Menu>
+                    </Affix>
                 </Layout.Sider>
-                <Content>
+                <Layout.Content>
                     <Outlet/>
-                </Content>
+                </Layout.Content>
             </Layout>
         </>
     )

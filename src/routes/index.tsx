@@ -7,13 +7,17 @@ export const Route = createFileRoute("/")({
 
 function RouteComponent() {
     return <>
-        <Flex justify="space-between" vertical={true}>
-            <Flex></Flex>
+        <Flex align="center" justify="space-between" vertical={true} style={{minHeight: "98vh"}}>
+            <Flex align="flex-start"> </Flex>
+
             <Flex align="center" vertical={true}>
-                <img alt="" height="250" src="../assets/favicon.svg"/>
+                <img alt="" style={{height: "auto", maxWidth: 350, width: "100%"}} src="/favicon.svg"/>
                 <h1>MoneyBook</h1>
                 <p>使用简便、安全可靠的记账查询工具</p>
-                <a href="https://github.com/gek64/moneybookUI">©gek64 2025</a>
+            </Flex>
+
+            <Flex align="flex-end">
+                <a href="https://github.com/gek64/moneybookUI" style={{color: "inherit"}}>©gek64</a>
             </Flex>
         </Flex>
     </>
